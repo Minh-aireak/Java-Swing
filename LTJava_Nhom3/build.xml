@@ -1,0 +1,9 @@
+<path id="project.classpath">
+    <fileset dir="lib">
+        <include name="mysql-connector-java-8.0.33.jar"/>
+    </fileset>
+</path>
+
+<javac srcdir="src" destdir="build/classes" classpathref="project.classpath"/>
+
+<java classname="YourMainClass" classpathref="project.classpath"/>
