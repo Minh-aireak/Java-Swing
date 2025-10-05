@@ -1,8 +1,7 @@
 package UI_Login;
 
 import ConnectDatabase.DatabaseConnection;
-import UI_KhachHang.TaiKhoan;
-import static UI_KhachHang.TaiKhoan.ten;
+import entity.TaiKhoan;
 import UI_KhachHang.UI_KhachHang;
 import java.sql.Connection;
 import java.sql.SQLException;

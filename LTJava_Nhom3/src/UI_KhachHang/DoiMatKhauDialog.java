@@ -1,5 +1,6 @@
 package UI_KhachHang;
 
+import entity.TaiKhoan;
 import ConnectDatabase.DatabaseConnection;
 import java.sql.Connection;
 import javax.swing.JOptionPane;
@@ -165,9 +166,7 @@ public class DoiMatKhauDialog extends javax.swing.JDialog {
         }
     } catch (SQLException ex) {
         ex.printStackTrace();
-    } catch (ClassNotFoundException ex) {
-            Logger.getLogger(DoiMatKhauDialog.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    }
     }//GEN-LAST:event_btnXacNhanActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

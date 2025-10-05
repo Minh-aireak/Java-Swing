@@ -28,7 +28,7 @@ public class DatVe_DAO {
                     flag = true;
                 }
             }
-        } catch (SQLException | ClassNotFoundException ex) {
+        } catch (SQLException ex) {
             Logger.getLogger(DatVe_DAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return flag;
