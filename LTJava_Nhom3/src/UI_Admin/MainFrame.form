@@ -670,7 +670,7 @@
                   <Component id="jLabel3" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="243" max="-2" attributes="0"/>
-                      <Component id="btnXemChiTiet" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnLamMoi" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="222" max="-2" attributes="0"/>
                       <Component id="btnHuyVe" min="-2" pref="72" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
@@ -681,13 +681,16 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jLabel3" pref="89" max="32767" attributes="0"/>
+                      <Component id="jLabel3" pref="97" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane6" min="-2" pref="351" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="btnXemChiTiet" alignment="3" min="-2" pref="31" max="-2" attributes="0"/>
-                          <Component id="btnHuyVe" alignment="3" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="btnHuyVe" pref="32" max="32767" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="btnLamMoi" min="-2" pref="28" max="-2" attributes="0"/>
+                              <EmptySpace min="1" pref="1" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -734,15 +737,33 @@
                 <Component class="javax.swing.JTable" name="tbVe">
                   <Properties>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                      <Table columnCount="4" rowCount="0">
+                      <Table columnCount="7" rowCount="0">
                         <Column editable="true" title="M&#xe3; v&#xe9;" type="java.lang.Object"/>
-                        <Column editable="true" title="Ng&#x1b0;&#x1edd;i xem" type="java.lang.Object"/>
+                        <Column editable="true" title="Kh&#xe1;ch h&#xe0;ng" type="java.lang.Object"/>
                         <Column editable="true" title="Phim" type="java.lang.Object"/>
                         <Column editable="true" title="L&#x1ecb;ch chi&#x1ebf;u" type="java.lang.Object"/>
+                        <Column editable="true" title="Gh&#x1ebf;" type="java.lang.Object"/>
+                        <Column editable="true" title="Ph&#xf2;ng chi&#x1ebf;u" type="java.lang.Object"/>
+                        <Column editable="true" title="Gi&#xe1; v&#xe9;" type="java.lang.Object"/>
                       </Table>
                     </Property>
                     <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                       <TableColumnModel selectionModel="0">
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
+                        <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                          <Title/>
+                          <Editor/>
+                          <Renderer/>
+                        </Column>
                         <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                           <Title/>
                           <Editor/>
@@ -772,9 +793,9 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Component class="javax.swing.JButton" name="btnXemChiTiet">
+            <Component class="javax.swing.JButton" name="btnLamMoi">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Xem chi ti&#x1ebf;t"/>
+                <Property name="text" type="java.lang.String" value="L&#xe0;m m&#x1edb;i"/>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[72, 32]"/>
                 </Property>
@@ -783,7 +804,7 @@
                 </Property>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnXemChiTietActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnLamMoiActionPerformed"/>
               </Events>
             </Component>
           </SubComponents>
