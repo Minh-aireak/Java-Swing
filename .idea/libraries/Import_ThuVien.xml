@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Import_ThuVien">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Import_ThuVien/mysql-connector-j-9.3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Import_ThuVien/jfreechart-1.5.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Import_ThuVien/jcommon-1.0.24.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
