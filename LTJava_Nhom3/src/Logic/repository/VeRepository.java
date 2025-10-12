@@ -2,16 +2,20 @@ package Logic.repository;
 
 import Logic.entity.Ve;
 import ConnectDatabase.DatabaseConnection;
+import Logic.dto.request.DataCreateBillRequest;
 import Logic.dto.request.DataCreateVeRequest;
+import Logic.dto.request.DataGetLichChieuRequest;
 import Logic.dto.response.BillResponse;
 import Logic.dto.response.ChiTietBillResponse;
+import Logic.dto.response.DataGetLichChieuResponse;
 import Logic.dto.response.LichChieuResponse;
+import Logic.entity.Phim;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 public class VeRepository {
@@ -19,8 +23,6 @@ public class VeRepository {
     
     public void taoVe(DataCreateVeRequest listVeRequest) throws SQLException {
         PreparedStatement ps = null;
-        ResultSet rs = null;
-        
         int index = 1;
         ps = connection.prepareStatement("INSERT INTO bill (idBill, idTaiKhoan, thoiGianDat, tongTien) VALUES (?, ?, ?, ?)");
         ps.setString(index++, listVeRequest.getIdBill());
@@ -140,15 +142,17 @@ public class VeRepository {
                 response.add(billResponse);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(VeRepository.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger("getListBill error!");
         }
         
         return response;
     }
     
-    public ChiTietBillResponse getChiTietBill(String idBill, String idTaiKhoan) throws SQLException {
+    public ChiTietBillResponse getChiTietBill(String idBill, String idTaiKhoan) {
         ChiTietBillResponse billResponse = new ChiTietBillResponse();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
             connection = DatabaseConnection.getConnection();
             String statement = "SELECT DISTINCT lc.idLichChieu, p.tenPhim, lc.gioChieu, GROUP_CONCAT(v.idGhe SEPARATOR ', ') AS idGhe, pc.tenPhong, b.thoiGianDat , b.tongTien " +
             "FROM phim p " +
@@ -177,8 +181,11 @@ public class VeRepository {
                 billResponse.setThoiGianDat(dateFormat.format(rs.getTimestamp("thoiGianDat")));
                 billResponse.setTongTien(rs.getInt("tongTien"));
             }
-            
-            return billResponse;
+        } catch (Exception e) {
+            Logger.getLogger("getChiTietBill error!");
+        }
+        
+        return billResponse;
     }
     
     public LichChieuResponse getLichChieu(String idPhim, LocalDateTime gioChieu) {
@@ -209,5 +216,102 @@ public class VeRepository {
             
         }
         return chieuResponse;
+    }
+    
+    public List<Timestamp> getLichChieuPhim(Phim chosenPhim) {
+        List<Timestamp> list = null;
+         try {
+            PreparedStatement ps = connection.prepareStatement("SELECT gioChieu " +
+                                             "FROM lich_chieu lc " +
+                                             "JOIN phim p ON lc.idPhim = p.idPhim " +
+                                             "WHERE lc.idPhim = ? " +
+                                             "AND lc.gioChieu >= DATE_ADD(NOW(), INTERVAL 1 HOUR) " +
+                                             "ORDER BY gioChieu ASC");
+            ps.setString(1, chosenPhim.getIdPhim());
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                Timestamp ts = rs.getTimestamp("gioChieu");
+                list.add(ts);
+            }
+         } catch (SQLException ex) {
+             Logger.getLogger("Exception from database");
+         }
+        return list;
+    }
+    
+    public boolean saveBill(DataCreateBillRequest request) {
+        PreparedStatement ps = null;
+        String idBill = UUID.randomUUID().toString();
+        try {
+            int index = 1;
+            ps = connection.prepareStatement("INSERT INTO bill " +
+                    "(idBill, idTaiKhoan, thoiGianDat, tongTien) VALUES (?, ?, ?, ?)");
+            ps.setString(index++, idBill);
+            ps.setString(index++, request.getIdTaiKhoan());
+            ps.setTimestamp(index++, Timestamp.valueOf(request.getDateTime()));
+            ps.setInt(index, Integer.valueOf(request.getTongTien()));
+            ps.executeUpdate();
+            
+            for(String idGhe : request.getListGheForPay()){
+                ps = connection.prepareStatement("INSERT INTO ve " +
+                        "(idVe, idLichChieu, idGhe, idGia, idBill) VALUES (?, ? ,? ,? ,?)");
+                ps.setString(1, UUID.randomUUID().toString());
+                ps.setString(2, request.getIdLichChieu());
+                ps.setString(3, idGhe);
+                ps.setString(4, request.getIdGia());
+                ps.setString(5, idBill);
+                ps.executeUpdate();
+                ps = connection.prepareStatement("INSERT INTO lichchieu_ghe " +
+                        "(idLichChieu, idGhe, trangThai) VALUES (?, ?, ?)");
+                ps.setString(1, request.getIdLichChieu());
+                ps.setString(2, idGhe);
+                ps.setString(3, "Đã đặt");
+                ps.executeUpdate();
+            };
+            
+            ps = connection.prepareStatement("UPDATE lich_chieu " +
+                    "SET soGheConLai = soGheConLai - ? WHERE idLichChieu = ?");
+            ps.setString(1, String.valueOf(request.getListGheForPay().size()));
+            ps.setString(2, request.getIdLichChieu());
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger("saveBill error!");
+            return false;
+        }
+        return true;
+    }
+    
+    public DataGetLichChieuResponse getChiTietLichChieu(DataGetLichChieuRequest request) {
+        DataGetLichChieuResponse response = null;
+        try {
+            PreparedStatement ps = connection.prepareStatement("SELECT pc.tenPhong, GROUP_CONCAT(lcg.idGhe SEPARATOR ', ') AS idGhe, lc.idLichChieu, ga.idGia, ga.tieuChuan, ga.VIP, ga.Triple " +
+                "FROM phim p " +
+                "JOIN lich_chieu lc ON p.idPhim = lc.idPhim " +
+                "JOIN phong_chieu pc ON lc.idPhongChieu = pc.idPhongChieu " +
+                "LEFT JOIN lichchieu_ghe lcg ON lc.idLichChieu = lcg.idLichChieu " +
+                "LEFT JOIN ghe ge ON lcg.idGhe = ge.idGhe " +
+                "JOIN gia ga ON lc.idGia = ga.idGia " +
+                "WHERE lc.idPhim = ? " +
+                "AND lc.gioChieu = ? " +
+                "GROUP BY pc.tenPhong, lc.idLichChieu, ga.idGia, ga.tieuChuan, ga.VIP, ga.Triple");
+        
+                int index = 1;
+                ps.setString(index++, request.getChossePhim().getIdPhim());
+                ps.setTimestamp(index++, request.getTimestamp());
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()){
+                    response = new DataGetLichChieuResponse(
+                            rs.getString("tenPhong"), 
+                            rs.getString("idGhe"),
+                            rs.getString("idLichChieu"),
+                            rs.getString("idGia"),
+                            rs.getInt("tieuChuan"),
+                            rs.getInt("VIP"),
+                            rs.getInt("Triple"));
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger("getChiTietLichChieu error!");
+            }
+        return response;
     }
 }

@@ -1,8 +1,11 @@
 package Logic.controller;
 
 import ConnectDatabase.DatabaseConnection;
+import Logic.dto.request.DataGetLichChieuRequest;
 import Logic.dto.response.BillResponse;
 import Logic.dto.response.ChiTietBillResponse;
+import Logic.dto.response.DataGetLichChieuResponse;
+import Logic.entity.Phim;
 import Logic.entity.Ve;
 import java.awt.Component;
 import javax.swing.JTable;
@@ -37,46 +40,8 @@ public class VeController {
         
     }
     
-    public void createVe(Component c, JLabel jLabel, JPanel leftGhe
-            , JPanel rightGhe, JComboBox<String> dv_cbo_LichChieu) {
-        listTimestamps.clear();
-        if(jLabel.getText().isEmpty()){
-            JOptionPane.showMessageDialog(c, "Bạn chưa chọn phim!");
-            return;
-        }
-        veService.resetGhe(leftGhe, rightGhe, listGheVIP);
-        dv_cbo_LichChieu.removeAllItems();
-        dv_lab_TenPhim.setText("<html>" + "PHIM: " + chosenPhim.getTenPhim() + "</html>");
-        try {
-            Connection connection = DatabaseConnection.getConnection();
-            PreparedStatement ps = connection.prepareStatement("SELECT gioChieu " +
-                                             "FROM lich_chieu lc " +
-                                             "JOIN phim p ON lc.idPhim = p.idPhim " +
-                                             "WHERE lc.idPhim = ? " +
-                                             "AND lc.gioChieu >= DATE_ADD(NOW(), INTERVAL 1 HOUR) " +
-                                             "ORDER BY gioChieu ASC");
-            ps.setString(1, chosenPhim.getIdPhim());
-            ResultSet rs = ps.executeQuery();
-            boolean flag = false;
-            while (rs.next()){
-                flag = true;
-                Timestamp ts = rs.getTimestamp("gioChieu");
-                SimpleDateFormat newDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                String displayItem = newDate.format(ts);
-                listTimestamps.add(ts);
-                dv_cbo_LichChieu.addItem("Ngày chiếu: " + displayItem);
-            }
-            if(!flag && !getLichChieu(table.getValueAt(table.getSelectedRow(), 0).toString())){
-                JOptionPane.showMessageDialog(rootPane, "Phim hiện tại chưa cập nhật lịch chiếu", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }else if(!flag && getLichChieu(table.getValueAt(table.getSelectedRow(), 0).toString())){
-                JOptionPane.showMessageDialog(rootPane, "Phim hiện tại đã qua thời gian đặt vé", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-            tabbed.setSelectedIndex(2);
-        } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public List<String> createVe(Phim chosenPhim) {
+        return veService.createVe(chosenPhim);
     }
     
     public void deleteVe(Component parent, DefaultTableModel defaultTableModel, JTable jTable){
@@ -119,12 +84,10 @@ public class VeController {
     }
     
     public ChiTietBillResponse getChiTietBill(String idBill) {
-        ChiTietBillResponse data = null;
-        try {
-            data = veService.getChiTietBill(idBill);
-        } catch (Exception e) {
-            Logger.getLogger(VeController.class.getName()).log(Level.SEVERE, null, e);
-        }
-        return data;
+        return veService.getChiTietBill(idBill);
+    }
+    
+    public DataGetLichChieuResponse getChiTietLichChieu(DataGetLichChieuRequest request) {
+        return veService.getChiTietLichChieu(request);
     }
 }
