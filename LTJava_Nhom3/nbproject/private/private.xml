@@ -12,18 +12,16 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/UI_Admin/MainFrame.java</file>
-            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/UI_Login/DangKy.java</file>
-            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/UI_Login/UI_Login.java</file>
-            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Logic/service/VeService.java</file>
-            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Logic/controller/VeController.java</file>
-            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Logic/repository/VeRepository.java</file>
-            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Logic/dto/response/BillResponse.java</file>
-            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Logic/dto/response/ChiTietBillResponse.java</file>
-            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Logic/dto/response/LichChieuResponse.java</file>
-            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Logic/dto/request/DataCreateVeRequest.java</file>
-            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Logic/entity/Ve.java</file>
-            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/UI_KhachHang/UI_KhachHang.java</file>
+            <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/ConnectDatabase/Run.java</file>
+            <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/ConnectDatabase/DatabaseConnection.java</file>
+            <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/UI_Admin/DBConnection.java</file>
+            <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/UI_Admin/LichChieuDAO.java</file>
+            <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/UI_Admin/LichChieu.java</file>
+            <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/UI_Admin/MyChartFrame.java</file>
+            <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/UI_Admin/MainFrame.java</file>
+            <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/UI_Admin/ReportDAO.java</file>
+            <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/UI_Login/UI_Login.java</file>
+            <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/UI_KhachHang/DoiMatKhauDialog.java</file>
         </group>
     </open-files>
 </project-private>
