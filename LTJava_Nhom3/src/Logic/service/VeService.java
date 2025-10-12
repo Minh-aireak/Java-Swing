@@ -1,19 +1,24 @@
 package Logic.service;
 
+import Logic.dto.request.DataGetLichChieuRequest;
 import Logic.dto.response.BillResponse;
 import Logic.dto.response.ChiTietBillResponse;
+import Logic.dto.response.DataGetLichChieuResponse;
+import Logic.entity.Phim;
 import Logic.entity.Ve;
 import Logic.repository.VeRepository;
 import java.awt.Color;
 import java.awt.Component;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import java.sql.*;
 
 public class VeService {
-    Logic.repository.VeRepository veRepository;
+    VeRepository veRepository;
     String idTaiKhoan = null;
     
     public void selectGhe() {
@@ -49,8 +54,14 @@ public class VeService {
         
     }
     
-    public void createVe(){
-         
+    public List<String> createVe(Phim chosenPhim){
+         List<String> list = null;
+         for (Timestamp ts : veRepository.getLichChieuPhim(chosenPhim)) {
+            SimpleDateFormat newDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+            String displayItem = newDate.format(ts);
+            list.add(displayItem);
+         }
+         return list;
     }
     
     public boolean deleteVe(String idVe) {
@@ -65,10 +76,11 @@ public class VeService {
         return veRepository.getListBill(idTaiKhoan);
     }
     
-    public ChiTietBillResponse getChiTietBill(String idBill) throws SQLException {
-        var reponse = veRepository.getChiTietBill(idBill, idTaiKhoan);
-        return reponse;
+    public ChiTietBillResponse getChiTietBill(String idBill) {
+        return veRepository.getChiTietBill(idBill, idTaiKhoan);
     }
     
-//    public Object getListGheDaDat
+    public DataGetLichChieuResponse getChiTietLichChieu(DataGetLichChieuRequest request) {
+        return veRepository.getChiTietLichChieu(request);
+    }
 }

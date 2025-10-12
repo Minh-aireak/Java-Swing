@@ -1,4 +1,4 @@
-package UI_KhachHang;
+package Logic.entity;
 
 public class Phim {
     private String idPhim, tenPhim, tacGia, dienVien, thoiLuong, theLoai, ngonNgu, moTa, anhPhim;
