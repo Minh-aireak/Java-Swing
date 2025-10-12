@@ -1,5 +1,6 @@
 package UI_Admin;
 
+import Logic.entity.LichChieu;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;

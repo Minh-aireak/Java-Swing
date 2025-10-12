@@ -1,30 +1,20 @@
 package Logic.dto.response;
 
-public class LichChieuResponse {
+public class UpdateLichChieuResponse {
     private String idLichChieu;
     private String idPhim;
     private String gioChieu;
     private String idPhongChieu;
     private int soGheConLai;
     private String idGia;
-    private String message;
 
-    public LichChieuResponse(String idLichChieu, String idPhim, String gioChieu, String idPhongChieu, int soGheConLai, String idGia, String message) {
+    public UpdateLichChieuResponse(String idLichChieu, String idPhim, String gioChieu, String idPhongChieu, int soGheConLai, String idGia) {
         this.idLichChieu = idLichChieu;
         this.idPhim = idPhim;
         this.gioChieu = gioChieu;
         this.idPhongChieu = idPhongChieu;
         this.soGheConLai = soGheConLai;
         this.idGia = idGia;
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public String getIdLichChieu() {

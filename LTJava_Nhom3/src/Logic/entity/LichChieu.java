@@ -1,16 +1,16 @@
-package UI_Admin;
+package Logic.entity;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class LichChieu {
     private String idLichChieu;
     private String idPhim;
-    private Timestamp gioChieu;
+    private LocalDateTime gioChieu;
     private String idPhongChieu;
     private int soGheConLai;
     private String idGia;
 
-    public LichChieu(String idLichChieu, String idPhim, Timestamp gioChieu, String idPhongChieu, int soGheConLai, String idGia) {
+    public LichChieu(String idLichChieu, String idPhim, LocalDateTime gioChieu, String idPhongChieu, int soGheConLai, String idGia) {
         this.idLichChieu = idLichChieu;
         this.idPhim = idPhim;
         this.gioChieu = gioChieu;
@@ -36,11 +36,11 @@ public class LichChieu {
         this.idPhim = idPhim;
     }
 
-    public Timestamp getGioChieu() {
+    public LocalDateTime getGioChieu() {
         return gioChieu;
     }
 
-    public void setGioChieu(Timestamp gioChieu) {
+    public void setGioChieu(LocalDateTime gioChieu) {
         this.gioChieu = gioChieu;
     }
 

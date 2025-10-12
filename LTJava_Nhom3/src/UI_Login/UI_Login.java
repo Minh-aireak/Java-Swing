@@ -1,8 +1,8 @@
 package UI_Login;
 
 import ConnectDatabase.DatabaseConnection;
-import entity.TaiKhoan;
-import UI_KhachHang.UI_KhachHang;
+import Logic.controller.LoginController;
+import Logic.entity.TaiKhoan;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -12,6 +12,9 @@ import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import UI_Admin.MainFrame;
 public class UI_Login extends javax.swing.JFrame {
+    
+    public static TaiKhoan taiKhoan;
+    private LoginController loginController; 
 
     public UI_Login() {
         initComponents();
@@ -180,42 +183,18 @@ public class UI_Login extends javax.swing.JFrame {
 
     
     private void btn_DangNhapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DangNhapActionPerformed
-        char[] a = txtMatKhau.getPassword();
-        String pas = new String(a);
-        String user = txtTenDangNhap.getText().trim();
-        if(!user.isEmpty() && !pas.isEmpty()){
-            try {
-                Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement ps = connection.prepareStatement("SELECT idTaiKhoan, ten FROM tai_khoan WHERE soDienThoai = ? AND matKhau = ?");
-                ps.setString(1, user);
-                ps.setString(2, pas);
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()){
-                    String idTK = rs.getString("idTaiKhoan");
-                    String tenTK = rs.getString("ten");
-                    TaiKhoan.idTaiKhoan = idTK;
-                    TaiKhoan.ten = tenTK;
-                    if(idTK.substring(0, 2).equals("KH")){
-                        JOptionPane.showMessageDialog(rootPane, "<html>Đăng nhập thành công<br>Xin chào, " + ten, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                        dispose();
-                        UI_KhachHang b = new UI_KhachHang();
-                        b.setVisible(true);
-                        b.setLocationRelativeTo(null);
-                    }else{
-                        JOptionPane.showMessageDialog(rootPane, "<html>Đăng nhập thành công<br>Xin chào Admin - " + ten, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                        dispose();
-                        MainFrame c = new MainFrame();
-                        c.setVisible(true);
-                        c.setLocationRelativeTo(null);
-                    }
-                    return;
-                }
-                JOptionPane.showMessageDialog(rootPane, "Tài khoản, mật khẩu không chính xác!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-            } catch (SQLException | ClassNotFoundException ex) {
-                Logger.getLogger(UI_Login.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }else{
-            JOptionPane.showMessageDialog(rootPane, "Vui lòng nhập đầy đủ thông tin!", "Thông báo", JOptionPane.ERROR_MESSAGE);
+        
+        String soDienThoai = txtTenDangNhap.getText().trim();
+        char[] passwordChars = txtMatKhau.getPassword();
+        String matKhau = new String(passwordChars);
+        
+        try {
+            var response = loginController.dangNhap(soDienThoai, matKhau);
+            taiKhoan = response.getTaiKhoan();
+            
+            JOptionPane.showMessageDialog(this, response.getMessage(), "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Thông báo", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btn_DangNhapActionPerformed
 

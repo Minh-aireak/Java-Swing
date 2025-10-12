@@ -4,6 +4,8 @@
  */
 package UI_Admin;
 
+import Logic.entity.LichChieu;
+import Logic.controller.PhimController;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -13,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 
 public class EditLC extends javax.swing.JFrame {
+    PhimController phimController;
     private final DefaultTableModel modelLichChieu;
     private final int selectedRow;
     /**
@@ -208,35 +211,11 @@ public class EditLC extends javax.swing.JFrame {
         String soGheConLaiStr = txtSeatNum.getText().trim();
         String idGia = txtGiaID.getText().trim();
 
-        if (idPhim.isEmpty() || dateTime.isEmpty() || idPhongChieu == null || soGheConLaiStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
         try {
-            int soGheConLai = Integer.parseInt(soGheConLaiStr);
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-            java.util.Date parsedDate = sdf.parse(dateTime);
-            Timestamp timestamp = new Timestamp(parsedDate.getTime());
-
-            LichChieu lc = new LichChieu(idLichChieu, idPhim, timestamp, idPhongChieu, soGheConLai, idGia);
-            if (LichChieuDAO.capNhatLichChieu(lc)) {
-                JOptionPane.showMessageDialog(this, "Cập nhật lịch chiếu thành công!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-                modelLichChieu.setValueAt(idLichChieu, selectedRow, 0);
-                modelLichChieu.setValueAt(idPhim, selectedRow, 1);
-                modelLichChieu.setValueAt(timestamp.toLocalDateTime().format(formatter), selectedRow, 2);
-                modelLichChieu.setValueAt(idPhongChieu, selectedRow, 3);
-                modelLichChieu.setValueAt(soGheConLai, selectedRow, 4);
-                modelLichChieu.setValueAt(idGia, selectedRow, 5);
-                this.dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Cập nhật lịch chiếu thất bại!", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Số ghế còn lại phải là số!", "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (ParseException e) {
-            JOptionPane.showMessageDialog(this, "Định dạng ngày giờ không hợp lệ! Vui lòng nhập theo định dạng dd/MM/yyyy HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
+            var response = phimController.updateLichChieu(idLichChieu, idPhim, dateTime, idPhongChieu, soGheConLaiStr, idGia);
+            JOptionPane.showMessageDialog(this, response.getMessage(), "Thong bao", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnUpdateActionPerformed
 

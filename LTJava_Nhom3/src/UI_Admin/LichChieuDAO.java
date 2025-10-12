@@ -1,36 +1,11 @@
 package UI_Admin;
 
+import Logic.entity.LichChieu;
 import java.sql.*;
 import java.util.ArrayList;
 
 public class LichChieuDAO {
-    private static boolean kiemTraTonTai(String table, String column, String value) {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            conn = DBConnection.KetNoi();
-            String sql = "SELECT COUNT(*) FROM " + table + " WHERE " + column + " = ?";
-            ps = conn.prepareStatement(sql);
-            ps.setString(1, value);
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-            return false;
-        } catch (SQLException e) {
-            System.out.println("Lỗi kiểm tra tồn tại: " + e.getMessage());
-            return false;
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (ps != null) ps.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                System.out.println("Lỗi đóng tài nguyên: " + e.getMessage());
-            }
-        }
-    }
+    
 
     public static ArrayList<LichChieu> layDanhSachLichChieu() {
         ArrayList<LichChieu> ds = new ArrayList<>();
@@ -173,44 +148,6 @@ public class LichChieuDAO {
 }
 
     public static boolean capNhatLichChieu(LichChieu lc) {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        try {
-            conn = DBConnection.KetNoi();
-            if (conn == null) {
-                System.out.println("Không thể kết nối tới cơ sở dữ liệu!");
-                return false;
-            }
-            // Kiểm tra idPhim và idPhongChieu tồn tại
-            if (!kiemTraTonTai("phim", "idPhim", lc.getIdPhim())) {
-                System.out.println("Mã phim " + lc.getIdPhim() + " không tồn tại!");
-                return false;
-            }
-            if (!kiemTraTonTai("phong_chieu", "idPhongChieu", lc.getIdPhongChieu())) {
-                System.out.println("Mã phòng chiếu " + lc.getIdPhongChieu() + " không tồn tại!");
-                return false;
-            }
-
-            String sql = "UPDATE lich_chieu SET idPhim = ?, gioChieu = ?, soGheConLai = ?, idPhongChieu = ?, idGia = ? WHERE idLichChieu = ?";
-            ps = conn.prepareStatement(sql);
-            ps.setString(1, lc.getIdPhim());
-            ps.setTimestamp(2, lc.getGioChieu());
-            ps.setInt(3, lc.getSoGheConLai());
-            ps.setString(4, lc.getIdPhongChieu());
-            ps.setString(5, lc.getIdGia());
-            ps.setString(6, lc.getIdLichChieu());
-            int rows = ps.executeUpdate();
-            return rows > 0;
-        } catch (SQLException e) {
-            System.out.println("Lỗi cập nhật lịch chiếu: " + e.getMessage());
-            return false;
-        } finally {
-            try {
-                if (ps != null) ps.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                System.out.println("Lỗi đóng tài nguyên: " + e.getMessage());
-            }
-        }
+        
     }
 }

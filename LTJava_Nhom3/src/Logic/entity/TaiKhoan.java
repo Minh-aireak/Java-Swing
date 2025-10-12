@@ -1,4 +1,4 @@
-package entity;
+package Logic.entity;
 
 public class TaiKhoan {
     private String idTaiKhoan;
@@ -21,6 +21,10 @@ public class TaiKhoan {
         this.ngaySinh = ngaySinh;
         this.diaChi = diaChi;
         this.gioiTinh = gioiTinh;
+    }
+
+    public TaiKhoan() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     public String getIdTaiKhoan() {
