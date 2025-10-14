@@ -19,7 +19,6 @@ public class LichChieu {
         this.idGia = idGia;
     }
 
-    // Getters và Setters
     public String getIdLichChieu() {
         return idLichChieu;
     }

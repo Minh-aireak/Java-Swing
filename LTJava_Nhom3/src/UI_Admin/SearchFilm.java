@@ -1,5 +1,6 @@
 package UI_Admin;
 
+import Logic.entity.Phim;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 import java.util.ArrayList;

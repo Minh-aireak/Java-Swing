@@ -1,9 +1,12 @@
 package UI_KhachHang;
 
-import entity.TaiKhoan;
+import Logic.entity.Phim;
 import ConnectDatabase.DatabaseConnection;
-import QuanLyVeCho.controller.VeController;
-import static UI_KhachHang.DatVe_DAO.getLichChieu;
+import Logic.controller.VeController;
+import Logic.dto.request.DataCreateVeRequest;
+import Logic.dto.response.ChiTietLichChieuResponse;
+import Logic.dto.response.ListLichChieuResponse;
+import Logic.entity.TaiKhoan;
 import UI_Login.UI_Login;
 import java.awt.Color;
 import java.awt.Component;
@@ -22,7 +25,6 @@ import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -36,18 +38,24 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.sql.Timestamp;
+import java.util.Objects;
+import java.util.UUID;
 
 public class UI_KhachHang extends javax.swing.JFrame {
     VeController veController;
 
-            
     DefaultTableModel model, model2;
+    
+    
     Phim chosenPhim = new Phim();
-    ArrayList<String> listGheVIP = new ArrayList<>(Arrays.asList("B3,B4,B5,C3,C4,C5".split(",")));
-    ArrayList<String> listGheTriple = new ArrayList<>(Arrays.asList("D1,D2,D3".split(",")));
-    ArrayList<String> listGheForPay = new ArrayList<>();
-    ArrayList<Integer> listGiaVe = new ArrayList<>();
-    ArrayList<Timestamp> listTimestamps = new ArrayList<>();
+    TaiKhoan currentAccount = new TaiKhoan();
+    
+    
+    List<String> listGheVIP = new ArrayList<>(Arrays.asList("B3,B4,B5,C3,C4,C5".split(",")));
+    List<String> listGheTriple = new ArrayList<>(Arrays.asList("D1,D2,D3".split(",")));
+    List<String> listGheForPay = null;
+    List<Integer> listGiaVe = null;
+    List<Timestamp> listTimestamps = null;
     String idGia = "";
     String idLichChieu = "";
     int selectedIndexLichChieuList = -1;
@@ -90,7 +98,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
             ttb_TableColumn1.setMinWidth(40);
             ttb_TableColumn1.setMaxWidth(40);
             table.setRowHeight(30);
-            hscn_lab_XinChao.setText("Xin chào, " + TaiKhoan.ten +"!");
+            hscn_lab_XinChao.setText("Xin chào, " + currentAccount.getTen() +"!");
             themEvenListener();
             resetGhe();
             model.setRowCount(0);
@@ -110,7 +118,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
         }
-        displayBill();
+        displayListBill();
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -1853,6 +1861,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // Phim
     private void displayChiTietPhim(boolean flag){
         if(!flag){
             for(Component comp : jp_ThongTinChiTietPhim.getComponents()){
@@ -1865,7 +1874,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }
     
-    // KHÔNG LIÊN QUAN 
+    // KHÔNG LIÊN QUAN (*)
     private void displayChiTietDon(boolean flag){
         dv_lab_Standard.setVisible(flag);
         dv_lab_StandardQuantity.setVisible(flag);
@@ -1878,7 +1887,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
         dv_lab_TripleSum.setVisible(flag);
     }
 
-    // KHÔNG LIÊN QUAN
+    // KHÔNG LIÊN QUAN (*)
     private void ctp_btn_DatVeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctp_btn_DatVeActionPerformed
         listTimestamps.clear();
         if(ctp_lab_TenPhim.getText().isEmpty()){
@@ -1889,34 +1898,21 @@ public class UI_KhachHang extends javax.swing.JFrame {
         dv_cbo_LichChieu.removeAllItems();
         dv_lab_TenPhim.setText("<html>" + "PHIM: " + chosenPhim.getTenPhim() + "</html>");
         try {
-            Connection connection = DatabaseConnection.getConnection();
-            PreparedStatement ps = connection.prepareStatement("SELECT gioChieu " +
-                                             "FROM lich_chieu lc " +
-                                             "JOIN phim p ON lc.idPhim = p.idPhim " +
-                                             "WHERE lc.idPhim = ? " +
-                                             "AND lc.gioChieu >= DATE_ADD(NOW(), INTERVAL 1 HOUR) " +
-                                             "ORDER BY gioChieu ASC");
-            ps.setString(1, chosenPhim.getIdPhim());
-            ResultSet rs = ps.executeQuery();
-            boolean flag = false;
-            while (rs.next()){
-                flag = true;
-                Timestamp ts = rs.getTimestamp("gioChieu");
+            ListLichChieuResponse response = veController.getListLichChieu(chosenPhim.getIdPhim());
+            
+            if (!Objects.isNull(response.getMessage())) {
+                JOptionPane.showMessageDialog(rootPane, response.getMessage(), "Notification!", JOptionPane.INFORMATION_MESSAGE);
+            }
+            
+            for (Timestamp ts : response.getListGioChieu()) {
                 SimpleDateFormat newDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                 String displayItem = newDate.format(ts);
-                listTimestamps.add(ts);
                 dv_cbo_LichChieu.addItem("Ngày chiếu: " + displayItem);
             }
-            if(!flag && !getLichChieu(table.getValueAt(table.getSelectedRow(), 0).toString())){
-                JOptionPane.showMessageDialog(rootPane, "Phim hiện tại chưa cập nhật lịch chiếu", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }else if(!flag && getLichChieu(table.getValueAt(table.getSelectedRow(), 0).toString())){
-                JOptionPane.showMessageDialog(rootPane, "Phim hiện tại đã qua thời gian đặt vé", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
+            
             tabbed.setSelectedIndex(2);
         } catch (SQLException ex) {
-            Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_ctp_btn_DatVeActionPerformed
 
@@ -1946,7 +1942,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }
 
-    // KHÔNG LIÊN QUAN
+    // KHÔNG LIÊN QUAN (*)
     private void updateQuantityAndSumForPay(int value1, int value2){
         JLabel[] listNameLabel = {dv_lab_Standard, dv_lab_VIP, dv_lab_Triple};
         JLabel[] listQuantity = {dv_lab_StandardQuantity, dv_lab_VIPQuantity, dv_lab_TripleQuantity};
@@ -1975,7 +1971,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }
 
-    // KHÔNG LIÊN QUAN
+    // KHÔNG LIÊN QUAN (*)
     private void updateGheForPay(JToggleButton jgbtn){
         int value1;
         if(listGheVIP.contains(jgbtn.getActionCommand())){
@@ -2002,7 +1998,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }
 
-    // KHÔNG LIÊN QUAN
+    // KHÔNG LIÊN QUAN (*)
     private void addEvenListener(JToggleButton jgbtn){
         jgbtn.addItemListener(e -> {
             if(!dv_lab_TenPhong.getText().equals("Phòng")){
@@ -2012,13 +2008,13 @@ public class UI_KhachHang extends javax.swing.JFrame {
                     jgbtn.setSelected(false);
                     return;
                 }else{
-                    JOptionPane.showMessageDialog(rootPane, "<html>Hãy chọn phim để đặt ghế</html>", "Thông báo!", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(rootPane, "<html>Hãy chọn phim để đặt ghế</html>", "Thông báo!", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         });
     }
 
-    // KHÔNG LIÊN QUAN
+    // KHÔNG LIÊN QUAN (*)
     private void themEvenListener(){
         for(Component comp : dv_jp_LeftGhe.getComponents()){
             if(comp instanceof JToggleButton jtbtn){
@@ -2032,106 +2028,73 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }
     
-    // KHÔNG LIÊN QUAN
-    private void updateGheAfterPay(int index){
-        ArrayList<String> listGheDaDat = new ArrayList<>();
+    // KHÔNG LIÊN QUAN (*)
+    private void updateGheAfterPay(int index) throws SQLException{
         try {
-            Connection connection = DatabaseConnection.getConnection();
-            PreparedStatement ps = connection.prepareStatement("SELECT GROUP_CONCAT(lcg.idGhe SEPARATOR ', ') AS idGhe " +
-                    "FROM lich_chieu lc " +
-                    "LEFT JOIN lichchieu_ghe lcg ON lc.idLichChieu = lcg.idLichChieu " +
-                    "WHERE lc.gioChieu = ?");
-            ps.setTimestamp(1, listTimestamps.get(index));
-            ResultSet rs = ps.executeQuery();
-            String listGhe = null;
-            while (rs.next()){
-                listGhe = rs.getString("idGhe");
-            }
-            if(listGhe != null && !listGhe.isEmpty()){
-                String[] dsach = listGhe.split(", ");
-                listGheDaDat.addAll(Arrays.asList(dsach));
-            }
+            var response = veController.getListGhe(listTimestamps.get(index));
             for(Component comp : dv_jp_LeftGhe.getComponents()){
                 if(comp instanceof JToggleButton jtbtn){
-                    if(listGheDaDat.contains(jtbtn.getActionCommand())){
+                    if(response.contains(jtbtn.getActionCommand())){
                         jtbtn.setEnabled(false);
                     }
                 }
             }
             for(Component comp : dv_jp_RightGhe.getComponents()){
                 if(comp instanceof JToggleButton jtbtn){
-                    if(listGheDaDat.contains(jtbtn.getActionCommand())){
+                    if(response.contains(jtbtn.getActionCommand())){
                         jtbtn.setEnabled(false);
                     }
                 }
             }
-            
         } catch (SQLException ex) {
-            Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
         }
-        
     }
 
-    // KHÔNG LIÊN QUAN
+    // KHÔNG LIÊN QUAN (*)
     private void dv_cbo_LichChieuItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_dv_cbo_LichChieuItemStateChanged
         if(evt.getStateChange() == ItemEvent.SELECTED){
             resetGhe();
             listGiaVe.clear();
             listGheForPay.clear();
             selectedIndexLichChieuList = dv_cbo_LichChieu.getSelectedIndex();
-            Timestamp sqlTime = listTimestamps.get(selectedIndexLichChieuList);
-            ArrayList<String> listGheDaDat = new ArrayList<>();
-            try(
-                    Connection connection = DatabaseConnection.getConnection();
-                    PreparedStatement ps = connection.prepareStatement("SELECT pc.tenPhong, GROUP_CONCAT(lcg.idGhe SEPARATOR ', ') AS idGhe, lc.idLichChieu, ga.idGia, ga.tieuChuan, ga.VIP, ga.Triple " +
-                            "FROM phim p " +
-                            "JOIN lich_chieu lc ON p.idPhim = lc.idPhim " +
-                            "JOIN phong_chieu pc ON lc.idPhongChieu = pc.idPhongChieu " +
-                            "LEFT JOIN lichchieu_ghe lcg ON lc.idLichChieu = lcg.idLichChieu " +
-                            "LEFT JOIN ghe ge ON lcg.idGhe = ge.idGhe " +
-                            "JOIN gia ga ON lc.idGia = ga.idGia " +
-                            "WHERE lc.idPhim = ? " +
-                            "AND lc.gioChieu = ? " +
-                            "GROUP BY pc.tenPhong, lc.idLichChieu, ga.idGia, ga.tieuChuan, ga.VIP, ga.Triple");
-                    ){
-                int index = 1;
-                ps.setString(index++, chosenPhim.getIdPhim());
-                ps.setTimestamp(index++, sqlTime);
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()){
-                    dv_lab_TenPhong.setText(rs.getString("tenPhong"));
-                    dv_lab_ChiTietDonHang.setText("<html>1, PHIM: " + chosenPhim.getTenPhim() + "<br><br>2, Suất chiếu: " + dv_cbo_LichChieu.getSelectedItem() + " - " + rs.getString("tenPhong") + "</html>");
-                    String listGhe = rs.getString("idGhe");
-                    if(listGhe != null && !listGhe.isEmpty()){
-                        String[] list = listGhe.split(", ");
-                        listGheDaDat.addAll(Arrays.asList(list));
-                    }
-                    for(Component comp : dv_jp_LeftGhe.getComponents()){
-                        if(comp instanceof JToggleButton jtbtn){
-                            if(listGheDaDat.contains(jtbtn.getActionCommand())){
-                                jtbtn.setEnabled(false);
-                            }
+            Timestamp gioChieu = listTimestamps.get(selectedIndexLichChieuList);
+            List<String> listGheDaDat = null;
+            
+            try {
+                ChiTietLichChieuResponse response = veController.getChiTietLichChieu(chosenPhim, gioChieu);
+
+                dv_lab_TenPhong.setText(response.getTenPhong());
+                dv_lab_ChiTietDonHang.setText("<html>1, PHIM: " +
+                chosenPhim.getTenPhim() + "<br><br>2, Suất chiếu: " +
+                dv_cbo_LichChieu.getSelectedItem() + " - " +
+                dv_lab_TenPhong + "</html>");
+                listGheDaDat = response.getIdGhe();
+
+                for(Component comp : dv_jp_LeftGhe.getComponents()){
+                    if(comp instanceof JToggleButton jtbtn){
+                        if(listGheDaDat.contains(jtbtn.getActionCommand())){
+                            jtbtn.setEnabled(false);
                         }
                     }
-                    for(Component comp : dv_jp_RightGhe.getComponents()){
-                        if(comp instanceof JToggleButton jtbtn){
-                            if(listGheDaDat.contains(jtbtn.getActionCommand())){
-                                jtbtn.setEnabled(false);
-                            }
-                        }
-                    }
-                    idLichChieu = rs.getString("idLichChieu");
-                    idGia = rs.getString("idGia");
-                    listGiaVe.add(Integer.valueOf(rs.getString("tieuChuan")));
-                    listGiaVe.add(Integer.valueOf(rs.getString("VIP")));
-                    listGiaVe.add(Integer.valueOf(rs.getString("Triple")));
                 }
+                for(Component comp : dv_jp_RightGhe.getComponents()){
+                    if(comp instanceof JToggleButton jtbtn){
+                        if(listGheDaDat.contains(jtbtn.getActionCommand())){
+                            jtbtn.setEnabled(false);
+                        }
+                    }
+                }
+                idLichChieu = response.getIdLichChieu();
+                idGia = response.getIdGia();
+                listGiaVe = response.getListGias();
             } catch (SQLException ex) {
-                Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
             }
         }  
     }//GEN-LAST:event_dv_cbo_LichChieuItemStateChanged
-
+    
+    // TaiKhoan module
     private void btn_DoiMatKhauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DoiMatKhauActionPerformed
         DoiMatKhauDialog dialog = new DoiMatKhauDialog(this, true); 
         dialog.setLocationRelativeTo(this);
@@ -2141,81 +2104,40 @@ public class UI_KhachHang extends javax.swing.JFrame {
     // KHÔNG LIÊN QUAN
     private void dv_btn_ThanhToanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dv_btn_ThanhToanActionPerformed
 
-        if(dv_lab_TenPhong.getText() == "Phòng"){
-            JOptionPane.showMessageDialog(rootPane, "<html>Không thể thanh toán! <br> Bạn chưa chọn phim</html>", "Thông báo!", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        if(dv_lab_TongTien.getText().isEmpty() || Integer.valueOf(dv_lab_TongTien.getText()) == 0){
-            JOptionPane.showMessageDialog(rootPane, "<html>Không thể thanh toán! <br> Bạn chưa chọn ghế</html>", "Thông báo!", JOptionPane.ERROR_MESSAGE);
-        }else{
-            try {
-                Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement ps = null;
-                ResultSet rs = null;
-                int index = 1;
-                LocalDateTime now = LocalDateTime.now();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                String formatted = now.format(formatter);
-                String lastIdBill = "Bill000";
-                String lastIdVe = "Ve1000";
-                ps = connection.prepareStatement("SELECT MAX(idBill) FROM bill");
-                rs = ps.executeQuery();
-                if(rs.next() && rs.getString(1) != null){
-                    lastIdBill = rs.getString(1);
-                }
-                int numBill = Integer.parseInt(lastIdBill.substring(5));
-                String newIdBill = String.format("Bill%03d", ++numBill);
-                ps = connection.prepareStatement("INSERT INTO bill (idBill, idTaiKhoan, thoiGianDat, tongTien) VALUES (?, ?, ?, ?)");
-                ps.setString(index++, newIdBill);
-                ps.setString(index++, TaiKhoan.idTaiKhoan);
-                ps.setString(index++, formatted);
-                ps.setString(index, dv_lab_TongTien.getText());
-                ps.executeUpdate();
-                for(int i = 0; i < listGheForPay.size(); i++){
-                    ps = connection.prepareStatement("SELECT MAX(idVe) FROM ve");
-                    rs = ps.executeQuery();
-                    if(rs.next() && rs.getString(1) != null){
-                        lastIdVe = rs.getString(1);
-                    }
-                    int numVe = Integer.parseInt(lastIdVe.substring(2));
-                    String newIdVe = String.format("Ve%04d", ++numVe);
-                    ps = connection.prepareStatement("INSERT INTO ve (idVe, idLichChieu, idGhe, idGia, idBill) VALUES (?, ? ,? ,? ,?)");
-                    ps.setString(1, newIdVe);
-                    ps.setString(2, idLichChieu);
-                    ps.setString(3, listGheForPay.get(i));
-                    ps.setString(4, idGia);
-                    ps.setString(5, newIdBill);
-                    ps.executeUpdate();
-                    ps = connection.prepareStatement("INSERT INTO lichchieu_ghe (idLichChieu, idGhe, trangThai) VALUES (?, ?, ?)");
-                    ps.setString(1, idLichChieu);
-                    ps.setString(2, listGheForPay.get(i));
-                    ps.setString(3, "Đã đặt");
-                    ps.executeUpdate();
-                };
-                ps = connection.prepareStatement("UPDATE lich_chieu SET soGheConLai = soGheConLai - ? WHERE idLichChieu = ?");
-                ps.setString(1, String.valueOf(listGheForPay.size()));
-                ps.setString(2, idLichChieu);
-                ps.executeUpdate();
-            } catch (SQLException ex) {
-                Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        try {
+            
             JOptionPane.showMessageDialog(rootPane, "<html>Thanh toán thành công! <br> Chúc bạn ngày mới tốt lành</html>", "Thông báo!", JOptionPane.INFORMATION_MESSAGE);
-            tabbed.setSelectedIndex(0);
-        }
+            veController.saveVe(new DataCreateVeRequest(
+                    UUID.randomUUID().toString(), 
+                    currentAccount.getIdTaiKhoan(),
+                    LocalDateTime.now(),
+                    dv_lab_TongTien.getText(),
+                    listGheForPay,
+                    idGia,
+                    idLichChieu,
+                    "Đã đặt"
+            ));
+            tabbed.setSelectedIndex(4);
 
-        resetGhe();
-        updateGheAfterPay(selectedIndexLichChieuList);
-        displayListBill();
-        dv_lab_StandardQuantity.setText("0");
-        dv_lab_StandardSum.setText("0");
-        dv_lab_VIPQuantity.setText("0");
-        dv_lab_VIPSum.setText("0");
-        dv_lab_TripleQuantity.setText("0");
-        dv_lab_TripleSum.setText("0");
-        dv_lab_TongTien.setText("0");
-        displayChiTietDon(false);
+            resetGhe();
+            updateGheAfterPay(selectedIndexLichChieuList);
+            displayListBill();
+            dv_lab_StandardQuantity.setText("0");
+            dv_lab_StandardSum.setText("0");
+            dv_lab_VIPQuantity.setText("0");
+            dv_lab_VIPSum.setText("0");
+            dv_lab_TripleQuantity.setText("0");
+            dv_lab_TripleSum.setText("0");
+            dv_lab_TongTien.setText("0");
+            displayChiTietDon(false);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Notification!", JOptionPane.INFORMATION_MESSAGE);
+        }
     }//GEN-LAST:event_dv_btn_ThanhToanActionPerformed
 
+    // Phim module
     private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
 
         indexRow = table.getSelectedRow();
@@ -2260,6 +2182,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
         displayChiTietPhim(true);
     }//GEN-LAST:event_tableMouseClicked
 
+    // Phim module
     private void h_btn_TimKiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_h_btn_TimKiemActionPerformed
 
         model.setRowCount(0);
@@ -2326,7 +2249,8 @@ public class UI_KhachHang extends javax.swing.JFrame {
                 Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
             }
     }//GEN-LAST:event_h_btn_TimKiemActionPerformed
-
+    
+    // TaiKhoan module
     private void btn_LogOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_LogOutActionPerformed
         int result = JOptionPane.showConfirmDialog(rootPane, "Bạn muốn đăng xuất không ?", "Xác nhận", JOptionPane.YES_NO_OPTION);
         if(result == JOptionPane.YES_OPTION){
@@ -2337,6 +2261,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btn_LogOutActionPerformed
 
+    // TaiKhoan module
     private void btn_CapNhatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CapNhatActionPerformed
         try {
             Connection conn = DatabaseConnection.getConnection();
@@ -2420,40 +2345,19 @@ public class UI_KhachHang extends javax.swing.JFrame {
     // KHÔNG LIÊN QUAN (*)
     private void displayListBill(){
         model2.setRowCount(0);
-//        Connection connection;
-//        try {
-//            connection = DatabaseConnection.getConnection();
-//            String statement = "SELECT DISTINCT b.idBill, p.tenPhim, b.tongTien " +
-//            "FROM phim p " +
-//            "JOIN lich_chieu lc ON p.idPhim = lc.idPhim " +
-//            "JOIN ve v ON lc.idLichChieu = v.idLichChieu " +
-//            "JOIN bill b ON v.idBill = b.idBill " +
-//            "JOIN tai_khoan tk ON b.idTaiKhoan = tk.idTaiKhoan " +
-//            "WHERE tk.idTaiKhoan = ? ";
-//            PreparedStatement ps = connection.prepareStatement(statement);
-//            ps.setString(1, TaiKhoan.idTaiKhoan);
-//            ResultSet rs = ps.executeQuery();
-//            while(rs.next()){
-//                Vector<String> v = new Vector<>();
-//                v.add(rs.getString("idBill"));
-//                v.add(String.valueOf(index));
-//                v.add(rs.getString("tenPhim"));
-//                v.add(rs.getString("tongTien"));
-//                model2.addRow(v);
-//                index += 1;
-//            }
-//            ttb_Table.setModel(model2);
-//        } catch (SQLException ex) {
-//            Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        veController.getListBill().forEach((t) -> {
-            Vector<String> v = new Vector<>();
-            v.add(t.getIdBill());
-            v.add(t.getTenPhim());
-            v.add(String.valueOf(t.getTongTien()));
-            model2.addRow(v);
-        });
-        ttb_Table.setModel(model2);
+        try {
+            var response = veController.getListBill();
+            response.forEach((t) -> {
+                Vector<String> v = new Vector<>();
+                v.add(t.getIdBill());
+                v.add(t.getTenPhim());
+                v.add(String.valueOf(t.getTongTien()));
+                model2.addRow(v);
+            });
+            ttb_Table.setModel(model2);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // KHÔNG LIÊN QUAN (*)
@@ -2473,50 +2377,18 @@ public class UI_KhachHang extends javax.swing.JFrame {
     private void ttb_TableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ttb_TableMouseClicked
         indexRow = ttb_Table.getSelectedRow();
         String idBill = ttb_Table.getValueAt(indexRow, 0).toString();
-//        try {
-//            Connection connection = DatabaseConnection.getConnection();
-//            String statement = "SELECT DISTINCT lc.idLichChieu, p.tenPhim, lc.gioChieu, GROUP_CONCAT(v.idGhe SEPARATOR ', ') AS idGhe, pc.tenPhong, b.thoiGianDat , b.tongTien " +
-//            "FROM phim p " +
-//            "JOIN lich_chieu lc ON p.idPhim = lc.idPhim " +
-//            "JOIN ve v ON lc.idLichChieu = v.idLichChieu " +
-//            "JOIN bill b ON b.idBill = v.idBill " +
-//            "JOIN tai_khoan tk ON b.idTaiKhoan = tk.idTaiKhoan " +
-//            "JOIN phong_chieu pc ON lc.idPhongChieu = pc.idPhongChieu " +
-//            "WHERE tk.idTaiKhoan = ? " +
-//            "AND b.idBill = ? " +
-//            "GROUP BY lc.idLichChieu, p.tenPhim, lc.gioChieu, p.thoiLuong, pc.tenPhong, b.thoiGianDat, b.tongTien ";
-//            PreparedStatement ps = connection.prepareStatement(statement);
-//            ps.setString(1, TaiKhoan.idTaiKhoan);
-//            ps.setString(2, data);
-//            ResultSet rs = ps.executeQuery();
-//            while (rs.next()){
-//                ttb_txt_TenPhim.setText(rs.getString("tenPhim"));
-//                Timestamp timeStamp = rs.getTimestamp("gioChieu");
-//                SimpleDateFormat newDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-//                String newTime = newDate.format(timeStamp);
-//                ttb_txt_XuatChieu.setText(newTime);
-//                String[] idGheNe = (rs.getString("idGhe")).split(", ");
-//                List<String> listIdGhe = Arrays.asList(idGheNe);
-//                Collections.sort(listIdGhe);
-//                ttb_txt_SoGheDaDat.setText(String.join(", ", listIdGhe));
-//                ttb_txt_PhongChieu.setText(rs.getString("tenPhong").substring(13));
-//                Timestamp timeStamp1 = rs.getTimestamp("thoiGianDat");
-//                SimpleDateFormat newDate1 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-//                String newTime1 = newDate1.format(timeStamp1);
-//                ttb_txt_ThoiGianDat.setText(newTime1);
-//                ttb_txt_TongTien.setText(rs.getString("tongTien"));
-//            }
-//        } catch (SQLException ex) {
-//            Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        var data = veController.getChiTietBill(idBill);
-        ttb_txt_TenPhim.setText(data.getTenPhim());
-        ttb_txt_XuatChieu.setText(data.getXuatChieu());
-        ttb_txt_SoGheDaDat.setText(data.getSoGheDaDat());
-        ttb_txt_PhongChieu.setText(data.getPhongChieu().substring(13));
-        ttb_txt_ThoiGianDat.setText(data.getThoiGianDat());
-        ttb_txt_TongTien.setText(String.valueOf(data.getTongTien()));
-        displayChiTietBill(true);
+        try {
+            var data = veController.getChiTietBill(idBill);
+            ttb_txt_TenPhim.setText(data.getTenPhim());
+            ttb_txt_XuatChieu.setText(data.getXuatChieu());
+            ttb_txt_SoGheDaDat.setText(data.getSoGheDaDat());
+            ttb_txt_PhongChieu.setText(data.getPhongChieu().substring(13));
+            ttb_txt_ThoiGianDat.setText(data.getThoiGianDat());
+            ttb_txt_TongTien.setText(String.valueOf(data.getTongTien()));
+            displayChiTietBill(true);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_ttb_TableMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

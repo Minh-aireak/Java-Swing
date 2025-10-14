@@ -1,5 +1,6 @@
 package UI_Admin;
 
+import Logic.entity.Phim;
 import Logic.entity.LichChieu;
 import QuanLyVeCho.repository.VeRepository;
 import QuanLyVeCho.entity.Ve;

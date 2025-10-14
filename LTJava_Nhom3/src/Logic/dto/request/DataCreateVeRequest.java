@@ -7,21 +7,19 @@ public class DataCreateVeRequest {
     String idBill;
     String idTaiKhoan;
     LocalDateTime thoiGianDat;
-    int tongTien;
-    List<String> listIdVe;
+    String tongTien;
     List<String> listIdGhe;
-    List<String> listIdGia;
+    String idGia;
     String idLichChieu;
     String trangThai;
 
-    public DataCreateVeRequest(String idBill, String idTaiKhoan, LocalDateTime thoiGianDat, int tongTien, List<String> listIdVe, List<String> listIdGhe, List<String> listIdGia, String idLichChieu, String trangThai) {
+    public DataCreateVeRequest(String idBill, String idTaiKhoan, LocalDateTime thoiGianDat, String tongTien, List<String> listIdGhe, String idGia, String idLichChieu, String trangThai) {
         this.idBill = idBill;
         this.idTaiKhoan = idTaiKhoan;
         this.thoiGianDat = thoiGianDat;
         this.tongTien = tongTien;
-        this.listIdVe = listIdVe;
         this.listIdGhe = listIdGhe;
-        this.listIdGia = listIdGia;
+        this.idGia = idGia;
         this.idLichChieu = idLichChieu;
         this.trangThai = trangThai;
     }
@@ -30,7 +28,7 @@ public class DataCreateVeRequest {
         return thoiGianDat;
     }
 
-    public int getTongTien() {
+    public String getTongTien() {
         return tongTien;
     }
 
@@ -54,7 +52,7 @@ public class DataCreateVeRequest {
         this.thoiGianDat = thoiGianDat;
     }
 
-    public void setTongTien(int tongTien) {
+    public void setTongTien(String tongTien) {
         this.tongTien = tongTien;
     }
     
@@ -74,28 +72,20 @@ public class DataCreateVeRequest {
         return idTaiKhoan;
     }
 
-    public List<String> getListIdVe() {
-        return listIdVe;
-    }
-
     public List<String> getListIdGhe() {
         return listIdGhe;
     }
 
-    public List<String> getListIdGia() {
-        return listIdGia;
-    }
-
-    public void setListIdVe(List<String> listIdVe) {
-        this.listIdVe = listIdVe;
+    public String getIdGia() {
+        return idGia;
     }
 
     public void setListIdGhe(List<String> listIdGhe) {
         this.listIdGhe = listIdGhe;
     }
 
-    public void setListIdGia(List<String> listIdGia) {
-        this.listIdGia = listIdGia;
+    public void setIdGia(String idGia) {
+        this.idGia = idGia;
     }
     
 }

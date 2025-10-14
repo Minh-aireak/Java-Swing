@@ -1,5 +1,6 @@
 package UI_Admin;
 
+import Logic.entity.Phim;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

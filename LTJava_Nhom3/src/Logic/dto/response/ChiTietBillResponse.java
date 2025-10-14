@@ -1,7 +1,5 @@
 package Logic.dto.response;
 
-import java.util.List;
-
 public class ChiTietBillResponse {
     String idBill;
     String tenPhim;

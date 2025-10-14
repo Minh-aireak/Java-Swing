@@ -1,5 +1,6 @@
 package UI_Admin;
 
+import Logic.entity.Phim;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;

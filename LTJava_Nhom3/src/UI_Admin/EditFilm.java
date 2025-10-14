@@ -1,5 +1,6 @@
 package UI_Admin;
 
+import Logic.entity.Phim;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

@@ -5,42 +5,41 @@ import ConnectDatabase.DatabaseConnection;
 import Logic.dto.request.DataCreateVeRequest;
 import Logic.dto.response.BillResponse;
 import Logic.dto.response.ChiTietBillResponse;
-import Logic.dto.response.LichChieuResponse;
+import Logic.dto.response.ChiTietLichChieuResponse;
+import Logic.entity.Phim;
 import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.UUID;
 
 public class VeRepository {
     Connection connection = DatabaseConnection.getConnection();
     
-    public void taoVe(DataCreateVeRequest listVeRequest) throws SQLException {
+    public void saveVe(DataCreateVeRequest listVeRequest) throws SQLException {
         PreparedStatement ps = null;
-        ResultSet rs = null;
         
         int index = 1;
         ps = connection.prepareStatement("INSERT INTO bill (idBill, idTaiKhoan, thoiGianDat, tongTien) VALUES (?, ?, ?, ?)");
         ps.setString(index++, listVeRequest.getIdBill());
         ps.setString(index++, listVeRequest.getIdTaiKhoan());
-        ps.setString(index++, listVeRequest.getThoiGianDat().toString());
-        ps.setInt(index, listVeRequest.getTongTien());
+        ps.setTimestamp(index++, Timestamp.valueOf(listVeRequest.getThoiGianDat()));
+        ps.setInt(index, Integer.valueOf(listVeRequest.getTongTien()));
         ps.executeUpdate();
         
-        for(int i = 0; i < listVeRequest.getListIdVe().size(); i++){
+        for (String idGhe : listVeRequest.getListIdGhe()){
             ps = connection.prepareStatement("INSERT INTO ve (idVe, idLichChieu, idGhe, idGia, idBill) VALUES (?, ? ,? ,? ,?)");
-            ps.setString(1, listVeRequest.getListIdVe().get(i));
+            ps.setString(1, UUID.randomUUID().toString());
             ps.setString(2, listVeRequest.getIdLichChieu());
-            ps.setString(3, listVeRequest.getListIdGhe().get(i));
-            ps.setString(4, listVeRequest.getListIdGia().get(i));
+            ps.setString(3, idGhe);
+            ps.setString(4, listVeRequest.getIdGia());
             ps.setString(5, listVeRequest.getIdBill());
             ps.executeUpdate();
             ps = connection.prepareStatement("INSERT INTO lichchieu_ghe (idLichChieu, idGhe, trangThai) VALUES (?, ?, ?)");
             ps.setString(1, listVeRequest.getIdLichChieu());
-            ps.setString(2, listVeRequest.getListIdGhe().get(i));
-            ps.setString(3, "Đã đặt");
+            ps.setString(2, idGhe);
+            ps.setString(3, listVeRequest.getTrangThai());
             ps.executeUpdate();
         }
         
@@ -50,7 +49,7 @@ public class VeRepository {
         ps.executeUpdate();
     }
     
-    public ArrayList<Ve> layDanhSachDatVe(){
+    public ArrayList<Ve> getDanhSachDatVe(){
         ArrayList<Ve> ds = new ArrayList<>();
         
         try {
@@ -92,7 +91,7 @@ public class VeRepository {
         return ds;
     }
 
-    public boolean huyVe(String idVe){
+    public boolean deleteVe(String idVe){
         try {
             connection = DatabaseConnection.getConnection();
             String sqlVe = "DELETE FROM ve WHERE idVe = ?";
@@ -117,30 +116,26 @@ public class VeRepository {
         }
     }
     
-    public List<BillResponse> getListBill(String idTaiKhoan) {
+    public List<BillResponse> getListBill(String idTaiKhoan) throws SQLException {
         List<BillResponse> response = new ArrayList<>();
             
-        try {
-            connection = DatabaseConnection.getConnection();
-            String statement = "SELECT DISTINCT b.idBill, p.tenPhim, b.tongTien " +
-                    "FROM phim p " +
-                    "JOIN lich_chieu lc ON p.idPhim = lc.idPhim " +
-                    "JOIN ve v ON lc.idLichChieu = v.idLichChieu " +
-                    "JOIN bill b ON v.idBill = b.idBill " +
-                    "JOIN tai_khoan tk ON b.idTaiKhoan = tk.idTaiKhoan " +
-                    "WHERE tk.idTaiKhoan = ? ";
-            PreparedStatement ps = connection.prepareStatement(statement);
-            ps.setString(1, idTaiKhoan);
-            ResultSet rs = ps.executeQuery();
-            while(rs.next()){
-                BillResponse billResponse = new BillResponse();
-                billResponse.setIdBill(rs.getString("idBill"));
-                billResponse.setTenPhim(rs.getString("tenPhim"));
-                billResponse.setTongTien(rs.getInt("tongTien"));
-                response.add(billResponse);
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(VeRepository.class.getName()).log(Level.SEVERE, null, ex);
+        connection = DatabaseConnection.getConnection();
+        String statement = "SELECT DISTINCT b.idBill, p.tenPhim, b.tongTien " +
+                "FROM phim p " +
+                "JOIN lich_chieu lc ON p.idPhim = lc.idPhim " +
+                "JOIN ve v ON lc.idLichChieu = v.idLichChieu " +
+                "JOIN bill b ON v.idBill = b.idBill " +
+                "JOIN tai_khoan tk ON b.idTaiKhoan = tk.idTaiKhoan " +
+                "WHERE tk.idTaiKhoan = ? ";
+        PreparedStatement ps = connection.prepareStatement(statement);
+        ps.setString(1, idTaiKhoan);
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()){
+            BillResponse billResponse = new BillResponse();
+            billResponse.setIdBill(rs.getString("idBill"));
+            billResponse.setTenPhim(rs.getString("tenPhim"));
+            billResponse.setTongTien(rs.getInt("tongTien"));
+            response.add(billResponse);
         }
         
         return response;
@@ -181,33 +176,71 @@ public class VeRepository {
             return billResponse;
     }
     
-    public LichChieuResponse getLichChieu(String idPhim, LocalDateTime gioChieu) {
-        LichChieuResponse chieuResponse = new LichChieuResponse();
+    public ChiTietLichChieuResponse getChiTietLichChieu(Phim chosenPhim, Timestamp gioChieu) throws SQLException {
+        ChiTietLichChieuResponse response = null;
         
-        try {
-            PreparedStatement ps = connection.prepareStatement(
-                "SELECT pc.tenPhong, GROUP_CONCAT(lcg.idGhe SEPARATOR ', ') AS idGhe, lc.idLichChieu, ga.idGia, ga.tieuChuan, ga.VIP, ga.Triple " +
-                "FROM phim p " +
-                "JOIN lich_chieu lc ON p.idPhim = lc.idPhim " +
-                "JOIN phong_chieu pc ON lc.idPhongChieu = pc.idPhongChieu " +
-                "LEFT JOIN lichchieu_ghe lcg ON lc.idLichChieu = lcg.idLichChieu " +
-                "LEFT JOIN ghe ge ON lcg.idGhe = ge.idGhe " +
-                "JOIN gia ga ON lc.idGia = ga.idGia " +
-                "WHERE lc.idPhim = ? " +
-                "AND lc.gioChieu = ? " +
-                "GROUP BY pc.tenPhong, lc.idLichChieu, ga.idGia, ga.tieuChuan, ga.VIP, ga.Triple");
-            ps.setString(1, idPhim);
-            ps.setObject(2, gioChieu);
-            ResultSet rs = ps.executeQuery();
-            chieuResponse.setTenPhong(rs.getString("tenPhong"));
-            chieuResponse.setListIdGheDaDat(rs.getString("listIdGheDaDat"));
-            chieuResponse.setTenPhong(rs.getString("tenPhong"));
-            chieuResponse.setTenPhong(rs.getString("tenPhong"));
-            chieuResponse.setTenPhong(rs.getString("tenPhong"));
-            chieuResponse.setTenPhong(rs.getString("tenPhong"));
-        } catch (Exception e) {
-            
+        PreparedStatement ps = connection.prepareStatement(
+            "SELECT pc.tenPhong, GROUP_CONCAT(lcg.idGhe SEPARATOR ', ') AS idGhe, lc.idLichChieu, ga.idGia, ga.tieuChuan, ga.VIP, ga.Triple " +
+            "FROM phim p " +
+            "JOIN lich_chieu lc ON p.idPhim = lc.idPhim " +
+            "JOIN phong_chieu pc ON lc.idPhongChieu = pc.idPhongChieu " +
+            "LEFT JOIN lichchieu_ghe lcg ON lc.idLichChieu = lcg.idLichChieu " +
+            "LEFT JOIN ghe ge ON lcg.idGhe = ge.idGhe " +
+            "JOIN gia ga ON lc.idGia = ga.idGia " +
+            "WHERE lc.idPhim = ? " +
+            "AND lc.gioChieu = ? " +
+            "GROUP BY pc.tenPhong, lc.idLichChieu, ga.idGia, ga.tieuChuan, ga.VIP, ga.Triple");
+        ps.setString(1, chosenPhim.getIdPhim());
+        ps.setTimestamp(2, gioChieu);
+        ResultSet rs = ps.executeQuery();
+        response.setTenPhong(rs.getString("tenPhong"));
+        response.setIdLichChieu(rs.getString("idLichChieu"));
+        response.setIdGia(rs.getString("idGia"));
+        response.setTenPhong(rs.getString("tenPhong"));
+        
+        if(rs.getString("idGhe") != null && !rs.getString("idGhe").isEmpty()){
+            String[] list = rs.getString("idGhe").split(", ");
+            response.setIdGhe(Arrays.asList(list));
         }
-        return chieuResponse;
+
+        List<Integer> list = null;
+        list.add(rs.getInt("tieuChuan"));
+        list.add(rs.getInt("VIP"));
+        list.add(rs.getInt("Triple"));
+        response.setListGias(list);
+
+        return response;
+    }
+    
+    public List<String> getListGhe(Timestamp gioChieu) throws SQLException {
+        List<String> listGhe = null;
+        PreparedStatement ps = connection.prepareStatement("SELECT GROUP_CONCAT(lcg.idGhe SEPARATOR ', ') AS idGhe " +
+                    "FROM lich_chieu lc " +
+                    "LEFT JOIN lichchieu_ghe lcg ON lc.idLichChieu = lcg.idLichChieu " +
+                    "WHERE lc.gioChieu = ?");
+        ps.setTimestamp(1, gioChieu);
+        ResultSet rs = ps.executeQuery();
+        if(rs.getString("idGhe") != null && !rs.getString("idGhe").isEmpty()){
+            String[] dsach = rs.getString("idGhe").split(", ");
+            listGhe.addAll(Arrays.asList(dsach));
+        }
+        return listGhe;
+    }
+    
+    public List<Timestamp> getListLichChieu(String idPhim) throws SQLException {
+        List<Timestamp> listGioChieu = null;
+        PreparedStatement ps = connection.prepareStatement("SELECT gioChieu " +
+                                        "FROM lich_chieu lc " +
+                                        "JOIN phim p ON lc.idPhim = p.idPhim " +
+                                        "WHERE lc.idPhim = ? " +
+                                        "AND lc.gioChieu >= DATE_ADD(NOW(), INTERVAL 1 HOUR) " +
+                                        "ORDER BY gioChieu ASC");
+        ps.setString(1, idPhim);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()){
+            Timestamp ts = rs.getTimestamp("gioChieu");     
+            listGioChieu.add(ts);
+        }
+        return listGioChieu;
     }
 }

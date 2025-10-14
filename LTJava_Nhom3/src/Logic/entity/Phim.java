@@ -1,4 +1,4 @@
-package UI_Admin;
+package Logic.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ public class Phim {
     private String idPhim;
     private String tenPhim;
     private String tacGia;
-    private List<String> theLoai; // Danh sách id thể loại
+    private List<String> theLoai;
     private String thoiLuong;
     private String ngonNgu;
     private String dienVien;
@@ -30,8 +30,6 @@ public class Phim {
     public Phim() {
         theLoai = new ArrayList<>();
     }
-
-    // Getters và Setters
     public String getIdPhim() { return idPhim; }
     public void setIdPhim(String idPhim) { this.idPhim = idPhim; }
     public String getTenPhim() { return tenPhim; }
