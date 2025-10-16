@@ -14,6 +14,8 @@
         <group>
             <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Logic/service/VeService.java</file>
             <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Logic/dto/request/DataCreatePaymentRequest.java</file>
+            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Logic/entity/Phim.java</file>
+            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Logic/entity/LichChieu.java</file>
         </group>
     </open-files>
 </project-private>
