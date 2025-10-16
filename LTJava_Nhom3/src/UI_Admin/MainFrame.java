@@ -1,5 +1,6 @@
 package UI_Admin;
 
+import Logic.controller.BaoCaoController;
 import QuanLyVeCho.repository.VeRepository;
 import QuanLyVeCho.entity.Ve;
 import UI_Login.UI_Login;
@@ -12,6 +13,8 @@ import java.sql.*;
 import java.time.ZoneId;
 import QuanLyVeCho.controller.VeController;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 
@@ -24,6 +27,7 @@ public class MainFrame extends javax.swing.JFrame {
     private final DefaultTableModel modelGia;
     private final DefaultTableModel modelReport;
     QuanLyVeCho.controller.VeController veController;
+    Logic.controller.BaoCaoController baoCaoController;
     int selectedRow = -1;
     /**
      * Creates new form MainFrame
@@ -654,6 +658,11 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel5.setText("Đến:");
 
         jButton2.setText("Báo cáo (From-to)");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -995,153 +1004,162 @@ public class MainFrame extends javax.swing.JFrame {
         String day = txtDay.getText().trim();
         String month = txtMonth.getText().trim();
         String year = txtYear.getText().trim();
-
-        if (!day.isEmpty() && !day.matches("\\d+")) {
-            JOptionPane.showMessageDialog(this, "Ngày phải là số hợp lệ!");
+        String errorMessage = "";
+        if(!baoCaoController.ktraHopLe(day, month, year, errorMessage)){
+            JOptionPane.showMessageDialog(this, errorMessage, "Lỗi ngày tháng!", ERROR);
             return;
         }
-        if (!month.isEmpty() && !month.matches("\\d+")) {
-            JOptionPane.showMessageDialog(this, "Tháng phải là số hợp lệ!");
-            return;
+        try {
+            baoCaoController.taoBaoCao(day, month, year, modelReport);
+            } catch (Exception ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if (!year.isEmpty() && !year.matches("\\d+")) {
-            JOptionPane.showMessageDialog(this, "Năm phải là số hợp lệ!");
-            return;
-        }
-        int ngay = !day.isEmpty() ? Integer.parseInt(day) : -1;
-        int thang = !month.isEmpty() ? Integer.parseInt(month) : -1;
-        int nam = !month.isEmpty() ? Integer.parseInt(month) : -1;
-        
-        if(nam != -1 && nam < 1900){
-            JOptionPane.showMessageDialog(this, "Năm phải lớn hơn 1900!");
-            return;
-        }
-
-        if (thang != -1 && (thang < 1 || thang > 12)) {
-            JOptionPane.showMessageDialog(this, "Tháng phải nằm trong khoảng 1-12!");
-            return;
-        }
-        if (ngay != -1) {
-            if (thang == -1) {
-                JOptionPane.showMessageDialog(this, "Bạn cần nhập tháng để kiểm tra ngày!");
-                return;
-            }
-
-            List<Integer> thang31Ngay = List.of(1, 3, 5, 7, 8, 10, 12);
-            List<Integer> thang30Ngay = List.of(4, 6, 9, 11);
-
-            if (thang31Ngay.contains(thang)) {
-                if (ngay > 31) {
-                    JOptionPane.showMessageDialog(this, "Ngày không hợp lệ!");
-                    return;
-                }
-            } else if (thang30Ngay.contains(thang)) {
-                if (ngay > 30) {
-                    JOptionPane.showMessageDialog(this, "Ngày không hợp lệ!");
-                    return;
-                }
-            } else if (thang == 2) {
-                if (nam == -1) {
-                    JOptionPane.showMessageDialog(this, "Cần nhập năm để kiểm tra tháng 2!");
-                    return;
-                }
-                boolean isLeap = (nam % 4 == 0 && nam % 100 != 0) || (nam % 400 == 0);
-                int maxDay = isLeap ? 29 : 28;
-                if (ngay > maxDay) {
-                    JOptionPane.showMessageDialog(this, "Ngày không hợp lệ với tháng 2 năm " + nam + "!");
-                    return;
-                }
-            }
-        }
-
-        int soGheToiDa = 30;
-
-        StringBuilder updateSql = new StringBuilder("""
-            UPDATE lich_chieu lc
-            SET lc.soGheConLai = ? - (
-                SELECT COUNT(*) 
-                FROM ve v 
-                WHERE v.idLichChieu = lc.idLichChieu
-            )
-            WHERE 1=1
-        """);
-
-        List<Integer> updateParamValues = new ArrayList<>();
-
-        if (!year.isEmpty()) {
-            updateSql.append(" AND YEAR(lc.gioChieu) = ? ");
-            updateParamValues.add(Integer.parseInt(year));
-        }
-        if (!month.isEmpty()) {
-            updateSql.append(" AND MONTH(lc.gioChieu) = ? ");
-            updateParamValues.add(Integer.parseInt(month));
-        }
-        if (!day.isEmpty()) {
-            updateSql.append(" AND DAY(lc.gioChieu) = ? ");
-            updateParamValues.add(Integer.parseInt(day));
-        }
-
-        try (Connection conn = DBConnection.KetNoi()) {
-            if (conn == null) {
-                JOptionPane.showMessageDialog(this, "Không thể kết nối đến cơ sở dữ liệu!");
-                return;
-            }
-            try (PreparedStatement updatePs = conn.prepareStatement(updateSql.toString())) {
-                int index = 1;
-                updatePs.setInt(index++, soGheToiDa);
-                for (int val : updateParamValues) {
-                    updatePs.setInt(index++, val);
-                }
-                updatePs.executeUpdate();
-            }
-            StringBuilder reportSql = new StringBuilder("""
-                SELECT
-                    p.tenPhim,
-                    GREATEST(0, (? * COUNT(*)) - SUM(lc.soGheConLai)) AS so_ghe_da_dat
-                FROM
-                    lich_chieu lc
-                JOIN
-                    phim p ON lc.idPhim = p.idPhim
-                WHERE 1=1
-            """);
-
-            List<Integer> reportParamValues = new ArrayList<>();
-
-            if (!namStr.isEmpty()) {
-                reportSql.append(" AND YEAR(lc.gioChieu) = ? ");
-                reportParamValues.add(Integer.parseInt(namStr));
-            }
-            if (!thangStr.isEmpty()) {
-                reportSql.append(" AND MONTH(lc.gioChieu) = ? ");
-                reportParamValues.add(Integer.parseInt(thangStr));
-            }
-            if (!ngayStr.isEmpty()) {
-                reportSql.append(" AND DAY(lc.gioChieu) = ? ");
-                reportParamValues.add(Integer.parseInt(ngayStr));
-            }
-            reportSql.append("""
-                GROUP BY lc.idPhim, p.tenPhim
-                ORDER BY p.tenPhim
-            """);
-            try (PreparedStatement reportPs = conn.prepareStatement(reportSql.toString())) {
-                int index = 1;
-                reportPs.setInt(index++, soGheToiDa);
-                for (int val : reportParamValues) {
-                    reportPs.setInt(index++, val);
-                }
-
-                ResultSet rs = reportPs.executeQuery();
-                modelReport.setRowCount(0);
-                while (rs.next()) {
-                    String tenPhim = rs.getString("tenPhim");
-                    int soGheDaDat = rs.getInt("so_ghe_da_dat");
-                    modelReport.addRow(new Object[]{tenPhim, soGheDaDat});
-                }
-            }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Lỗi SQL: " + ex.getMessage());
-            ex.printStackTrace();
-        }
+//        if (!day.isEmpty() && !day.matches("\\d+")) {
+//            JOptionPane.showMessageDialog(this, "Ngày phải là số hợp lệ!");
+//            return;
+//        }
+//        if (!month.isEmpty() && !month.matches("\\d+")) {
+//            JOptionPane.showMessageDialog(this, "Tháng phải là số hợp lệ!");
+//            return;
+//        }
+//        if (!year.isEmpty() && !year.matches("\\d+")) {
+//            JOptionPane.showMessageDialog(this, "Năm phải là số hợp lệ!");
+//            return;
+//        }
+//        int ngay = !day.isEmpty() ? Integer.parseInt(day) : -1;
+//        int thang = !month.isEmpty() ? Integer.parseInt(month) : -1;
+//        int nam = !month.isEmpty() ? Integer.parseInt(month) : -1;
+//        
+//        if(nam != -1 && nam < 1900){
+//            JOptionPane.showMessageDialog(this, "Năm phải lớn hơn 1900!");
+//            return;
+//        }
+//
+//        if (thang != -1 && (thang < 1 || thang > 12)) {
+//            JOptionPane.showMessageDialog(this, "Tháng phải nằm trong khoảng 1-12!");
+//            return;
+//        }
+//        if (ngay != -1) {
+//            if (thang == -1) {
+//                JOptionPane.showMessageDialog(this, "Bạn cần nhập tháng để kiểm tra ngày!");
+//                return;
+//            }
+//
+//            List<Integer> thang31Ngay = List.of(1, 3, 5, 7, 8, 10, 12);
+//            List<Integer> thang30Ngay = List.of(4, 6, 9, 11);
+//
+//            if (thang31Ngay.contains(thang)) {
+//                if (ngay > 31) {
+//                    JOptionPane.showMessageDialog(this, "Ngày không hợp lệ!");
+//                    return;
+//                }
+//            } else if (thang30Ngay.contains(thang)) {
+//                if (ngay > 30) {
+//                    JOptionPane.showMessageDialog(this, "Ngày không hợp lệ!");
+//                    return;
+//                }
+//            } else if (thang == 2) {
+//                if (nam == -1) {
+//                    JOptionPane.showMessageDialog(this, "Cần nhập năm để kiểm tra tháng 2!");
+//                    return;
+//                }
+//                boolean isLeap = (nam % 4 == 0 && nam % 100 != 0) || (nam % 400 == 0);
+//                int maxDay = isLeap ? 29 : 28;
+//                if (ngay > maxDay) {
+//                    JOptionPane.showMessageDialog(this, "Ngày không hợp lệ với tháng 2 năm " + nam + "!");
+//                    return;
+//                }
+//            }
+//        }
+//
+//        int soGheToiDa = 30;
+//
+//        StringBuilder updateSql = new StringBuilder("""
+//            UPDATE lich_chieu lc
+//            SET lc.soGheConLai = ? - (
+//                SELECT COUNT(*)
+//                FROM ve v 
+//                WHERE v.idLichChieu = lc.idLichChieu
+//            )
+//            WHERE 1=1
+//        """);
+//
+//        List<Integer> updateParamValues = new ArrayList<>();
+//
+//        if (!year.isEmpty()) {
+//            updateSql.append(" AND YEAR(lc.gioChieu) = ? ");
+//            updateParamValues.add(Integer.parseInt(year));
+//        }
+//        if (!month.isEmpty()) {
+//            updateSql.append(" AND MONTH(lc.gioChieu) = ? ");
+//            updateParamValues.add(Integer.parseInt(month));
+//        }
+//        if (!day.isEmpty()) {
+//            updateSql.append(" AND DAY(lc.gioChieu) = ? ");
+//            updateParamValues.add(Integer.parseInt(day));
+//        }
+//
+//        try (Connection conn = DBConnection.KetNoi()) {
+//            if (conn == null) {
+//                JOptionPane.showMessageDialog(this, "Không thể kết nối đến cơ sở dữ liệu!");
+//                return;
+//            }
+//            try (PreparedStatement updatePs = conn.prepareStatement(updateSql.toString())) {
+//                int index = 1;
+//                updatePs.setInt(index++, soGheToiDa);
+//                for (int val : updateParamValues) {
+//                    updatePs.setInt(index++, val);
+//                }
+//                updatePs.executeUpdate();
+//            }
+//            StringBuilder reportSql = new StringBuilder("""
+//                SELECT
+//                    p.tenPhim,
+//                    GREATEST(0, (? * COUNT(*)) - SUM(lc.soGheConLai)) AS so_ghe_da_dat
+//                FROM
+//                    lich_chieu lc
+//                JOIN
+//                    phim p ON lc.idPhim = p.idPhim
+//                WHERE 1=1
+//            """);
+//
+//            List<Integer> reportParamValues = new ArrayList<>();
+//
+//            if (!year.isEmpty()) {
+//                reportSql.append(" AND YEAR(lc.gioChieu) = ? ");
+//                reportParamValues.add(Integer.parseInt(year));
+//            }
+//            if (!month.isEmpty()) {
+//                reportSql.append(" AND MONTH(lc.gioChieu) = ? ");
+//                reportParamValues.add(Integer.parseInt(month));
+//            }
+//            if (!day.isEmpty()) {
+//                reportSql.append(" AND DAY(lc.gioChieu) = ? ");
+//                reportParamValues.add(Integer.parseInt(day));
+//            }
+//            reportSql.append("""
+//                GROUP BY lc.idPhim, p.tenPhim
+//                ORDER BY p.tenPhim
+//            """);
+//            try (PreparedStatement reportPs = conn.prepareStatement(reportSql.toString())) {
+//                int index = 1;
+//                reportPs.setInt(index++, soGheToiDa);
+//                for (int val : reportParamValues) {
+//                    reportPs.setInt(index++, val);
+//                }
+//
+//                ResultSet rs = reportPs.executeQuery();
+//                modelReport.setRowCount(0);
+//                while (rs.next()) {
+//                    String tenPhim = rs.getString("tenPhim");
+//                    int soGheDaDat = rs.getInt("so_ghe_da_dat");
+//                    modelReport.addRow(new Object[]{tenPhim, soGheDaDat});
+//                }
+//            }
+//        } catch (SQLException ex) {
+//            JOptionPane.showMessageDialog(this, "Lỗi SQL: " + ex.getMessage());
+//            ex.printStackTrace();
+//        }
     }//GEN-LAST:event_btnCreBaoCaoActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -1153,6 +1171,11 @@ public class MainFrame extends javax.swing.JFrame {
             a.setVisible(true);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        Date DateFrom = DateFromChooser.getDate();
+        Date DateTo = DateToChooser.getDate();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     private void loadFilmData() {
         model.setRowCount(0);
