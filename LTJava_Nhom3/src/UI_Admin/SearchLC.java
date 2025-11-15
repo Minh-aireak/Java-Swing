@@ -4,6 +4,7 @@
  */
 package UI_Admin;
 
+import Logic.controller.PhimController;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -14,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class SearchLC extends javax.swing.JFrame {
+    private PhimController phimController = new PhimController();
     private final DefaultTableModel modelLichChieu;
     /**
      * Creates new form SearchLC
@@ -205,75 +207,11 @@ public class SearchLC extends javax.swing.JFrame {
         String idPhongChieu = (String) cbbRoom.getSelectedItem();
         String soGheConLaiStr = txtSeatNum.getText().trim();
 
-        StringBuilder sql = new StringBuilder("SELECT * FROM lich_chieu WHERE 1=1");
-        ArrayList<Object> params = new ArrayList<>();
-
-        if (!idLichChieu.isEmpty()) {
-            sql.append(" AND idLichChieu LIKE ?");
-            params.add("%" + idLichChieu + "%");
-        }
-        if (!idPhim.isEmpty()) {
-            sql.append(" AND idPhim LIKE ?");
-            params.add("%" + idPhim + "%");
-        }
-        if (!dateTime.isEmpty()) {
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                java.util.Date parsedDate = sdf.parse(dateTime);
-                Timestamp Time = new Timestamp(parsedDate.getTime());
-                sql.append(" AND gioChieu = ?");
-                params.add(Time);
-            } catch (ParseException e) {
-                JOptionPane.showMessageDialog(this, "Định dạng ngày giờ không hợp lệ!", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-        if (idPhongChieu != null && !idPhongChieu.isEmpty()) {
-            sql.append(" AND idPhongChieu = ?");
-            params.add(idPhongChieu);
-        }
-        if (!soGheConLaiStr.isEmpty()) {
-            try {
-                int soGheConLai = Integer.parseInt(soGheConLaiStr);
-                sql.append(" AND soGheConLai = ?");
-                params.add(soGheConLai);
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Số ghế còn lại phải là số!", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-
-        Connection conn = DBConnection.KetNoi();
         try {
-            PreparedStatement ps = conn.prepareStatement(sql.toString());
-            for (int i = 0; i < params.size(); i++) {
-                Object param = params.get(i);
-                if (param instanceof Timestamp) {
-                    ps.setTimestamp(i + 1, (Timestamp) param);
-                } else if (param instanceof Integer) {
-                    ps.setInt(i + 1, (Integer) param);
-                } else {
-                    ps.setString(i + 1, (String) param);
-                }
-            }
-            ResultSet rs = ps.executeQuery();
-            modelLichChieu.setRowCount(0);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-            while (rs.next()) {
-                Timestamp timestamp = rs.getTimestamp("gioChieu");
-                modelLichChieu.addRow(new Object[]{
-                    rs.getString("idLichChieu"),
-                    rs.getString("idPhim"),
-                    timestamp.toLocalDateTime().format(formatter),
-                    rs.getString("idPhongChieu"),
-                    rs.getInt("soGheConLai"),
-                    rs.getString("idGia")
-                });
-            }
-            conn.close();
-            this.dispose();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi tìm kiếm: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            var response = phimController.addLichChieu(idLichChieu, idPhim, dateTime, idPhongChieu, soGheConLaiStr);
+            JOptionPane.showMessageDialog(this, response.getMessage(), "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnSearchActionPerformed
 
