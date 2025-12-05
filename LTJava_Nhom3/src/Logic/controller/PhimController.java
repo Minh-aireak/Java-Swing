@@ -2,8 +2,6 @@ package Logic.controller;
 
 import Logic.entity.Phim;
 import Logic.repository.PhimRepository;
-import Logic.repository.impl.JdbcPhimRepository;
-
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
@@ -11,7 +9,7 @@ public class PhimController {
     private final PhimRepository repo;
 
     public PhimController() {
-        this.repo = new JdbcPhimRepository();
+        this.repo = new PhimRepository();
     }
 
     public boolean themPhim(Phim phim) throws FileNotFoundException, Exception {
