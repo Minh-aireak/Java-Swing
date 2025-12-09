@@ -1,5 +1,6 @@
 package UI_Admin;
 
+import Logic.controller.PhimController;
 import Logic.entity.LichChieu;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
@@ -8,9 +9,11 @@ import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class AddLC extends javax.swing.JFrame {
     private final DefaultTableModel modelLichChieu;
+    PhimController phimController = new PhimController();
     /**
      * Creates new form AddLC
      * @param model
@@ -22,34 +25,12 @@ public class AddLC extends javax.swing.JFrame {
     }
 
     private void loadPhongChieu() {
-        DefaultComboBoxModel<String> comboModel = new DefaultComboBoxModel<>();
-        Connection conn = null;
-        Statement st = null;
-        ResultSet rs = null;
-        try {
-            conn = DBConnection.KetNoi();
-            if (conn == null) {
-                JOptionPane.showMessageDialog(this, "Không thể kết nối tới cơ sở dữ liệu!", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            String sql = "SELECT idPhongChieu FROM phong_chieu";
-            st = conn.createStatement();
-            rs = st.executeQuery(sql);
-            while (rs.next()) {
-                comboModel.addElement(rs.getString("idPhongChieu"));
-            }
-            cbbRoom.setModel(comboModel);
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi tải danh sách phòng chiếu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (st != null) st.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                System.out.println("Lỗi đóng tài nguyên: " + e.getMessage());
-            }
-        }
+DefaultComboBoxModel<String> comboModel = new DefaultComboBoxModel<>();
+    List<String> list = phimController.getPhongChieu();
+    for(String item : list) {
+        comboModel.addElement(item);
+    }
+    cbbRoom.setModel(comboModel);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -226,45 +207,35 @@ public class AddLC extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRefreshActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-        String idLichChieu = txtLcID.getText().trim();
-        String idPhim = txtFilmID.getText().trim();
-        String dateTime = txtDate.getText().trim();
-        String idPhongChieu = (String) cbbRoom.getSelectedItem();
-        String soGheConLaiStr = txtSeatNum.getText().trim();
-        String idGia = txtGiaID.getText().trim();
+    String idLichChieu = txtLcID.getText().trim();
+    String idPhim = txtFilmID.getText().trim();
+    String dateTime = txtDate.getText().trim();
+    String idPhongChieu = (String) cbbRoom.getSelectedItem();
+    String soGheConLaiStr = txtSeatNum.getText().trim();
+    String idGia = txtGiaID.getText().trim();
 
-        if (idLichChieu.isEmpty() || idPhim.isEmpty() || dateTime.isEmpty() || idPhongChieu == null || soGheConLaiStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+    try {
+        
+        var response = phimController.addLichChieu(idLichChieu, idPhim, dateTime, idPhongChieu, soGheConLaiStr, idGia);
+        
+        // Kiểm tra message trả về từ Service
+        if (response.getMessage().contains("thành công")) {
+            JOptionPane.showMessageDialog(this, response.getMessage(), "Success", JOptionPane.INFORMATION_MESSAGE);
+            modelLichChieu.addRow(new Object[]{
+                response.getIdLichChieu(),
+                response.getIdPhim(),
+                response.getGioChieu(),
+                response.getIdPhongChieu(),
+                response.getSoGheConLai(),
+                response.getIdGia()
+            });
+            this.dispose();
+        } else {
+             JOptionPane.showMessageDialog(this, response.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        try {
-            int soGheConLai = Integer.parseInt(soGheConLaiStr);
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-            java.util.Date parsedDate = sdf.parse(dateTime);
-            Timestamp timestamp = new Timestamp(parsedDate.getTime());
-
-            LichChieu lc = new LichChieu(idLichChieu, idPhim, timestamp, idPhongChieu, soGheConLai, idGia);
-            if (LichChieuDAO.themLichChieu(lc, idPhongChieu)) {
-                JOptionPane.showMessageDialog(this, "Thêm lịch chiếu thành công!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-                modelLichChieu.addRow(new Object[]{
-                    lc.getIdLichChieu(),
-                    lc.getIdPhim(),
-                    lc.getGioChieu().toLocalDateTime().format(formatter),
-                    lc.getIdPhongChieu(),
-                    lc.getSoGheConLai(),
-                    lc.getIdGia()
-                });
-                this.dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Thêm lịch chiếu thất bại!", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Số ghế còn lại phải là số!", "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (ParseException e) {
-            JOptionPane.showMessageDialog(this, "Định dạng ngày giờ không hợp lệ! Vui lòng nhập theo định dạng dd/MM/yyyy HH:mm", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnAddActionPerformed
 
     

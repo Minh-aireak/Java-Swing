@@ -4,6 +4,7 @@
  */
 package UI_Admin;
 
+import Logic.controller.PhimController;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -12,9 +13,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SearchLC extends javax.swing.JFrame {
     private final DefaultTableModel modelLichChieu;
+    PhimController phimController = new PhimController();
     /**
      * Creates new form SearchLC
      */
@@ -25,21 +28,11 @@ public class SearchLC extends javax.swing.JFrame {
     }
 
     private void loadPhongChieu() {
-        DefaultComboBoxModel<String> comboModel = new DefaultComboBoxModel<>();
-        comboModel.addElement("");
-        Connection conn = DBConnection.KetNoi();
-        String sql = "SELECT idPhongChieu FROM phong_chieu";
-        try {
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery(sql);
-            while (rs.next()) {
-                comboModel.addElement(rs.getString("idPhongChieu"));
-            }
-            cbbRoom.setModel(comboModel);
-            conn.close();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi tải danh sách phòng chiếu: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
+DefaultComboBoxModel<String> comboModel = new DefaultComboBoxModel<>();
+    comboModel.addElement(""); // Item rỗng để chọn tất cả
+    List<String> list = phimController.getPhongChieu();
+    for(String item : list) comboModel.addElement(item);
+    cbbRoom.setModel(comboModel);
     }
     /**
      * This method is called from within the constructor to initialize the form.

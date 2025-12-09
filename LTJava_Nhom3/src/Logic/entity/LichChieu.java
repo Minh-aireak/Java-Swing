@@ -18,6 +18,9 @@ public class LichChieu {
         this.soGheConLai = soGheConLai;
         this.idGia = idGia;
     }
+    public LichChieu(){
+        
+    }
 
     public String getIdLichChieu() {
         return idLichChieu;

@@ -1,16 +1,8 @@
 package UI_Login;
 
-import ConnectDatabase.DatabaseConnection;
 import Logic.controller.LoginController;
 import Logic.entity.TaiKhoan;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import javax.swing.JOptionPane;
-import UI_Admin.MainFrame;
 public class UI_Login extends javax.swing.JFrame {
     
     public static TaiKhoan taiKhoan;

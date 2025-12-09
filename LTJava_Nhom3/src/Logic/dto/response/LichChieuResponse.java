@@ -18,6 +18,10 @@ public class LichChieuResponse {
         this.idGia = idGia;
         this.message = message;
     }
+    
+    public LichChieuResponse(){
+        
+    }
 
     public String getMessage() {
         return message;
