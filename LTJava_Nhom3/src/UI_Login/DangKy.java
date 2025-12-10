@@ -1,37 +1,15 @@
 package UI_Login;
 
-import ConnectDatabase.DatabaseConnection;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import Logic.controller.LoginController;
 import javax.swing.JOptionPane;
 
 public class DangKy extends javax.swing.JDialog {
+    private final LoginController loginController;
 
-public String taoMaTaiKhoanMoi(Connection conn) throws SQLException {
-    String sqlCheck = "SELECT idTaiKhoan FROM tai_khoan WHERE idTaiKhoan = ?";
-    PreparedStatement checkStmt = conn.prepareStatement(sqlCheck);
-    int stt = 1;
-    String newID;
-    while (true) {
-        newID = String.format("KH%04d", stt);
-        checkStmt.setString(1, newID);
-        ResultSet rs = checkStmt.executeQuery();
-        if (!rs.next()) {
-            rs.close();
-            break; 
-        }
-        rs.close();
-        stt++;
-    }
-    checkStmt.close();
-    return newID;
-}
     public DangKy(javax.swing.JFrame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        loginController = new LoginController();
     }
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -312,93 +290,79 @@ public String taoMaTaiKhoanMoi(Connection conn) throws SQLException {
     private void btnDangKyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDangKyActionPerformed
                                       
     try {
-        String soDienThoai = txtSDT.getText().trim();
-        String email = txtEmail.getText().trim();
-        String pass = new String(txtMatKhau.getPassword());
-        String rePass = new String(txtNhapLaiMatKhau.getPassword());
-        String hoDem = txtHoDem.getText().trim();
-        String ten = txtTen.getText().trim();
+            String soDienThoai = txtSDT.getText().trim();
+            String email       = txtEmail.getText().trim();
+            String pass        = new String(txtMatKhau.getPassword());
+            String rePass      = new String(txtNhapLaiMatKhau.getPassword());
+            String hoDem       = txtHoDem.getText().trim();
+            String ten         = txtTen.getText().trim();
 
-        if (soDienThoai.isEmpty() || email.isEmpty() || pass.isEmpty() || rePass.isEmpty()
-                || hoDem.isEmpty() || ten.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.");
-            return;
+            // 1. Validate phía client
+            if (soDienThoai.isEmpty() || email.isEmpty() || pass.isEmpty() || rePass.isEmpty()
+                    || hoDem.isEmpty() || ten.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.");
+                return;
+            }
+
+            if (!soDienThoai.matches("\\d{10}")) {
+                JOptionPane.showMessageDialog(this, "Số điện thoại phải là số và đủ 10 chữ số.");
+                return;
+            }
+
+            if (!email.matches("^[\\w.-]+@gmail\\.com$")) {
+                JOptionPane.showMessageDialog(this, "Email phải đúng định dạng và là ...@gmail.com.");
+                return;
+            }
+
+            String gioiTinh = "";
+            if (radNam.isSelected()) {
+                gioiTinh = "Nam";
+            } else if (radNu.isSelected()) {
+                gioiTinh = "Nữ";
+            } else {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn giới tính.");
+                return;
+            }
+
+            if (pass.length() < 8 || !pass.matches(".*[^a-zA-Z0-9].*")) {
+                JOptionPane.showMessageDialog(this, "Mật khẩu phải có ít nhất 8 ký tự và 1 ký tự đặc biệt.");
+                return;
+            }
+
+            if (!pass.equals(rePass)) {
+                JOptionPane.showMessageDialog(this, "Mật khẩu không khớp.");
+                return;
+            }
+
+            // 2. Các tham số chưa có trên UI => tạm để rỗng
+            String ngaySinh = "";  // bạn có thể thêm field ngày sinh sau
+            String diaChi   = "";
+
+            // 3. Gọi controller để đăng ký
+            LoginController.RegisterResponse resp =
+                    loginController.dangKy(
+                            soDienThoai,
+                            email,
+                            pass,
+                            hoDem,
+                            ten,
+                            gioiTinh,
+                            ngaySinh,
+                            diaChi
+                    );
+
+            // 4. Xử lý kết quả trả về
+            JOptionPane.showMessageDialog(this, resp.getMessage());
+
+            // Nếu backend trả về tài khoản mới => đăng ký OK -> đóng form
+            if (resp.getTaiKhoan() != null) {
+                this.dispose();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
         }
-        
-        if (!soDienThoai.matches("\\d{10}")) {
-            JOptionPane.showMessageDialog(this, "Số điện thoại phải là số và đủ 10 chữ số.");
-            return;
-        }
-
-        if (!email.matches("^[\\w.-]+@gmail\\.com$")) {
-            JOptionPane.showMessageDialog(this, "Email phải đúng định dạng và là ...@gmail.com.");
-            return;
-        }
-
-        String gioiTinh = "";
-        if (radNam.isSelected()) {
-            gioiTinh = "Nam";
-        } else if (radNu.isSelected()) {
-            gioiTinh = "Nữ";
-        } else {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn giới tính.");
-            return;
-        }
-
-        if (pass.length() < 8 || !pass.matches(".*[^a-zA-Z0-9].*")) {
-            JOptionPane.showMessageDialog(this, "Mật khẩu phải có ít nhất 8 ký tự và 1 ký tự đặc biệt.");
-            return;
-        }
-        if (!pass.equals(rePass)) {
-            JOptionPane.showMessageDialog(this, "Mật khẩu không khớp.");
-            return;
-        }
-
-        // Kết nối và kiểm tra trùng
-        Connection conn = DatabaseConnection.getConnection();
-        String sqlCheck = "SELECT * FROM tai_khoan WHERE soDienThoai = ? OR email = ?";
-        PreparedStatement checkStmt = conn.prepareStatement(sqlCheck);
-        checkStmt.setString(1, soDienThoai);
-        checkStmt.setString(2, email);
-        ResultSet rs = checkStmt.executeQuery();
-        if (rs.next()) {
-            JOptionPane.showMessageDialog(this, "Số điện thoại hoặc email đã tồn tại!");
-            checkStmt.close();
-            conn.close();
-            return;
-        }
-        checkStmt.close();
-
-        // Đăng ký tài khoản
-        String idMoi = taoMaTaiKhoanMoi(conn);
-        String sql = "INSERT INTO tai_khoan (idTaiKhoan, soDienThoai, email, matKhau, hoDem, ten, ngaySinh, diaChi, gioiTinh) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setString(1, idMoi);
-stmt.setString(2, soDienThoai);
-        stmt.setString(3, email);
-        stmt.setString(4, pass);
-        stmt.setString(5, hoDem);
-        stmt.setString(6, ten);
-        stmt.setNull(7, java.sql.Types.DATE);  // Không nhập ngày sinh
-        stmt.setNull(8, java.sql.Types.VARCHAR);  // Không nhập địa chỉ
-        stmt.setString(9, gioiTinh);
-
-        int rows = stmt.executeUpdate();
-        if (rows > 0) {
-            JOptionPane.showMessageDialog(this, "Đăng ký thành công!");
-            this.dispose(); // Đóng form
-        } else {
-            JOptionPane.showMessageDialog(this, "Đăng ký thất bại!");
-        }
-
-        stmt.close();
-        conn.close();
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
-    
-}
     }//GEN-LAST:event_btnDangKyActionPerformed
 
     private void btnHuyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHuyActionPerformed

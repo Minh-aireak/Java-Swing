@@ -1,15 +1,19 @@
 package UI_Login;
 
+import Global.Session;
 import Logic.controller.LoginController;
-import Logic.entity.TaiKhoan;
 import javax.swing.JOptionPane;
 public class UI_Login extends javax.swing.JFrame {
     
-    public static TaiKhoan taiKhoan;
-    private LoginController loginController; 
+    public static Session session;
+    private LoginController loginController;
 
     public UI_Login() {
-        initComponents();
+         initComponents();
+        // Khởi tạo controller
+        loginController = new LoginController();
+        // (tuỳ bạn) căn giữa màn hình
+        this.setLocationRelativeTo(null);
     }
 
     @SuppressWarnings("unchecked")
@@ -175,29 +179,78 @@ public class UI_Login extends javax.swing.JFrame {
 
     
     private void btn_DangNhapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DangNhapActionPerformed
-        
         String soDienThoai = txtTenDangNhap.getText().trim();
         char[] passwordChars = txtMatKhau.getPassword();
         String matKhau = new String(passwordChars);
-        
+
+        // 1. Kiểm tra input cơ bản
+        if (soDienThoai.isEmpty() || matKhau.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Vui lòng nhập đầy đủ số điện thoại và mật khẩu.",
+                    "Thông báo",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        // (tuỳ bạn) kiểm tra format số điện thoại
+        if (!soDienThoai.matches("\\d{10}")) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Số điện thoại phải là số và đủ 10 chữ số.",
+                    "Thông báo",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
         try {
-            var response = loginController.dangNhap(soDienThoai, matKhau);
-            taiKhoan = response.getTaiKhoan();
+            // 2. Gọi controller để đăng nhập
+            LoginController.LoginResponse response = loginController.dangNhap(soDienThoai, matKhau);
             
-            JOptionPane.showMessageDialog(this, response.getMessage(), "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            // 4. Nếu không tìm thấy tài khoản (sai mật khẩu / không tồn tại)
+            if (response.getTaiKhoan() == null) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        response.getMessage(),   // ví dụ: "Số điện thoại hoặc mật khẩu không đúng"
+                        "Đăng nhập thất bại",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+            
+            session.setCurrentUser(response.getTaiKhoan());
+            // 5. Đăng nhập thành công
+            JOptionPane.showMessageDialog(
+                    this,
+                    response.getMessage(),       // ví dụ: "Đăng nhập thành công"
+                    "Thông báo",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+
+            // TODO: mở màn hình chính sau khi đăng nhap
+            // UI_Main uiMain = new UI_Main();
+            // uiMain.setLocationRelativeTo(null);
+            // uiMain.setVisible(true);
+            // this.dispose();
+
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Thông báo", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Lỗi khi đăng nhập: " + ex.getMessage(),
+                    "Lỗi",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }//GEN-LAST:event_btn_DangNhapActionPerformed
 
     
     private void btnDangKyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDangKyActionPerformed
 
-        dispose();
-        DangKy dialog = new DangKy(this, true); 
+        DangKy dialog = new DangKy(this, true);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-        setVisible(true);
     }//GEN-LAST:event_btnDangKyActionPerformed
 
 

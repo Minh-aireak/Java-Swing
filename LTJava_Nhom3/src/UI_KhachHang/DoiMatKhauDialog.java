@@ -1,19 +1,20 @@
 package UI_KhachHang;
 
-import entity.TaiKhoan;
-import ConnectDatabase.DatabaseConnection;
-import java.sql.Connection;
+import Global.Session;
+import Logic.entity.TaiKhoan;
+import Logic.controller.LoginController;
 import javax.swing.JOptionPane;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 public class DoiMatKhauDialog extends javax.swing.JDialog {
-
+    public static Session session;
+    private final LoginController loginController;
+    
     public DoiMatKhauDialog(javax.swing.JFrame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        loginController = new LoginController();
+        setLocationRelativeTo(parent);
     }
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -122,51 +123,68 @@ public class DoiMatKhauDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_btnHuyActionPerformed
 
     private void btnXacNhanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXacNhanActionPerformed
-        String oldPass = new String(txtOld.getPassword());
-        String newPass = new String(txtNew.getPassword());
+String oldPass     = new String(txtOld.getPassword());
+        String newPass     = new String(txtNew.getPassword());
         String confirmPass = new String(txtConfirm.getPassword());
-        Connection connection = null;
-        PreparedStatement ps = null;
-    if (newPass.equals(oldPass)) {
-        JOptionPane.showMessageDialog(this, "Mật khẩu mới phải khác mật khẩu cũ!");
-        return;
-    }
 
-    
-    if (newPass.length() < 8) {
-        JOptionPane.showMessageDialog(this, "Mật khẩu mới phải có ít nhất 8 ký tự!");
-        return;
-    }
-
-    
-    if (!newPass.matches(".*[!@#$%^&*()_+=\\-\\[\\]{};':\"\\\\|,.<>/?].*")) {
-        JOptionPane.showMessageDialog(this, "Mật khẩu mới phải chứa ít nhất 1 ký tự đặc biệt!");
-        return;
-    }
-
-    
-    if (!newPass.equals(confirmPass)) {
-        JOptionPane.showMessageDialog(this, "Xác nhận mật khẩu không khớp!");
-        return;
-    }
-    
-     try {
-        connection = DatabaseConnection.getConnection();
-        String sqlUpdate = "UPDATE tai_khoan SET matKhau = ? WHERE idTaiKhoan = ?";
-        ps = connection.prepareStatement(sqlUpdate);
-        ps.setString(1, newPass);
-        ps.setString(2, TaiKhoan.idTaiKhoan);
-
-        int updated = ps.executeUpdate();
-        if (updated > 0) {
-            JOptionPane.showMessageDialog(this, "Đổi mật khẩu thành công!");
-            dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Đổi mật khẩu thất bại!");
+        // 1. Kiểm tra input phía client
+        if (oldPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ các trường mật khẩu!");
+            return;
         }
-    } catch (SQLException ex) {
-        ex.printStackTrace();
-    }
+
+        if (newPass.equals(oldPass)) {
+            JOptionPane.showMessageDialog(this, "Mật khẩu mới phải khác mật khẩu cũ!");
+            return;
+        }
+
+        if (newPass.length() < 8) {
+            JOptionPane.showMessageDialog(this, "Mật khẩu mới phải có ít nhất 8 ký tự!");
+            return;
+        }
+
+        if (!newPass.matches(".*[!@#$%^&*()_+=\\-\\[\\]{};':\"\\\\|,.<>/?].*")) {
+            JOptionPane.showMessageDialog(this, "Mật khẩu mới phải chứa ít nhất 1 ký tự đặc biệt!");
+            return;
+        }
+
+        if (!newPass.equals(confirmPass)) {
+            JOptionPane.showMessageDialog(this, "Xác nhận mật khẩu không khớp!");
+            return;
+        }
+
+        // 2. Lấy id tài khoản hiện tại
+        String idTaiKhoan = session.getCurrentUser().getIdTaiKhoan();  // dùng static idTaiKhoan như code cũ
+        if (idTaiKhoan == null || idTaiKhoan.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy ID tài khoản đang đăng nhập!");
+            return;
+        }
+
+        try {
+            // 3. Gọi LoginController để đổi mật khẩu
+            LoginController.ChangePasswordResponse resp =
+                    loginController.doiMatKhau(idTaiKhoan, oldPass, newPass);
+
+            if (resp.isSuccess()) {
+                JOptionPane.showMessageDialog(this, resp.getMessage() != null ? resp.getMessage() : "Đổi mật khẩu thành công!");
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(
+                        this,
+                        resp.getMessage() != null ? resp.getMessage() : "Đổi mật khẩu thất bại!",
+                        "Lỗi",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Lỗi khi đổi mật khẩu: " + ex.getMessage(),
+                    "Lỗi",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }//GEN-LAST:event_btnXacNhanActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -2,6 +2,7 @@ package UI_KhachHang;
 
 import Logic.entity.Phim;
 import ConnectDatabase.DatabaseConnection;
+import Global.Session;
 import Logic.controller.VeController;
 import Logic.dto.request.DataCreateVeRequest;
 import Logic.dto.response.ChiTietLichChieuResponse;
@@ -43,12 +44,10 @@ import java.util.UUID;
 
 public class UI_KhachHang extends javax.swing.JFrame {
     VeController veController;
-
     DefaultTableModel model, model2;
-    
+    static Session session;
     
     Phim chosenPhim = new Phim();
-    TaiKhoan currentAccount = new TaiKhoan();
     
     
     List<String> listGheVIP = new ArrayList<>(Arrays.asList("B3,B4,B5,C3,C4,C5".split(",")));
@@ -98,7 +97,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
             ttb_TableColumn1.setMinWidth(40);
             ttb_TableColumn1.setMaxWidth(40);
             table.setRowHeight(30);
-            hscn_lab_XinChao.setText("Xin chào, " + currentAccount.getTen() +"!");
+            hscn_lab_XinChao.setText("Xin chào, " + session.getCurrentUser().getTen() +"!");
             themEvenListener();
             resetGhe();
             model.setRowCount(0);
@@ -2109,7 +2108,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(rootPane, "<html>Thanh toán thành công! <br> Chúc bạn ngày mới tốt lành</html>", "Thông báo!", JOptionPane.INFORMATION_MESSAGE);
             veController.saveVe(new DataCreateVeRequest(
                     UUID.randomUUID().toString(), 
-                    currentAccount.getIdTaiKhoan(),
+                    session.getCurrentUser().getIdTaiKhoan(),
                     LocalDateTime.now(),
                     dv_lab_TongTien.getText(),
                     listGheForPay,
