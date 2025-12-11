@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import Logic.controller.PhimController;
+import Logic.entity.Phim;
 
 
 /**
@@ -343,23 +345,31 @@ if (!tacGia.matches("[\\p{L}\\s,]+")) {
             return;
         }
         // Tạo đối tượng Phim
-        Phim phim = new Phim(idPhim, tenPhim, tacGia, theLoaiList, thoiLuong, ngonNgu, dienVien, moTa, anhPhim);
+        UI_Admin.Phim phim = new UI_Admin.Phim(idPhim, tenPhim, tacGia, theLoaiList, thoiLuong, ngonNgu, dienVien, moTa, anhPhim);
+        
+        // Chuyển đổi sang Logic.entity.Phim
+        Phim logicPhim = new Phim(idPhim, tenPhim, tacGia, theLoaiList, thoiLuong, ngonNgu, dienVien, moTa, anhPhim);
 
         // Cập nhật phim
-        if (PhimDAO.capNhatPhim(phim)) {
-            JOptionPane.showMessageDialog(this, "Cập nhật phim thành công!");
-            model.setValueAt(idPhim, selectedRow, 0);
-            model.setValueAt(tenPhim, selectedRow, 1);
-            model.setValueAt(tacGia, selectedRow, 2);
-            model.setValueAt(String.join(", ", theLoaiList), selectedRow, 3);
-            model.setValueAt(thoiLuong, selectedRow, 4);
-            model.setValueAt(ngonNgu, selectedRow, 5);
-            model.setValueAt(dienVien, selectedRow, 6);
-            model.setValueAt(moTa, selectedRow, 7);
-            model.setValueAt(anhPhim, selectedRow, 8);
-            dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Cập nhật phim thất bại!", "Error", JOptionPane.ERROR_MESSAGE);
+        PhimController controller = new PhimController();
+        try {
+            if (controller.capNhatPhim(logicPhim)) {
+                JOptionPane.showMessageDialog(this, "Cập nhật phim thành công!");
+                model.setValueAt(idPhim, selectedRow, 0);
+                model.setValueAt(tenPhim, selectedRow, 1);
+                model.setValueAt(tacGia, selectedRow, 2);
+                model.setValueAt(String.join(", ", theLoaiList), selectedRow, 3);
+                model.setValueAt(thoiLuong, selectedRow, 4);
+                model.setValueAt(ngonNgu, selectedRow, 5);
+                model.setValueAt(dienVien, selectedRow, 6);
+                model.setValueAt(moTa, selectedRow, 7);
+                model.setValueAt(anhPhim, selectedRow, 8);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Cập nhật phim thất bại!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception ex) {
+            System.getLogger(EditFilm.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
