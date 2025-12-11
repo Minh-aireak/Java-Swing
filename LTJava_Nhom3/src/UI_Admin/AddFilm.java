@@ -11,6 +11,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import Logic.controller.PhimController;
+import Logic.entity.Phim;
 
 public class AddFilm extends javax.swing.JFrame {
     private DefaultTableModel model;
@@ -319,10 +321,14 @@ public class AddFilm extends javax.swing.JFrame {
             return;
         }
             // Tạo đối tượng Phim
-            Phim phim = new Phim(idPhim, tenPhim, tacGia, theLoaiList, thoiLuong, ngonNgu, dienVien, moTa, anhPhim);
+            UI_Admin.Phim phim = new UI_Admin.Phim(idPhim, tenPhim, tacGia, theLoaiList, thoiLuong, ngonNgu, dienVien, moTa, anhPhim);
+            
+            // Chuyển đổi sang Logic.entity.Phim
+            Phim logicPhim = new Phim(idPhim, tenPhim, tacGia, theLoaiList, thoiLuong, ngonNgu, dienVien, moTa, anhPhim);
             
             // Thêm phim
-            if (PhimDAO.themPhim(phim)) {
+            PhimController controller = new PhimController();
+            if (controller.themPhim(logicPhim)) {
                 model.addRow(new Object[]{idPhim, tenPhim, tacGia, String.join(", ", theLoaiList), thoiLuong, ngonNgu, dienVien, moTa, anhPhim});
                 JOptionPane.showMessageDialog(this, "Thêm phim thành công!");
                 dispose();
@@ -331,6 +337,8 @@ public class AddFilm extends javax.swing.JFrame {
             }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(AddFilm.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            System.getLogger(AddFilm.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }//GEN-LAST:event_btnAddActionPerformed
 
