@@ -12,6 +12,7 @@ import java.util.List;
 import java.sql.*;
 import java.time.ZoneId;
 import QuanLyVeCho.controller.VeController;
+import java.beans.PropertyChangeListener;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -142,7 +143,7 @@ public class MainFrame extends javax.swing.JFrame {
         DateToChooser = new com.toedter.calendar.JDateChooser();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
+        rp_From_To_Btn = new javax.swing.JButton();
         txtDay = new javax.swing.JTextField();
         txtMonth = new javax.swing.JTextField();
         txtYear = new javax.swing.JTextField();
@@ -649,18 +650,19 @@ public class MainFrame extends javax.swing.JFrame {
         ));
         jScrollPane7.setViewportView(tbBaoCao);
 
-        DateFromChooser.setDateFormatString("dd MM yyyy");
+        DateFromChooser.setDateFormatString("dd-MM-yyyy");
 
-        DateToChooser.setDateFormatString("dd MM yyyy");
+        DateToChooser.setDateFormatString("dd-MM-yyyy");
 
         jLabel4.setText("Từ ngày:");
 
         jLabel5.setText("Đến:");
 
-        jButton2.setText("Báo cáo (From-to)");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        rp_From_To_Btn.setText("Báo cáo (From-to)");
+        rp_From_To_Btn.setEnabled(false);
+        rp_From_To_Btn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                rp_From_To_BtnActionPerformed(evt);
             }
         });
 
@@ -689,7 +691,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(DateToChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(42, 42, 42)
-                        .addComponent(jButton2)
+                        .addComponent(rp_From_To_Btn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
                         .addComponent(btnDisplayChart))
                     .addGroup(jPanel6Layout.createSequentialGroup()
@@ -724,7 +726,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnDisplayChart)
-                        .addComponent(jButton2))
+                        .addComponent(rp_From_To_Btn))
                     .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jLabel4)
                         .addComponent(DateFromChooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1171,11 +1173,21 @@ public class MainFrame extends javax.swing.JFrame {
             a.setVisible(true);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        Date DateFrom = DateFromChooser.getDate();
-        Date DateTo = DateToChooser.getDate();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void updateFromButton(){
+        java.sql.Date DateFrom = new java.sql.Date(DateFromChooser.getDate().getTime());
+        java.sql.Date DateTo = new java.sql.Date(DateToChooser.getDate().getTime());
+        
+        rp_From_To_Btn.setEnabled(DateFrom != null && DateTo != null);
+    }
+    private void propertyChangeListeners(){
+        PropertyChangeListener listener = evt -> updateFromButton();
+        DateFromChooser.addPropertyChangeListener("date", listener);
+        DateToChooser.addPropertyChangeListener("date", listener);
+        updateFromButton();
+    }
+    private void rp_From_To_BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rp_From_To_BtnActionPerformed
+        propertyChangeListeners();  
+    }//GEN-LAST:event_rp_From_To_BtnActionPerformed
 
     private void loadFilmData() {
         model.setRowCount(0);
@@ -1258,7 +1270,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnSearchGia;
     private javax.swing.JButton btnSearchLichChieu;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1283,6 +1294,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JButton rp_From_To_Btn;
     private javax.swing.JTable tbBaoCao;
     private javax.swing.JTable tbCus;
     private javax.swing.JTable tbFilm;

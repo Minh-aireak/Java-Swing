@@ -15,7 +15,6 @@
             <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/ConnectDatabase/DatabaseConnection.java</file>
             <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/UI_Admin/DBConnection.java</file>
             <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/UI_Admin/MainFrame.java</file>
-            <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/Logic/controller/BaoCaoController.java</file>
             <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/Logic/entity/Bill.java</file>
             <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/Logic/entity/TaiKhoan.java</file>
             <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/Logic/dto/response/BillResponse.java</file>
@@ -28,6 +27,9 @@
             <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/Logic/service/VeService.java</file>
             <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/Logic/dto/request/DataCreateVeRequest.java</file>
             <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/UI_Admin/LichChieuDAO.java</file>
+            <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/UI_KhachHang/DoiMatKhauDialog.java</file>
+            <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/Logic/controller/BaoCaoController.java</file>
+            <file>file:/C:/Users/PV/OneDrive/Desktop/Java-Swing/LTJava_Nhom3/src/UI_Admin/SearchLC.java</file>
         </group>
     </open-files>
 </project-private>

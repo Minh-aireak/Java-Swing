@@ -10,9 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import Logic.repository.BaoCaoRepository;
 /**
@@ -264,7 +262,12 @@ public class BaoCaoController {
 //        }
     }
     
-    public void taoBaoCaoFromTo(Date dateFrom, Date dateTo, DefaultTableModel modelReport){
-        
+    public void taoBaoCaoFromTo(java.sql.Date dateFrom, java.sql.Date dateTo, DefaultTableModel modelReport)throws Exception{
+        try{
+            reportRepo.capNhatSoGheConLaiFromTo(dateFrom, dateTo, SO_GHE_TOI_DA);
+            reportRepo.layBaoCaoFromTo(dateFrom, dateTo, SO_GHE_TOI_DA, modelReport);
+        }catch(Exception e){
+            throw new Exception("Lỗi tạo báo cáo!");
+        }
     }
 }
