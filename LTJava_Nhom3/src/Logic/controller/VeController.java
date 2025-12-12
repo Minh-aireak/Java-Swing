@@ -23,7 +23,8 @@ public class VeController {
     }
     
     public boolean deleteVe(String idVe) {
-        if (*)
+//        if (*)
+        return false;
     }
     
     public List<BillResponse> getListBill() throws SQLException{
