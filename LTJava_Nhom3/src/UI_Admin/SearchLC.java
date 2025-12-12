@@ -1,24 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package UI_Admin;
 
 import Logic.controller.PhimController;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SearchLC extends javax.swing.JFrame {
     private PhimController phimController = new PhimController();
     private final DefaultTableModel modelLichChieu;
-    PhimController phimController = new PhimController();
     /**
      * Creates new form SearchLC
      */
@@ -193,18 +183,18 @@ DefaultComboBoxModel<String> comboModel = new DefaultComboBoxModel<>();
     }//GEN-LAST:event_btnRefreshActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        String idLichChieu = txtLcID.getText().trim();
-        String idPhim = txtFilmID.getText().trim();
-        String dateTime = txtDate.getText().trim();
-        String idPhongChieu = (String) cbbRoom.getSelectedItem();
-        String soGheConLaiStr = txtSeatNum.getText().trim();
-
-        try {
-            var response = phimController.addLichChieu(idLichChieu, idPhim, dateTime, idPhongChieu, soGheConLaiStr);
-            JOptionPane.showMessageDialog(this, response.getMessage(), "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-        }
+//        String idLichChieu = txtLcID.getText().trim();
+//        String idPhim = txtFilmID.getText().trim();
+//        String dateTime = txtDate.getText().trim();
+//        String idPhongChieu = (String) cbbRoom.getSelectedItem();
+//        String soGheConLaiStr = txtSeatNum.getText().trim();
+//
+//        try {
+//            var response = phimController.addLichChieu(idLichChieu, idPhim, dateTime, idPhongChieu, soGheConLaiStr);
+//            JOptionPane.showMessageDialog(this, response.getMessage(), "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+//        } catch (Exception ex) {
+//            JOptionPane.showMessageDialog(this, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+//        }
     }//GEN-LAST:event_btnSearchActionPerformed
 
     

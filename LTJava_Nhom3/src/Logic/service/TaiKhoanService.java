@@ -3,126 +3,153 @@ package Logic.service;
 import Logic.entity.TaiKhoan;
 import Logic.repository.TaiKhoanRepository;
 
-import java.util.Objects;
+import java.sql.SQLException;
 import java.util.Optional;
 
 public class TaiKhoanService {
 
-    private final TaiKhoanService repo;
+    private final TaiKhoanRepository repo = new TaiKhoanRepository();
+    private TaiKhoan currentUser;
 
-    public TaiKhoanService() {
-        this.repo = new TaiKhoanService();
-    }
+    // Lớp Result dùng chung
+    public static class Result<T> {
+        private final boolean success;
+        private final String message;
+        private final T data;
 
-    public TaiKhoanService(TaiKhoanService repo) {
-        this.repo = Objects.requireNonNull(repo);
-    }
-
-    // Đăng nhập
-    public Result<TaiKhoan> dangNhap(String soDienThoai, String matKhau) throws Exception {
-        if (soDienThoai == null || soDienThoai.isEmpty() ||
-            matKhau == null || matKhau.isEmpty()) {
-            return Result.fail("Vui lòng nhập đầy đủ thông tin đăng nhập.");
+        public Result(boolean success, String message, T data) {
+            this.success = success;
+            this.message = message;
+            this.data = data;
         }
-        Optional<TaiKhoan> tk = repo.findByPhoneAndPassword(soDienThoai, matKhau);
-        if (tk.isPresent()) {
-            return Result.ok("Đăng nhập thành công!", tk.get());
+
+        public boolean isSuccess() { return success; }
+        public String getMessage() { return message; }
+        public T getData() { return data; }
+
+        public static <T> Result<T> ok(String msg, T data) {
+            return new Result<>(true, msg, data);
         }
-        return Result.fail("Số điện thoại hoặc mật khẩu không đúng.");
+
+        public static <T> Result<T> fail(String msg) {
+            return new Result<>(false, msg, null);
+        }
     }
 
-    // Đăng ký (giữ nguyên các thuộc tính dạng String của TaiKhoan)
+    // login
+    public Result<TaiKhoan> dangNhap(String soDienThoai, String matKhau) {
+        try {
+            Optional<TaiKhoan> opt = repo.findByPhoneAndPassword(soDienThoai, matKhau);
+            if (opt.isPresent()) {
+                currentUser = opt.get();
+                return Result.ok("Đăng nhập thành công!", currentUser);
+            } else {
+                return Result.fail("Sai số điện thoại hoặc mật khẩu!");
+            }
+        } catch (SQLException e) {
+            return Result.fail("Lỗi DB: " + e.getMessage());
+        }
+    }
+
+    // logup
     public Result<TaiKhoan> dangKy(String soDienThoai,
                                    String email,
                                    String matKhau,
                                    String hoDem,
                                    String ten,
                                    String gioiTinh,
-                                   String ngaySinh,  // có thể null
-                                   String diaChi     // có thể null
-    ) throws Exception {
-        if (soDienThoai == null || soDienThoai.isEmpty() ||
-            email == null || email.isEmpty() ||
-            matKhau == null || matKhau.isEmpty() ||
-            hoDem == null || hoDem.isEmpty() ||
-            ten == null || ten.isEmpty() ||
-            gioiTinh == null || gioiTinh.isEmpty()) {
-            return Result.fail("Vui lòng nhập đầy đủ thông tin bắt buộc.");
+                                   String ngaySinh,
+                                   String diaChi) {
+        try {
+            // check sdt
+            if (repo.findByPhone(soDienThoai).isPresent()) {
+                return Result.fail("Số điện thoại đã được sử dụng!");
+            }
+
+            // check mail
+            if (repo.findByEmail(email).isPresent()) {
+                return Result.fail("Email đã được sử dụng!");
+            }
+
+            TaiKhoan tk = new TaiKhoan();
+            tk.setSoDienThoai(soDienThoai);
+            tk.setEmail(email);
+            tk.setMatKhau(matKhau);
+            tk.setHoDem(hoDem);
+            tk.setTen(ten);
+            tk.setGioiTinh(gioiTinh);
+            tk.setNgaySinh(ngaySinh);
+            tk.setDiaChi(diaChi);
+
+            TaiKhoan saved = repo.save(tk);
+            if (saved == null || saved.getIdTaiKhoan() == null) {
+                return Result.fail("Đăng ký thất bại, không thể lưu vào CSDL!");
+            }
+
+            return Result.ok("Đăng ký thành công!", saved);
+
+        } catch (SQLException e) {
+            return Result.fail("Lỗi DB khi đăng ký: " + e.getMessage());
         }
-
-        if (repo.existsByPhoneOrEmail(soDienThoai, email)) {
-            return Result.fail("Số điện thoại hoặc email đã tồn tại.");
-        }
-
-        TaiKhoan tk = new TaiKhoan();
-        tk.setSoDienThoai(soDienThoai);
-        tk.setEmail(email);
-        tk.setMatKhau(matKhau);
-        tk.setHoDem(hoDem);
-        tk.setTen(ten);
-        tk.setGioiTinh(gioiTinh);
-        tk.setNgaySinh(ngaySinh); // có thể null
-        tk.setDiaChi(diaChi);     // có thể null
-
-        TaiKhoan saved = repo.insertTaiKhoan(tk);
-        return Result.ok("Đăng ký thành công!", saved);
     }
 
-    // Đổi mật khẩu
-    public Result<Void> doiMatKhau(String idTaiKhoan, String oldPass, String newPass) throws Exception {
-        if (idTaiKhoan == null || idTaiKhoan.isEmpty() ||
-            oldPass == null || oldPass.isEmpty() ||
-            newPass == null || newPass.isEmpty()) {
-            return Result.fail("Thiếu thông tin đổi mật khẩu.");
+    // change pass
+    public Result<Void> doiMatKhau(String idTaiKhoan, String oldPass, String newPass) {
+        try {
+            boolean ok = repo.updatePassword(idTaiKhoan, oldPass, newPass);
+            if (ok) {
+                return Result.ok("Đổi mật khẩu thành công!", null);
+            } else {
+                return Result.fail("Mật khẩu cũ không đúng!");
+            }
+        } catch (SQLException e) {
+            return Result.fail("Lỗi DB: " + e.getMessage());
         }
-        if (oldPass.equals(newPass)) {
-            return Result.fail("Mật khẩu mới phải khác mật khẩu cũ.");
-        }
-        boolean ok = repo.updatePassword(idTaiKhoan, oldPass, newPass);
-        if (ok) {
-            return Result.ok("Đổi mật khẩu thành công!", null);
-        }
-        return Result.fail("Đổi mật khẩu thất bại! Kiểm tra lại mật khẩu cũ.");
     }
 
-    private Optional<TaiKhoan> findByPhoneAndPassword(String soDienThoai, String matKhau) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    // update inf
+    public Result<TaiKhoan> capNhatThongTin(String idTaiKhoan,
+                                            String hoDem,
+                                            String ten,
+                                            String ngaySinh,
+                                            String diaChi,
+                                            String gioiTinh) {
+        try {
+            Optional<TaiKhoan> opt = repo.findById(idTaiKhoan);
+            if (opt.isEmpty()) {
+                return Result.fail("Không tìm thấy tài khoản!");
+            }
 
-    private boolean existsByPhoneOrEmail(String soDienThoai, String email) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+            TaiKhoan tk = opt.get();
 
-    private TaiKhoan insertTaiKhoan(TaiKhoan tk) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+            if (hoDem != null && !hoDem.trim().isEmpty()) tk.setHoDem(hoDem.trim());
+            if (ten != null && !ten.trim().isEmpty()) tk.setTen(ten.trim());
+            if (ngaySinh != null && !ngaySinh.trim().isEmpty()) tk.setNgaySinh(ngaySinh.trim());
+            if (diaChi != null && !diaChi.trim().isEmpty()) tk.setDiaChi(diaChi.trim());
+            if (gioiTinh != null && !gioiTinh.trim().isEmpty()) tk.setGioiTinh(gioiTinh.trim());
 
-    private boolean updatePassword(String idTaiKhoan, String oldPass, String newPass) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+            boolean ok = repo.updateInfo(tk);
+            if (!ok) {
+                return Result.fail("Cập nhật thất bại!");
+            }
 
-    // Lớp Result gọn nhẹ cho Service trả về message + data (không thêm thuộc tính entity)
-    public static class Result<T> {
-        private final boolean success;
-        private final String message;
-        private final T data;
+            if (currentUser != null && currentUser.getIdTaiKhoan().equals(idTaiKhoan)) {
+                currentUser = tk;
+            }
 
-        private Result(boolean success, String message, T data) {
-            this.success = success;
-            this.message = message;
-            this.data = data;
+            return Result.ok("Cập nhật thành công!", tk);
+
+        } catch (SQLException e) {
+            return Result.fail("Lỗi DB: " + e.getMessage());
         }
+    }
 
-        public static <T> Result<T> ok(String message, T data) {
-            return new Result<>(true, message, data);
-        }
+    // 🔹 LOGOUT
+    public void logout() {
+        currentUser = null;
+    }
 
-        public static <T> Result<T> fail(String message) {
-            return new Result<>(false, message, null);
-        }
-
-        public boolean isSuccess() { return success; }
-        public String getMessage() { return message; }
-        public T getData() { return data; }
+    public TaiKhoan getCurrentUser() {
+        return currentUser;
     }
 }

@@ -1,82 +1,90 @@
 package Logic.controller;
 
+import Logic.dto.response.LoginResponse;
 import Logic.entity.TaiKhoan;
 import Logic.service.TaiKhoanService;
 
 public class LoginController {
 
-    private final TaiKhoanService service;
+    private final TaiKhoanService service = new TaiKhoanService();
 
-    public LoginController() {
-        this.service = new TaiKhoanService();
-    }
-
-    // ĐĂNG NHẬP
-    public LoginResponse dangNhap(String soDienThoai, String matKhau) throws Exception {
+    // login
+    public LoginResponse dangNhap(String soDienThoai, String matKhau) {
         var rs = service.dangNhap(soDienThoai, matKhau);
-        LoginResponse resp = new LoginResponse();
-        resp.setMessage(rs.getMessage());
-        if (rs.isSuccess()) {
-            resp.setTaiKhoan(rs.getData());
-        }
-        return resp;
+        return new LoginResponse(rs.isSuccess(), rs.getMessage(), rs.getData());
     }
 
-    // ĐĂNG KÝ 
+    // logout
+    public void logout() {
+        service.logout();
+    }
+
+    // change pass
+    public ChangePasswordResponse doiMatKhau(String idTaiKhoan, String oldPass, String newPass) {
+        var rs = service.doiMatKhau(idTaiKhoan, oldPass, newPass);
+        return new ChangePasswordResponse(rs.isSuccess(), rs.getMessage());
+    }
+
+    // update if
+    public LoginResponse capNhatThongTin(String idTaiKhoan,
+                                         String hoDem,
+                                         String ten,
+                                         String ngaySinh,
+                                         String diaChi,
+                                         String gioiTinh) {
+        var rs = service.capNhatThongTin(idTaiKhoan, hoDem, ten, ngaySinh, diaChi, gioiTinh);
+        return new LoginResponse(rs.isSuccess(), rs.getMessage(), rs.getData());
+    }
+
+    // dki
     public RegisterResponse dangKy(String soDienThoai,
                                    String email,
                                    String matKhau,
                                    String hoDem,
                                    String ten,
                                    String gioiTinh,
-                                   String ngaySinh, // có thể null
-                                   String diaChi    // có thể null
-    ) throws Exception {
+                                   String ngaySinh,
+                                   String diaChi) {
+
         var rs = service.dangKy(soDienThoai, email, matKhau, hoDem, ten, gioiTinh, ngaySinh, diaChi);
-        RegisterResponse resp = new RegisterResponse();
-        resp.setMessage(rs.getMessage());
-        resp.setTaiKhoan(rs.getData()); // có thể null nếu fail
-        return resp;
+        return new RegisterResponse(rs.isSuccess(), rs.getMessage(), rs.getData());
     }
 
-    // ==== ĐỔI MẬT KHẨU ====
-    public ChangePasswordResponse doiMatKhau(String idTaiKhoan, String oldPass, String newPass) throws Exception {
-        var rs = service.doiMatKhau(idTaiKhoan, oldPass, newPass);
-        ChangePasswordResponse resp = new ChangePasswordResponse();
-        resp.setMessage(rs.getMessage());
-        resp.setSuccess(rs.isSuccess());
-        return resp;
+
+    // Đổi mật khẩu
+    public static class ChangePasswordResponse {
+        private boolean success;
+        private String message;
+
+        public ChangePasswordResponse(boolean success, String message) {
+            this.success = success;
+            this.message = message;
+        }
+
+        public boolean isSuccess() { return success; }
+        public String getMessage() { return message; }
+        public void setSuccess(boolean success) { this.success = success; }
+        public void setMessage(String message) { this.message = message; }
     }
 
-    // ======== Các DTO phản hồi gọn nhẹ (nằm ngay trong Controller để bạn không phải tạo thêm file) ========
-
-    public static class LoginResponse {
+    // Đăng ký
+    public static class RegisterResponse {
+        private boolean success;
         private String message;
         private TaiKhoan taiKhoan;
 
-        public String getMessage() { return message; }
-        public TaiKhoan getTaiKhoan() { return taiKhoan; }
-        public void setMessage(String message) { this.message = message; }
-        public void setTaiKhoan(TaiKhoan taiKhoan) { this.taiKhoan = taiKhoan; }
-    }
+        public RegisterResponse(boolean success, String message, TaiKhoan taiKhoan) {
+            this.success = success;
+            this.message = message;
+            this.taiKhoan = taiKhoan;
+        }
 
-    public static class RegisterResponse {
-        private String message;
-        private TaiKhoan taiKhoan; // trả về tài khoản mới tạo (có id)
-
-        public String getMessage() { return message; }
-        public TaiKhoan getTaiKhoan() { return taiKhoan; }
-        public void setMessage(String message) { this.message = message; }
-        public void setTaiKhoan(TaiKhoan taiKhoan) { this.taiKhoan = taiKhoan; }
-    }
-
-    public static class ChangePasswordResponse {
-        private String message;
-        private boolean success;
-
-        public String getMessage() { return message; }
         public boolean isSuccess() { return success; }
-        public void setMessage(String message) { this.message = message; }
+        public String getMessage() { return message; }
+        public TaiKhoan getTaiKhoan() { return taiKhoan; }
+
         public void setSuccess(boolean success) { this.success = success; }
+        public void setMessage(String message) { this.message = message; }
+        public void setTaiKhoan(TaiKhoan taiKhoan) { this.taiKhoan = taiKhoan; }
     }
 }

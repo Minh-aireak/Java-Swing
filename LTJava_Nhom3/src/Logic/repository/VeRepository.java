@@ -91,7 +91,7 @@ public class VeRepository {
         return ds;
     }
 
-    public boolean deleteVe(String idVe){
+    public boolean deleteVe(String idVe) throws SQLException{
         try {
             connection = DatabaseConnection.getConnection();
             String sqlVe = "DELETE FROM ve WHERE idVe = ?";
@@ -109,7 +109,6 @@ public class VeRepository {
 
             return rows > 0;
         } catch (SQLException e) {
-            System.out.println("Lỗi hủy vé: " + e.getMessage());
             return false;
         } finally {
             if (connection != null) try { connection.close(); } catch (SQLException e) {}

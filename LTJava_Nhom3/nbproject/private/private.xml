@@ -5,7 +5,7 @@
             <url>src/UI_KhachHang/UI_KhachHang.java</url>
             <bookmark id="1">
                 <name/>
-                <line>2008</line>
+                <line>2012</line>
                 <key/>
             </bookmark>
         </file>
@@ -29,11 +29,16 @@
             <file>file:/D:/Java-Swing/LTJava_Nhom3/src/UI_Admin/AddLC.java</file>
             <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Logic/service/PhimService.java</file>
             <file>file:/D:/Java-Swing/LTJava_Nhom3/src/UI_Admin/SearchLC.java</file>
-            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/UI_Admin/LichChieuDAO.java</file>
             <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Logic/dto/response/LichChieuResponse.java</file>
             <file>file:/D:/Java-Swing/LTJava_Nhom3/src/UI_Login/DangKy.java</file>
             <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Global/Session.java</file>
-            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/UI_KhachHang/DatVe_DAO.java</file>
+            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/UI_Admin/AddFilm.java</file>
+            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/UI_Admin/EditFilm.java</file>
+            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/UI_Admin/MyChartFrame.java</file>
+            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/ConnectDatabase/Run.java</file>
+            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Logic/controller/VeController.java</file>
+            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Logic/repository/VeRepository.java</file>
+            <file>file:/D:/Java-Swing/LTJava_Nhom3/src/Logic/service/VeService.java</file>
         </group>
     </open-files>
 </project-private>

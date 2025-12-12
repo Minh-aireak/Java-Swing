@@ -68,7 +68,6 @@ public class PhimController {
         return response;
     }
     
-    // --- Hàm cho AddLC ---
     public LichChieuResponse addLichChieu(String idLichChieu, String idPhim,
             String gioChieu, String idPhongChieu
             , String soGheConLai, String idGia) throws Exception {

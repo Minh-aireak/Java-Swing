@@ -122,70 +122,64 @@ public class DoiMatKhauDialog extends javax.swing.JDialog {
         dispose();
     }//GEN-LAST:event_btnHuyActionPerformed
 
-    private void btnXacNhanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXacNhanActionPerformed
-String oldPass     = new String(txtOld.getPassword());
-        String newPass     = new String(txtNew.getPassword());
-        String confirmPass = new String(txtConfirm.getPassword());
+    private void btnXacNhanActionPerformed(java.awt.event.ActionEvent evt) {                                           
+    String oldPass     = new String(txtOld.getPassword());
+    String newPass     = new String(txtNew.getPassword());
+    String confirmPass = new String(txtConfirm.getPassword());
 
-        // 1. Kiểm tra input phía client
-        if (oldPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ các trường mật khẩu!");
-            return;
-        }
+    // check phía client
+    if (oldPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ các trường mật khẩu!");
+        return;
+    }
 
-        if (newPass.equals(oldPass)) {
-            JOptionPane.showMessageDialog(this, "Mật khẩu mới phải khác mật khẩu cũ!");
-            return;
-        }
+    if (newPass.equals(oldPass)) {
+        JOptionPane.showMessageDialog(this, "Mật khẩu mới phải khác mật khẩu cũ!");
+        return;
+    }
 
-        if (newPass.length() < 8) {
-            JOptionPane.showMessageDialog(this, "Mật khẩu mới phải có ít nhất 8 ký tự!");
-            return;
-        }
+    if (!newPass.equals(confirmPass)) {
+        JOptionPane.showMessageDialog(this, "Xác nhận mật khẩu không khớp!");
+        return;
+    }
 
-        if (!newPass.matches(".*[!@#$%^&*()_+=\\-\\[\\]{};':\"\\\\|,.<>/?].*")) {
-            JOptionPane.showMessageDialog(this, "Mật khẩu mới phải chứa ít nhất 1 ký tự đặc biệt!");
-            return;
-        }
+    // get id tài khoản hiện tại từ Session 
+    String idTaiKhoan = session.getCurrentUser().getIdTaiKhoan();
+    if (idTaiKhoan == null || idTaiKhoan.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Không tìm thấy ID tài khoản đang đăng nhập!");
+        return;
+    }
 
-        if (!newPass.equals(confirmPass)) {
-            JOptionPane.showMessageDialog(this, "Xác nhận mật khẩu không khớp!");
-            return;
-        }
+    try {
+        // call controller để đổi mật khẩu
+        LoginController.ChangePasswordResponse resp =
+                loginController.doiMatKhau(idTaiKhoan, oldPass, newPass);
 
-        // 2. Lấy id tài khoản hiện tại
-        String idTaiKhoan = session.getCurrentUser().getIdTaiKhoan();  // dùng static idTaiKhoan như code cũ
-        if (idTaiKhoan == null || idTaiKhoan.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy ID tài khoản đang đăng nhập!");
-            return;
-        }
-
-        try {
-            // 3. Gọi LoginController để đổi mật khẩu
-            LoginController.ChangePasswordResponse resp =
-                    loginController.doiMatKhau(idTaiKhoan, oldPass, newPass);
-
-            if (resp.isSuccess()) {
-                JOptionPane.showMessageDialog(this, resp.getMessage() != null ? resp.getMessage() : "Đổi mật khẩu thành công!");
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(
-                        this,
-                        resp.getMessage() != null ? resp.getMessage() : "Đổi mật khẩu thất bại!",
-                        "Lỗi",
-                        JOptionPane.ERROR_MESSAGE
-                );
-            }
-
-        } catch (Exception ex) {
+        if (resp.isSuccess()) {
             JOptionPane.showMessageDialog(
                     this,
-                    "Lỗi khi đổi mật khẩu: " + ex.getMessage(),
+                    resp.getMessage() != null ? resp.getMessage() : "Đổi mật khẩu thành công!"
+            );
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(
+                    this,
+                    resp.getMessage() != null ? resp.getMessage() : "Đổi mật khẩu thất bại!",
                     "Lỗi",
                     JOptionPane.ERROR_MESSAGE
             );
         }
-    }//GEN-LAST:event_btnXacNhanActionPerformed
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(
+                this,
+                "Lỗi khi đổi mật khẩu: " + e.getMessage(),
+                "Lỗi",
+                JOptionPane.ERROR_MESSAGE
+        );
+    }
+}
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnHuy;

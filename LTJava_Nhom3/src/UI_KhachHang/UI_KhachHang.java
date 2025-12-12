@@ -3,15 +3,16 @@ package UI_KhachHang;
 import Logic.entity.Phim;
 import ConnectDatabase.DatabaseConnection;
 import Global.Session;
+import Logic.controller.LoginController;
 import Logic.controller.VeController;
 import Logic.dto.request.DataCreateVeRequest;
 import Logic.dto.response.ChiTietLichChieuResponse;
 import Logic.dto.response.ListLichChieuResponse;
+import Logic.dto.response.LoginResponse;
 import Logic.entity.TaiKhoan;
 import UI_Login.UI_Login;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.event.ItemEvent;
 import javax.swing.ImageIcon;
@@ -23,11 +24,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
@@ -45,8 +44,13 @@ import java.util.UUID;
 public class UI_KhachHang extends javax.swing.JFrame {
     VeController veController;
     DefaultTableModel model, model2;
+    LoginController loginController;
     static Session session;
-    
+    TaiKhoan currentUser = session.getCurrentUser();
+    public UI_KhachHang(TaiKhoan user) {
+        this(); // gọi constructor mặc định
+        this.currentUser = user;
+    }
     Phim chosenPhim = new Phim();
     
     
@@ -2093,13 +2097,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }  
     }//GEN-LAST:event_dv_cbo_LichChieuItemStateChanged
     
-    // TaiKhoan module
-    private void btn_DoiMatKhauActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DoiMatKhauActionPerformed
-        DoiMatKhauDialog dialog = new DoiMatKhauDialog(this, true); 
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
-    }//GEN-LAST:event_btn_DoiMatKhauActionPerformed
-    
     // KHÔNG LIÊN QUAN
     private void dv_btn_ThanhToanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dv_btn_ThanhToanActionPerformed
 
@@ -2138,47 +2135,47 @@ public class UI_KhachHang extends javax.swing.JFrame {
 
     // Phim module
     private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
-
-        indexRow = table.getSelectedRow();
-        String data = table.getValueAt(indexRow, 0).toString();
-        tabbed.setSelectedIndex(1);
-        try {
-            Connection connection = DatabaseConnection.getConnection();
-            String statement = "SELECT p.idPhim, p.tenPhim, p.tacGia, p.dienVien, p.thoiLuong, GROUP_CONCAT(tl.tenTheLoai SEPARATOR ', ') AS theLoai, p.ngonNgu, p.moTa, p.anhPhim " +
-            "FROM phim p " +
-            "JOIN phim_theloai ptl ON p.idPhim = ptl.idPhim " +
-            "JOIN the_loai tl ON ptl.idTheLoai = tl.idTheLoai " +
-            "WHERE p.idPhim = ? " +
-            "GROUP BY p.idPhim, p.tenPhim, p.tacGia, p.dienVien, p.thoiLuong, p.ngonNgu, p.moTa ";
-            PreparedStatement ps = connection.prepareStatement(statement);
-            ps.setString(1, data);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()){
-                chosenPhim.setIdPhim(rs.getString("idPhim"));
-                chosenPhim.setTenPhim(rs.getString("tenPhim"));
-                ctp_lab_TenPhim.setText("PHIM - " + rs.getString("tenPhim"));
-                chosenPhim.setTacGia(rs.getString("tacGia"));
-                ctp_lab_TacGia.setText(rs.getString("tacGia"));
-                chosenPhim.setDienVien(rs.getString("dienVien"));
-                ctp_lab_DienVien.setText("<html>" + rs.getString("dienVien") + "</html>");
-                chosenPhim.setThoiLuong(rs.getString("thoiLuong"));
-                ctp_lab_ThoiLuong.setText(rs.getString("thoiLuong"));
-                chosenPhim.setTheLoai(rs.getString("theLoai"));
-                ctp_lab_TheLoai.setText(rs.getString("theLoai"));
-                chosenPhim.setNgonNgu(rs.getString("ngonNgu"));
-                ctp_lab_NgonNgu.setText(rs.getString("ngonNgu"));
-                chosenPhim.setMoTa(rs.getString("moTa"));
-                ctp_lab_MoTa.setText("<html>" + rs.getString("moTa") + "</html>");
-                chosenPhim.setAnhPhim(rs.getString("anhPhim"));
-                byte[] imageByte = rs.getBytes("anhPhim");
-                ImageIcon imgIcon = new ImageIcon(imageByte);
-                Image img = imgIcon.getImage().getScaledInstance(ctp_lab_AnhPhim.getWidth(), ctp_lab_AnhPhim.getHeight(), Image.SCALE_SMOOTH);
-                ctp_lab_AnhPhim.setIcon(new ImageIcon(img));
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        displayChiTietPhim(true);
+//
+//        indexRow = table.getSelectedRow();
+//        String data = table.getValueAt(indexRow, 0).toString();
+//        tabbed.setSelectedIndex(1);
+//        try {
+//            Connection connection = DatabaseConnection.getConnection();
+//            String statement = "SELECT p.idPhim, p.tenPhim, p.tacGia, p.dienVien, p.thoiLuong, GROUP_CONCAT(tl.tenTheLoai SEPARATOR ', ') AS theLoai, p.ngonNgu, p.moTa, p.anhPhim " +
+//            "FROM phim p " +
+//            "JOIN phim_theloai ptl ON p.idPhim = ptl.idPhim " +
+//            "JOIN the_loai tl ON ptl.idTheLoai = tl.idTheLoai " +
+//            "WHERE p.idPhim = ? " +
+//            "GROUP BY p.idPhim, p.tenPhim, p.tacGia, p.dienVien, p.thoiLuong, p.ngonNgu, p.moTa ";
+//            PreparedStatement ps = connection.prepareStatement(statement);
+//            ps.setString(1, data);
+//            ResultSet rs = ps.executeQuery();
+//            while (rs.next()){
+//                chosenPhim.setIdPhim(rs.getString("idPhim"));
+//                chosenPhim.setTenPhim(rs.getString("tenPhim"));
+//                ctp_lab_TenPhim.setText("PHIM - " + rs.getString("tenPhim"));
+//                chosenPhim.setTacGia(rs.getString("tacGia"));
+//                ctp_lab_TacGia.setText(rs.getString("tacGia"));
+//                chosenPhim.setDienVien(rs.getString("dienVien"));
+//                ctp_lab_DienVien.setText("<html>" + rs.getString("dienVien") + "</html>");
+//                chosenPhim.setThoiLuong(rs.getString("thoiLuong"));
+//                ctp_lab_ThoiLuong.setText(rs.getString("thoiLuong"));
+//                chosenPhim.setTheLoai(rs.getString("theLoai"));
+//                ctp_lab_TheLoai.setText(rs.getString("theLoai"));
+//                chosenPhim.setNgonNgu(rs.getString("ngonNgu"));
+//                ctp_lab_NgonNgu.setText(rs.getString("ngonNgu"));
+//                chosenPhim.setMoTa(rs.getString("moTa"));
+//                ctp_lab_MoTa.setText("<html>" + rs.getString("moTa") + "</html>");
+//                chosenPhim.setAnhPhim(rs.getString("anhPhim"));
+//                byte[] imageByte = rs.getBytes("anhPhim");
+//                ImageIcon imgIcon = new ImageIcon(imageByte);
+//                Image img = imgIcon.getImage().getScaledInstance(ctp_lab_AnhPhim.getWidth(), ctp_lab_AnhPhim.getHeight(), Image.SCALE_SMOOTH);
+//                ctp_lab_AnhPhim.setIcon(new ImageIcon(img));
+//            }
+//        } catch (SQLException ex) {
+//            Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        displayChiTietPhim(true);
     }//GEN-LAST:event_tableMouseClicked
 
     // Phim module
@@ -2248,98 +2245,103 @@ public class UI_KhachHang extends javax.swing.JFrame {
                 Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
             }
     }//GEN-LAST:event_h_btn_TimKiemActionPerformed
-    
-    // TaiKhoan module
-    private void btn_LogOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_LogOutActionPerformed
-        int result = JOptionPane.showConfirmDialog(rootPane, "Bạn muốn đăng xuất không ?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-        if(result == JOptionPane.YES_OPTION){
-            dispose();
-            UI_Login uilogin = new UI_Login();
-            uilogin.setLocationRelativeTo(null);
-            uilogin.setVisible(true);
-        }
-    }//GEN-LAST:event_btn_LogOutActionPerformed
 
     // TaiKhoan module
-    private void btn_CapNhatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CapNhatActionPerformed
-        try {
-            Connection conn = DatabaseConnection.getConnection();
+    private void btn_DoiMatKhauActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_DoiMatKhauActionPerformed
+        DoiMatKhauDialog dialog = new DoiMatKhauDialog(this, true);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
 
-            String ten = txt_Ten.getText().trim();
-            String hoDem = txt_Ho.getText().trim();
-            String ngaySinhStr = txt_NgaySinh.getText().trim();
-            String diaChi = txt_DiaChi.getText().trim();
-            String gioiTinh = radNam.isSelected() ? "Nam" : (radNu.isSelected() ? "Nữ" : "");
+    // TaiKhoan module
+    private void btn_LogOutActionPerformed(java.awt.event.ActionEvent evt) {
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                "Bạn muốn đăng xuất không ?",
+                "Xác nhận",
+                JOptionPane.YES_NO_OPTION
+        );
 
-            String sqlSelect = "SELECT * FROM tai_khoan WHERE idTaiKhoan = ?";
-            PreparedStatement psSelect = conn.prepareStatement(sqlSelect);
-            psSelect.setString(1, TaiKhoan.idTaiKhoan);  
-            ResultSet rs = psSelect.executeQuery();
-
-            if (rs.next()) {
-                if (ten.isEmpty()) ten = rs.getString("ten");
-                if (hoDem.isEmpty()) hoDem = rs.getString("hoDem");
-                if (diaChi.isEmpty()) diaChi = rs.getString("diaChi");
-                if (gioiTinh.isEmpty()) gioiTinh = rs.getString("gioiTinh");
-
-                java.sql.Date ngaySinh = rs.getDate("ngaySinh"); 
-
-                if (!ngaySinhStr.isEmpty()) {
-                    if (!ngaySinhStr.matches("^\\d{2}/\\d{2}/\\d{4}$")) {
-                        JOptionPane.showMessageDialog(this, "Định dạng ngày sinh phải là dd/MM/yyyy", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                    sdf.setLenient(false);
-                    java.util.Date parsedDate;
-
-                    try {
-                        parsedDate = sdf.parse(ngaySinhStr);
-                    } catch (ParseException e) {
-                        JOptionPane.showMessageDialog(this, "Ngày sinh không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTime(parsedDate);
-                    int year = cal.get(Calendar.YEAR);
-
-                    if (year < 1900 || year > 2025) {
-                        JOptionPane.showMessageDialog(this, "Năm sinh phải nằm trong khoảng từ 1900 đến 2025!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    ngaySinh = new java.sql.Date(parsedDate.getTime());
-
-                }
-                String sqlUpdate = "UPDATE tai_khoan SET ten = ?, hoDem = ?, ngaySinh = ?, diaChi = ?, gioiTinh = ? WHERE idTaiKhoan = ?";
-                PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate);
-                psUpdate.setString(1, ten);
-                psUpdate.setString(2, hoDem);
-                psUpdate.setDate(3, ngaySinh);
-                psUpdate.setString(4, diaChi);
-                psUpdate.setString(5, gioiTinh);
-                psUpdate.setString(6, TaiKhoan.idTaiKhoan);
-                int updated = psUpdate.executeUpdate();
-                if (updated > 0) {
-                    JOptionPane.showMessageDialog(this, "Cập nhật thành công!");
-                    hscn_lab_XinChao.setText("Xin chào, " + ten +"!");
-    } else {
-                    JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
-                }
+        if (result == JOptionPane.YES_OPTION) {
+            // call backend logout
+            if (loginController != null) {
+                loginController.logout();
             }
-            conn.close();
+
+            this.dispose();
+            UI_Login login = new UI_Login();
+            login.setLocationRelativeTo(null);
+            login.setVisible(true);
+        }
+    }
+
+    private void btn_CapNhatActionPerformed(java.awt.event.ActionEvent evt) {
+
+        if (currentUser == null) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy tài khoản đang đăng nhập!");
+            return;
+        }
+
+        String hoDem       = txt_Ho.getText().trim();
+        String ten         = txt_Ten.getText().trim();
+        String ngaySinhStr = txt_NgaySinh.getText().trim();
+        String diaChi      = txt_DiaChi.getText().trim();
+        String gioiTinh    = radNam.isSelected() ? "Nam" : (radNu.isSelected() ? "Nữ" : "");
+
+        // validate ngày sinh (nếu nhập)
+        if (!ngaySinhStr.isEmpty()) {
+            if (!ngaySinhStr.matches("^\\d{2}/\\d{2}/\\d{4}$")) {
+                JOptionPane.showMessageDialog(this, "Định dạng ngày sinh phải là dd/MM/yyyy");
+                return;
+            }
+
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+            sdf.setLenient(false);
+            try {
+                sdf.parse(ngaySinhStr);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Ngày sinh không hợp lệ!");
+                return;
+            }
+        }
+
+        try {
+            LoginResponse res = loginController.capNhatThongTin(
+                    currentUser.getIdTaiKhoan(),
+                    hoDem,
+                    ten,
+                    ngaySinhStr,
+                    diaChi,
+                    gioiTinh
+            );
+
+            if (res == null || res.getTaiKhoan() == null) {
+                String msg = (res != null && res.getMessage() != null)
+                        ? res.getMessage()
+                        : "Cập nhật thất bại!";
+                JOptionPane.showMessageDialog(this, msg, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            TaiKhoan updated = res.getTaiKhoan();
+            currentUser = updated;
+            hscn_lab_XinChao.setText("Xin chào, " + updated.getTen() + "!");
+
+            JOptionPane.showMessageDialog(this,
+                    res.getMessage() != null ? res.getMessage() : "Cập nhật thành công!");
+
+            // Reset form
             txt_Ten.setText("");
             txt_Ho.setText("");
             txt_NgaySinh.setText("");
             txt_DiaChi.setText("");
             radNam.setSelected(false);
             radNu.setSelected(false);
-        } catch (HeadlessException | SQLException e) {
+
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
         }
-    }//GEN-LAST:event_btn_CapNhatActionPerformed
+    }
 
     // KHÔNG LIÊN QUAN (*)
     private void displayListBill(){

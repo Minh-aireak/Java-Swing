@@ -2,19 +2,21 @@ package UI_Login;
 
 import Global.Session;
 import Logic.controller.LoginController;
+import Logic.dto.response.LoginResponse;
+import Logic.entity.TaiKhoan;
+import UI_KhachHang.UI_KhachHang;
+
 import javax.swing.JOptionPane;
 public class UI_Login extends javax.swing.JFrame {
     
     public static Session session;
     private LoginController loginController;
 
-    public UI_Login() {
-         initComponents();
-        // Khởi tạo controller
-        loginController = new LoginController();
-        // (tuỳ bạn) căn giữa màn hình
-        this.setLocationRelativeTo(null);
-    }
+    // public UI_Login() {
+    // initComponents();
+    // loginController = new LoginController();
+    // this.setLocationRelativeTo(null);
+    // }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -178,74 +180,81 @@ public class UI_Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     
-    private void btn_DangNhapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DangNhapActionPerformed
-        String soDienThoai = txtTenDangNhap.getText().trim();
-        char[] passwordChars = txtMatKhau.getPassword();
-        String matKhau = new String(passwordChars);
+   private void btn_DangNhapActionPerformed(java.awt.event.ActionEvent evt) {                                             
+    String soDienThoai = txtTenDangNhap.getText().trim();
+    char[] passwordChars = txtMatKhau.getPassword();
+    String matKhau = new String(passwordChars);
 
-        // 1. Kiểm tra input cơ bản
-        if (soDienThoai.isEmpty() || matKhau.isEmpty()) {
+    //  tra input cơ bản
+    if (soDienThoai.isEmpty() || matKhau.isEmpty()) {
+        JOptionPane.showMessageDialog(
+                this,
+                "Vui lòng nhập đầy đủ số điện thoại và mật khẩu.",
+                "Thông báo",
+                JOptionPane.WARNING_MESSAGE
+        );
+        return;
+    }
+
+    // check  format số điện thoại (10 số)
+    if (!soDienThoai.matches("\\d{10}")) {
+        JOptionPane.showMessageDialog(
+                this,
+                "Số điện thoại phải là số và đủ 10 chữ số.",
+                "Thông báo",
+                JOptionPane.WARNING_MESSAGE
+        );
+        return;
+    }
+
+    try {
+        // call backend đăng nhập
+        LoginResponse response = loginController.dangNhap(soDienThoai, matKhau);
+
+        //  backend trả về null hoặc không có tài khoản
+        if (response == null || response.getTaiKhoan() == null) {
+            String msg = (response != null && response.getMessage() != null)
+                    ? response.getMessage()
+                    : "Số điện thoại hoặc mật khẩu không đúng.";
             JOptionPane.showMessageDialog(
                     this,
-                    "Vui lòng nhập đầy đủ số điện thoại và mật khẩu.",
-                    "Thông báo",
-                    JOptionPane.WARNING_MESSAGE
-            );
-            return;
-        }
-
-        // (tuỳ bạn) kiểm tra format số điện thoại
-        if (!soDienThoai.matches("\\d{10}")) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Số điện thoại phải là số và đủ 10 chữ số.",
-                    "Thông báo",
-                    JOptionPane.WARNING_MESSAGE
-            );
-            return;
-        }
-
-        try {
-            // 2. Gọi controller để đăng nhập
-            LoginController.LoginResponse response = loginController.dangNhap(soDienThoai, matKhau);
-            
-            // 4. Nếu không tìm thấy tài khoản (sai mật khẩu / không tồn tại)
-            if (response.getTaiKhoan() == null) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        response.getMessage(),   // ví dụ: "Số điện thoại hoặc mật khẩu không đúng"
-                        "Đăng nhập thất bại",
-                        JOptionPane.ERROR_MESSAGE
-                );
-                return;
-            }
-            
-            session.setCurrentUser(response.getTaiKhoan());
-            // 5. Đăng nhập thành công
-            JOptionPane.showMessageDialog(
-                    this,
-                    response.getMessage(),       // ví dụ: "Đăng nhập thành công"
-                    "Thông báo",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-
-            // TODO: mở màn hình chính sau khi đăng nhap
-            // UI_Main uiMain = new UI_Main();
-            // uiMain.setLocationRelativeTo(null);
-            // uiMain.setVisible(true);
-            // this.dispose();
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Lỗi khi đăng nhập: " + ex.getMessage(),
-                    "Lỗi",
+                    msg,
+                    "Đăng nhập thất bại",
                     JOptionPane.ERROR_MESSAGE
             );
+            return;
         }
-    }//GEN-LAST:event_btn_DangNhapActionPerformed
 
-    
+        // đăng nhập thành công
+        JOptionPane.showMessageDialog(
+                this,
+                response.getMessage() != null ? response.getMessage() : "Đăng nhập thành công!",
+                "Thông báo",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+
+        // UI_KhachHang và truyền tài khoản đang đăng nhập
+        TaiKhoan tk = response.getTaiKhoan();
+        UI_KhachHang ui = new UI_KhachHang(tk);  // cần thêm constructor này ở UI_KhachHang
+        ui.setLocationRelativeTo(null);
+        ui.setVisible(true);
+
+        // close form đăng nhập
+        this.dispose();
+
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(
+                this,
+                "Lỗi khi đăng nhập: " + ex.getMessage(),
+                "Lỗi",
+                JOptionPane.ERROR_MESSAGE
+        );
+    } finally {
+        //delete mật khẩu khỏi bộ nhớ (optional)
+        java.util.Arrays.fill(passwordChars, '\0');
+    }
+}
+
     private void btnDangKyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDangKyActionPerformed
 
         DangKy dialog = new DangKy(this, true);

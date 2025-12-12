@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class VeService {
     VeRepository veRepository;
@@ -34,6 +36,16 @@ public class VeService {
          } catch (SQLException ex) {
              throw new SQLException("saveVe error!");
          }
+    }
+    
+    public boolean deleteVe(String idVe) {
+        try {
+            veRepository.deleteVe(idVe);
+            return true;
+        } catch (SQLException ex) {
+            System.out.println("Lỗi hủy vé: " + ex.getMessage());
+        }
+        return false;
     }
     
     public List<BillResponse> getListBill() throws SQLException{

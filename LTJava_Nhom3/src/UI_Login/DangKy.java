@@ -100,19 +100,9 @@ public class DangKy extends javax.swing.JDialog {
 
         btgGioiTinh.add(radNam);
         radNam.setText("Nam");
-        radNam.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                radNamActionPerformed(evt);
-            }
-        });
 
         btgGioiTinh.add(radNu);
         radNu.setText("Nữ");
-        radNu.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                radNuActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -134,12 +124,6 @@ public class DangKy extends javax.swing.JDialog {
         );
 
         jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder("E-mail(*)"));
-
-        txtEmail.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtEmailActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -188,12 +172,6 @@ public class DangKy extends javax.swing.JDialog {
         );
 
         jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("Nhập lại mật khẩu(*)"));
-
-        txtNhapLaiMatKhau.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNhapLaiMatKhauActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
         jPanel10.setLayout(jPanel10Layout);
@@ -297,7 +275,7 @@ public class DangKy extends javax.swing.JDialog {
             String hoDem       = txtHoDem.getText().trim();
             String ten         = txtTen.getText().trim();
 
-            // 1. Validate phía client
+            // Validate phía client
             if (soDienThoai.isEmpty() || email.isEmpty() || pass.isEmpty() || rePass.isEmpty()
                     || hoDem.isEmpty() || ten.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.");
@@ -334,11 +312,11 @@ public class DangKy extends javax.swing.JDialog {
                 return;
             }
 
-            // 2. Các tham số chưa có trên UI => tạm để rỗng
-            String ngaySinh = "";  // bạn có thể thêm field ngày sinh sau
+            //  Các tham số chưa có trên UI nen tạm để rỗng
+            String ngaySinh = ""; 
             String diaChi   = "";
 
-            // 3. Gọi controller để đăng ký
+            // call controller để đăng ký
             LoginController.RegisterResponse resp =
                     loginController.dangKy(
                             soDienThoai,
@@ -351,10 +329,10 @@ public class DangKy extends javax.swing.JDialog {
                             diaChi
                     );
 
-            // 4. Xử lý kết quả trả về
+            // xu lý kết quả trả về
             JOptionPane.showMessageDialog(this, resp.getMessage());
 
-            // Nếu backend trả về tài khoản mới => đăng ký OK -> đóng form
+            // Nếu backend trả về tài khoản mới thi đăng ký OK xong đóng form
             if (resp.getTaiKhoan() != null) {
                 this.dispose();
             }
@@ -368,10 +346,6 @@ public class DangKy extends javax.swing.JDialog {
     private void btnHuyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHuyActionPerformed
         dispose();
     }//GEN-LAST:event_btnHuyActionPerformed
-
-    private void radNamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radNamActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_radNamActionPerformed
 
     private void radNuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radNuActionPerformed
         // TODO add your handling code here:

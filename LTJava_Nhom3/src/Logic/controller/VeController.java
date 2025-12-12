@@ -22,6 +22,10 @@ public class VeController {
         veService.saveVe(request);
     }
     
+    public boolean deleteVe(String idVe) {
+        if (*)
+    }
+    
     public List<BillResponse> getListBill() throws SQLException{
         return veService.getListBill();
     }

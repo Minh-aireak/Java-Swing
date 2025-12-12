@@ -1,9 +1,8 @@
 package UI_Admin;
 
+import Logic.controller.PhimController;
 import Logic.entity.Phim;
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -322,8 +321,12 @@ public class AddFilm extends javax.swing.JFrame {
             // Tạo đối tượng Phim
             Phim phim = new Phim(idPhim, tenPhim, tacGia, theLoaiList, thoiLuong, ngonNgu, dienVien, moTa, anhPhim);
             
+            // Chuyển đổi sang Logic.entity.Phim
+            Phim logicPhim = new Phim(idPhim, tenPhim, tacGia, theLoaiList, thoiLuong, ngonNgu, dienVien, moTa, anhPhim);
+            
             // Thêm phim
-            if (PhimDAO.themPhim(phim)) {
+            PhimController controller = new PhimController();
+            if (controller.themPhim(logicPhim)) {
                 model.addRow(new Object[]{idPhim, tenPhim, tacGia, String.join(", ", theLoaiList), thoiLuong, ngonNgu, dienVien, moTa, anhPhim});
                 JOptionPane.showMessageDialog(this, "Thêm phim thành công!");
                 dispose();
@@ -332,6 +335,8 @@ public class AddFilm extends javax.swing.JFrame {
             }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(AddFilm.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            System.getLogger(AddFilm.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }//GEN-LAST:event_btnAddActionPerformed
 

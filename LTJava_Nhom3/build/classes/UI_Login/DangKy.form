@@ -239,9 +239,6 @@
             </Property>
             <Property name="text" type="java.lang.String" value="Nam"/>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="radNamActionPerformed"/>
-          </Events>
         </Component>
         <Component class="javax.swing.JRadioButton" name="radNu">
           <Properties>
@@ -250,9 +247,6 @@
             </Property>
             <Property name="text" type="java.lang.String" value="N&#x1eef;"/>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="radNuActionPerformed"/>
-          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -283,9 +277,6 @@
       </Layout>
       <SubComponents>
         <Component class="javax.swing.JTextField" name="txtEmail">
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtEmailActionPerformed"/>
-          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -376,9 +367,6 @@
       </Layout>
       <SubComponents>
         <Component class="javax.swing.JPasswordField" name="txtNhapLaiMatKhau">
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtNhapLaiMatKhauActionPerformed"/>
-          </Events>
         </Component>
       </SubComponents>
     </Container>
