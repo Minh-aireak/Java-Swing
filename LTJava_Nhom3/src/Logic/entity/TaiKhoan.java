@@ -24,7 +24,6 @@ public class TaiKhoan {
     }
 
     public TaiKhoan() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     public String getIdTaiKhoan() {

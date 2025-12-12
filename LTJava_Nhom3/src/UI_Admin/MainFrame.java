@@ -1,5 +1,6 @@
 package UI_Admin;
 
+import Logic.controller.BaoCaoController;
 import UI_Login.UI_Login;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -12,9 +13,14 @@ import Logic.controller.PhimController;
 import Logic.controller.VeController;
 import Logic.entity.Phim;
 import Logic.entity.Ve;
+import Logic.repository.BaoCaoRepository;
+import java.beans.PropertyChangeListener;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
 
 
 public class MainFrame extends javax.swing.JFrame {
+    private BaoCaoController baoCaoController = new BaoCaoController(new BaoCaoRepository());
     private final DefaultTableModel model;
     private final DefaultTableModel modelCus;
     private final DefaultTableModel modelDatVe;
@@ -85,6 +91,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel7 = new javax.swing.JLabel();
+        jMonthChooser1 = new com.toedter.calendar.JMonthChooser();
         tpCus = new tabbedCustom.TabbedPaneCustom();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -118,7 +125,7 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jScrollPane6 = new javax.swing.JScrollPane();
         tbVe = new javax.swing.JTable();
-        btnXemChiTiet = new javax.swing.JButton();
+        btnLamMoi = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         btnEditGia = new javax.swing.JButton();
         btnDeleteGia = new javax.swing.JButton();
@@ -131,14 +138,19 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel6 = new javax.swing.JPanel();
         btnDisplayChart = new javax.swing.JButton();
         btnCreBaoCao = new javax.swing.JButton();
-        txtYear = new javax.swing.JTextField();
-        txtMonth = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        txtDay = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
         jScrollPane7 = new javax.swing.JScrollPane();
         tbBaoCao = new javax.swing.JTable();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        rp_From_To_Btn = new javax.swing.JButton();
+        txtDay = new javax.swing.JTextField();
+        txtMonth = new javax.swing.JTextField();
+        txtYear = new javax.swing.JTextField();
+        DateFromChooser = new com.toedter.calendar.JDateChooser();
+        DateToChooser = new com.toedter.calendar.JDateChooser();
         jToolBar1 = new javax.swing.JToolBar();
         jButton1 = new javax.swing.JButton();
 
@@ -468,19 +480,14 @@ public class MainFrame extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Mã vé", "Người xem", "Phim", "Lịch chiếu"
+                "Mã vé", "Khách hàng", "Phim", "Lịch chiếu", "Ghế", "Phòng chiếu", "Giá vé"
             }
         ));
         jScrollPane6.setViewportView(tbVe);
 
-        btnXemChiTiet.setText("Xem chi tiết");
-        btnXemChiTiet.setMaximumSize(new java.awt.Dimension(72, 32));
-        btnXemChiTiet.setMinimumSize(new java.awt.Dimension(72, 32));
-        btnXemChiTiet.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnXemChiTietActionPerformed(evt);
-            }
-        });
+        btnLamMoi.setText("Làm mới");
+        btnLamMoi.setMaximumSize(new java.awt.Dimension(72, 32));
+        btnLamMoi.setMinimumSize(new java.awt.Dimension(72, 32));
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -490,7 +497,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(243, 243, 243)
-                .addComponent(btnXemChiTiet, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnLamMoi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(222, 222, 222)
                 .addComponent(btnHuyVe, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -499,13 +506,15 @@ public class MainFrame extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
+                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 351, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(15, 15, 15)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnXemChiTiet, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnHuyVe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnHuyVe, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(btnLamMoi, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(1, 1, 1)))
                 .addContainerGap())
         );
 
@@ -640,49 +649,87 @@ public class MainFrame extends javax.swing.JFrame {
         ));
         jScrollPane7.setViewportView(tbBaoCao);
 
+        jLabel4.setText("Từ ngày:");
+
+        jLabel5.setText("Đến:");
+
+        rp_From_To_Btn.setText("Báo cáo (From-to)");
+        rp_From_To_Btn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rp_From_To_BtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(118, 118, 118)
-                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtDay, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(47, 47, 47)
-                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtMonth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(51, 51, 51)
-                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(58, 58, 58)
-                .addComponent(btnCreBaoCao)
-                .addGap(61, 61, 61)
-                .addComponent(btnDisplayChart)
-                .addContainerGap(51, Short.MAX_VALUE))
             .addComponent(jScrollPane7)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGap(99, 99, 99)
+                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(txtDay))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGap(93, 93, 93)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(DateFromChooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(78, 78, 78)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtMonth)
+                    .addComponent(DateToChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGap(102, 102, 102)
+                        .addComponent(rp_From_To_Btn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
+                        .addComponent(btnDisplayChart))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGap(54, 54, 54)
+                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtYear, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnCreBaoCao, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(56, 56, 56))
         );
-
-        jPanel6Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {txtDay, txtMonth, txtYear});
-
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel11)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel9)
-                    .addComponent(txtDay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtMonth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnCreBaoCao)
-                    .addComponent(btnDisplayChart))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(28, Short.MAX_VALUE))
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel9)
+                            .addComponent(txtYear, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel6Layout.createSequentialGroup()
+                            .addGap(15, 15, 15)
+                            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(txtMonth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel10))
+                                .addComponent(btnCreBaoCao))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel11)
+                        .addComponent(txtDay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(DateToChooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnDisplayChart)
+                            .addComponent(rp_From_To_Btn)))
+                    .addComponent(DateFromChooser, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE))
         );
 
         tpCus.addTab("Báo cáo", jPanel6);
@@ -950,156 +997,21 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDisplayChartActionPerformed
 
     private void btnCreBaoCaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreBaoCaoActionPerformed
-        String ngayStr = txtDay.getText().trim();
-        String thangStr = txtMonth.getText().trim();
-        String namStr = txtYear.getText().trim();
-
-        if (!ngayStr.isEmpty() && !ngayStr.matches("\\d+")) {
-            JOptionPane.showMessageDialog(this, "Ngày phải là số hợp lệ!");
+            
+        String day = txtDay.getText().trim();
+        String month = txtMonth.getText().trim();
+        String year = txtYear.getText().trim();
+        String errorMessage = "";
+        if(!baoCaoController.ktraHopLe(day, month, year, errorMessage)){
+            JOptionPane.showMessageDialog(this, errorMessage, "Lỗi ngày tháng!", ERROR);
             return;
         }
-        if (!thangStr.isEmpty() && !thangStr.matches("\\d+")) {
-            JOptionPane.showMessageDialog(this, "Tháng phải là số hợp lệ!");
-            return;
+        try {
+            baoCaoController.taoBaoCao(day, month, year, modelReport);
+            } catch (Exception ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if (!namStr.isEmpty() && !namStr.matches("\\d+")) {
-            JOptionPane.showMessageDialog(this, "Năm phải là số hợp lệ!");
-            return;
-        }
-        int ngay = !ngayStr.isEmpty() ? Integer.parseInt(ngayStr) : -1;
-        int thang = !thangStr.isEmpty() ? Integer.parseInt(thangStr) : -1;
-        int nam = !namStr.isEmpty() ? Integer.parseInt(namStr) : -1;
         
-        if(nam != -1 && nam < 1900){
-            JOptionPane.showMessageDialog(this, "Năm phải lớn hơn 1900!");
-            return;
-        }
-
-        if (thang != -1 && (thang < 1 || thang > 12)) {
-            JOptionPane.showMessageDialog(this, "Tháng phải nằm trong khoảng 1-12!");
-            return;
-        }
-        if (ngay != -1) {
-            if (thang == -1) {
-                JOptionPane.showMessageDialog(this, "Bạn cần nhập tháng để kiểm tra ngày!");
-                return;
-            }
-
-            List<Integer> thang31Ngay = List.of(1, 3, 5, 7, 8, 10, 12);
-            List<Integer> thang30Ngay = List.of(4, 6, 9, 11);
-
-            if (thang31Ngay.contains(thang)) {
-                if (ngay > 31) {
-                    JOptionPane.showMessageDialog(this, "Ngày không hợp lệ!");
-                    return;
-                }
-            } else if (thang30Ngay.contains(thang)) {
-                if (ngay > 30) {
-                    JOptionPane.showMessageDialog(this, "Ngày không hợp lệ!");
-                    return;
-                }
-            } else if (thang == 2) {
-                if (nam == -1) {
-                    JOptionPane.showMessageDialog(this, "Cần nhập năm để kiểm tra tháng 2!");
-                    return;
-                }
-                boolean isLeap = (nam % 4 == 0 && nam % 100 != 0) || (nam % 400 == 0);
-                int maxDay = isLeap ? 29 : 28;
-                if (ngay > maxDay) {
-                    JOptionPane.showMessageDialog(this, "Ngày không hợp lệ với tháng 2 năm " + nam + "!");
-                    return;
-                }
-            }
-        }
-
-        int soGheToiDa = 30;
-
-        StringBuilder updateSql = new StringBuilder("""
-            UPDATE lich_chieu lc
-            SET lc.soGheConLai = ? - (
-                SELECT COUNT(*) 
-                FROM ve v 
-                WHERE v.idLichChieu = lc.idLichChieu
-            )
-            WHERE 1=1
-        """);
-
-        List<Integer> updateParamValues = new ArrayList<>();
-
-        if (!namStr.isEmpty()) {
-            updateSql.append(" AND YEAR(lc.gioChieu) = ? ");
-            updateParamValues.add(Integer.parseInt(namStr));
-        }
-        if (!thangStr.isEmpty()) {
-            updateSql.append(" AND MONTH(lc.gioChieu) = ? ");
-            updateParamValues.add(Integer.parseInt(thangStr));
-        }
-        if (!ngayStr.isEmpty()) {
-            updateSql.append(" AND DAY(lc.gioChieu) = ? ");
-            updateParamValues.add(Integer.parseInt(ngayStr));
-        }
-
-        try (Connection conn = DBConnection.KetNoi()) {
-            if (conn == null) {
-                JOptionPane.showMessageDialog(this, "Không thể kết nối đến cơ sở dữ liệu!");
-                return;
-            }
-            try (PreparedStatement updatePs = conn.prepareStatement(updateSql.toString())) {
-                int index = 1;
-                updatePs.setInt(index++, soGheToiDa);
-                for (int val : updateParamValues) {
-                    updatePs.setInt(index++, val);
-                }
-                updatePs.executeUpdate();
-            }
-            StringBuilder reportSql = new StringBuilder("""
-                SELECT
-                    p.tenPhim,
-                    GREATEST(0, (? * COUNT(*)) - SUM(lc.soGheConLai)) AS so_ghe_da_dat
-                FROM
-                    lich_chieu lc
-                JOIN
-                    phim p ON lc.idPhim = p.idPhim
-                WHERE 1=1
-            """);
-
-            List<Integer> reportParamValues = new ArrayList<>();
-
-            if (!namStr.isEmpty()) {
-                reportSql.append(" AND YEAR(lc.gioChieu) = ? ");
-                reportParamValues.add(Integer.parseInt(namStr));
-            }
-            if (!thangStr.isEmpty()) {
-                reportSql.append(" AND MONTH(lc.gioChieu) = ? ");
-                reportParamValues.add(Integer.parseInt(thangStr));
-            }
-            if (!ngayStr.isEmpty()) {
-                reportSql.append(" AND DAY(lc.gioChieu) = ? ");
-                reportParamValues.add(Integer.parseInt(ngayStr));
-            }
-            reportSql.append("""
-                GROUP BY lc.idPhim, p.tenPhim
-                ORDER BY p.tenPhim
-            """);
-            try (PreparedStatement reportPs = conn.prepareStatement(reportSql.toString())) {
-                int index = 1;
-                reportPs.setInt(index++, soGheToiDa);
-                for (int val : reportParamValues) {
-                    reportPs.setInt(index++, val);
-                }
-
-                ResultSet rs = reportPs.executeQuery();
-                modelReport.setRowCount(0);
-                while (rs.next()) {
-                    String tenPhim = rs.getString("tenPhim");
-                    int soGheDaDat = rs.getInt("so_ghe_da_dat");
-                    modelReport.addRow(new Object[]{tenPhim, soGheDaDat});
-                }
-            }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Lỗi SQL: " + ex.getMessage());
-            ex.printStackTrace();
-        }
     }//GEN-LAST:event_btnCreBaoCaoActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -1111,6 +1023,23 @@ public class MainFrame extends javax.swing.JFrame {
             a.setVisible(true);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void updateFromButton(){
+        java.sql.Date DateFrom = new java.sql.Date(DateFromChooser.getDate().getTime());
+        java.sql.Date DateTo = new java.sql.Date(DateToChooser.getDate().getTime());
+        
+        rp_From_To_Btn.setEnabled(DateFrom != null && DateTo != null);
+    }
+    private void propertyChangeListeners(){
+        PropertyChangeListener listener = evt -> updateFromButton();
+        DateFromChooser.addPropertyChangeListener("date", listener);
+        DateToChooser.addPropertyChangeListener("date", listener);
+        updateFromButton();
+    }
+    
+    private void rp_From_To_BtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rp_From_To_BtnActionPerformed
+        propertyChangeListeners();
+    }//GEN-LAST:event_rp_From_To_BtnActionPerformed
 
     private void loadFilmData() {
         model.setRowCount(0);
@@ -1168,6 +1097,8 @@ public class MainFrame extends javax.swing.JFrame {
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private com.toedter.calendar.JDateChooser DateFromChooser;
+    private com.toedter.calendar.JDateChooser DateToChooser;
     private javax.swing.JButton btnAddCus;
     private javax.swing.JButton btnAddFilm;
     private javax.swing.JButton btnAddGia;
@@ -1183,6 +1114,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnEditGia;
     private javax.swing.JButton btnEditLichChieu;
     private javax.swing.JButton btnHuyVe;
+    private javax.swing.JButton btnLamMoi;
     private javax.swing.JButton btnRefreshCus;
     private javax.swing.JButton btnRefreshFilm;
     private javax.swing.JButton btnRefreshGia;
@@ -1191,7 +1123,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnSearchFilm;
     private javax.swing.JButton btnSearchGia;
     private javax.swing.JButton btnSearchLichChieu;
-    private javax.swing.JButton btnXemChiTiet;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -1199,9 +1130,12 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel9;
+    private com.toedter.calendar.JMonthChooser jMonthChooser1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -1215,6 +1149,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JButton rp_From_To_Btn;
     private javax.swing.JTable tbBaoCao;
     private javax.swing.JTable tbCus;
     private javax.swing.JTable tbFilm;

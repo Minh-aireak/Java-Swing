@@ -25,11 +25,10 @@ public class TaiKhoanRepository {
 
     // Đăng nhập
     public Optional<TaiKhoan> findByPhoneAndPassword(String soDienThoai, String matKhau) throws SQLException {
-        String sql = "SELECT idTaiKhoan, soDienThoai, email, matKhau, hoDem, ten, ngaySinh, diaChi, gioiTinh " +
-                     "FROM tai_khoan WHERE soDienThoai = ? AND matKhau = ?";
+        String sql = "SELECT idTaiKhoan, soDienThoai, email, matKhau, hoDem, ten, ngaySinh, diaChi, gioiTinh "
+                + "FROM tai_khoan WHERE soDienThoai = ? AND matKhau = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, soDienThoai);
             ps.setString(2, matKhau);
@@ -45,11 +44,10 @@ public class TaiKhoanRepository {
 
     // Lấy theo id
     public Optional<TaiKhoan> findById(String idTaiKhoan) throws SQLException {
-        String sql = "SELECT idTaiKhoan, soDienThoai, email, matKhau, hoDem, ten, ngaySinh, diaChi, gioiTinh " +
-                     "FROM tai_khoan WHERE idTaiKhoan = ?";
+        String sql = "SELECT idTaiKhoan, soDienThoai, email, matKhau, hoDem, ten, ngaySinh, diaChi, gioiTinh "
+                + "FROM tai_khoan WHERE idTaiKhoan = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, idTaiKhoan);
 
@@ -64,11 +62,10 @@ public class TaiKhoanRepository {
 
     //  check sdt dùng cho kiểm tra trùng khi đăng ký
     public Optional<TaiKhoan> findByPhone(String soDienThoai) throws SQLException {
-        String sql = "SELECT idTaiKhoan, soDienThoai, email, matKhau, hoDem, ten, ngaySinh, diaChi, gioiTinh " +
-                     "FROM tai_khoan WHERE soDienThoai = ?";
+        String sql = "SELECT idTaiKhoan, soDienThoai, email, matKhau, hoDem, ten, ngaySinh, diaChi, gioiTinh "
+                + "FROM tai_khoan WHERE soDienThoai = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, soDienThoai);
 
@@ -83,11 +80,10 @@ public class TaiKhoanRepository {
 
     // check theo mail dùng cho kiểm tra trùng khi đăng ký
     public Optional<TaiKhoan> findByEmail(String email) throws SQLException {
-        String sql = "SELECT idTaiKhoan, soDienThoai, email, matKhau, hoDem, ten, ngaySinh, diaChi, gioiTinh " +
-                     "FROM tai_khoan WHERE email = ?";
+        String sql = "SELECT idTaiKhoan, soDienThoai, email, matKhau, hoDem, ten, ngaySinh, diaChi, gioiTinh "
+                + "FROM tai_khoan WHERE email = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, email);
 
@@ -102,56 +98,48 @@ public class TaiKhoanRepository {
 
     // LƯU TÀI KHOẢN MỚI (ĐĂNG KÝ)
     public TaiKhoan save(TaiKhoan tk) throws SQLException {
-        String sql = "INSERT INTO tai_khoan " +
-                     "(soDienThoai, email, matKhau, hoDem, ten, ngaySinh, diaChi, gioiTinh) " +
-                     "VALUES (?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO tai_khoan "
+                + "(idTaiKhoan, soDienThoai, email, matKhau, hoDem, ten, ngaySinh, diaChi, gioiTinh) "
+                + "VALUES (?,?,?,?,?,?,?,?,?)";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, tk.getSoDienThoai());
-            ps.setString(2, tk.getEmail());
-            ps.setString(3, tk.getMatKhau());
-            ps.setString(4, tk.getHoDem());
-            ps.setString(5, tk.getTen());
-            ps.setString(6, tk.getNgaySinh());
-            ps.setString(7, tk.getDiaChi());
-            ps.setString(8, tk.getGioiTinh());
+            ps.setString(1, tk.getIdTaiKhoan());
+            ps.setString(2, tk.getSoDienThoai());
+            ps.setString(3, tk.getEmail());
+            ps.setString(4, tk.getMatKhau());
+            ps.setString(5, tk.getHoDem());
+            ps.setString(6, tk.getTen());
 
-            int inserted = ps.executeUpdate();
-            if (inserted == 0) {
-                return null;
+            // ngaySinh có thể NULL
+            if (tk.getNgaySinh() == null || tk.getNgaySinh().trim().isEmpty()) {
+                ps.setNull(7, java.sql.Types.VARCHAR);
+            } else {
+                ps.setString(7, tk.getNgaySinh());
             }
 
-            // Lấy id tự tăng (nếu bảng setting AI)
-            try (ResultSet rs = ps.getGeneratedKeys()) {
-                if (rs.next()) {
-                    String id = rs.getString(1);
-                    tk.setIdTaiKhoan(id);
-                }
-            }
+            ps.setString(8, tk.getDiaChi());
+            ps.setString(9, tk.getGioiTinh());
+
+            ps.executeUpdate();
         }
         return tk;
     }
 
     // Cập nhật thông tin
     public boolean updateInfo(TaiKhoan tk) throws SQLException {
-        String sql = "UPDATE tai_khoan " +
-                     "SET hoDem = ?, ten = ?, ngaySinh = ?, diaChi = ?, gioiTinh = ? " +
-                     "WHERE idTaiKhoan = ?";
+        String sql = "UPDATE tai_khoan SET hoDem=?, ten=?, ngaySinh=?, diaChi=?, gioiTinh=? WHERE idTaiKhoan=?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, tk.getHoDem());
             ps.setString(2, tk.getTen());
-            ps.setString(3, tk.getNgaySinh());
+            ps.setString(3, tk.getNgaySinh());   // varchar nullable ok
             ps.setString(4, tk.getDiaChi());
             ps.setString(5, tk.getGioiTinh());
-            ps.setString(6, tk.getIdTaiKhoan());
+            ps.setString(6, tk.getIdTaiKhoan()); // ✅ chỉ để xác định dòng
 
-            int updated = ps.executeUpdate();
-            return updated > 0;
+            return ps.executeUpdate() > 0;
         }
     }
 
@@ -159,8 +147,7 @@ public class TaiKhoanRepository {
     public boolean updatePassword(String idTaiKhoan, String oldPass, String newPass) throws SQLException {
         String sql = "UPDATE tai_khoan SET matKhau = ? WHERE idTaiKhoan = ? AND matKhau = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, newPass);
             ps.setString(2, idTaiKhoan);

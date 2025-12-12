@@ -10,6 +10,8 @@
         <Property name="text" type="java.lang.String" value="Phim:"/>
       </Properties>
     </Component>
+    <Component class="com.toedter.calendar.JMonthChooser" name="jMonthChooser1">
+    </Component>
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
@@ -803,9 +805,6 @@
                   <Dimension value="[72, 32]"/>
                 </Property>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnLamMoiActionPerformed"/>
-              </Events>
             </Component>
           </SubComponents>
         </Container>
@@ -1006,31 +1005,39 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jScrollPane7" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace min="-2" pref="99" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jLabel4" min="-2" pref="49" max="-2" attributes="0"/>
-                          <Group type="102" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="99" max="-2" attributes="0"/>
                               <Component id="jLabel11" min="-2" pref="37" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="txtDay" min="-2" pref="81" max="-2" attributes="0"/>
+                              <Component id="txtDay" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="93" max="-2" attributes="0"/>
+                              <Component id="jLabel4" min="-2" pref="49" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="DateFromChooser" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace min="-2" pref="93" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="78" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="jLabel5" min="-2" pref="24" max="-2" attributes="0"/>
                           <Component id="jLabel10" min="-2" pref="37" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="txtMonth" max="32767" attributes="0"/>
+                          <Component id="DateToChooser" max="32767" attributes="0"/>
+                      </Group>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <EmptySpace min="-2" pref="198" max="-2" attributes="0"/>
-                              <Component id="jButton2" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="102" max="-2" attributes="0"/>
+                              <Component id="rp_From_To_Btn" min="-2" max="-2" attributes="0"/>
                               <EmptySpace pref="65" max="32767" attributes="0"/>
                               <Component id="btnDisplayChart" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
-                              <Component id="txtMonth" min="-2" pref="88" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="62" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="54" max="-2" attributes="0"/>
                               <Component id="jLabel9" min="-2" pref="37" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="txtYear" min="-2" pref="90" max="-2" attributes="0"/>
@@ -1069,19 +1076,19 @@
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="btnDisplayChart" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="1" attributes="0">
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
-                                  <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" alignment="1" groupAlignment="0" attributes="0">
+                              <Component id="DateToChooser" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="btnDisplayChart" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="rp_From_To_Btn" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                           </Group>
+                          <Component id="DateFromChooser" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel4" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jScrollPane7" pref="422" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jScrollPane7" pref="420" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -1164,12 +1171,12 @@
                 <Property name="text" type="java.lang.String" value="&#x110;&#x1ebf;n:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="jButton2">
+            <Component class="javax.swing.JButton" name="rp_From_To_Btn">
               <Properties>
                 <Property name="text" type="java.lang.String" value="B&#xe1;o c&#xe1;o (From-to)"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="rp_From_To_BtnActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JTextField" name="txtDay">
@@ -1177,6 +1184,10 @@
             <Component class="javax.swing.JTextField" name="txtMonth">
             </Component>
             <Component class="javax.swing.JTextField" name="txtYear">
+            </Component>
+            <Component class="com.toedter.calendar.JDateChooser" name="DateFromChooser">
+            </Component>
+            <Component class="com.toedter.calendar.JDateChooser" name="DateToChooser">
             </Component>
           </SubComponents>
         </Container>

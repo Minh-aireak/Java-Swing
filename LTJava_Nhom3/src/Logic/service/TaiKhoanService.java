@@ -15,6 +15,7 @@ public class TaiKhoanService {
 
     // Lớp Result dùng chung
     public static class Result<T> {
+
         private final boolean success;
         private final String message;
         private final T data;
@@ -25,9 +26,17 @@ public class TaiKhoanService {
             this.data = data;
         }
 
-        public boolean isSuccess() { return success; }
-        public String getMessage() { return message; }
-        public T getData() { return data; }
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public T getData() {
+            return data;
+        }
 
         public static <T> Result<T> ok(String msg, T data) {
             return new Result<>(true, msg, data);
@@ -54,15 +63,20 @@ public class TaiKhoanService {
         }
     }
 
+    //sinh id tk
+    private String generateIdTaiKhoan() {
+        return "TK_" + java.util.UUID.randomUUID().toString().replace("-", "");
+    }
+
     // logup
     public Result<TaiKhoan> dangKy(String soDienThoai,
-                                   String email,
-                                   String matKhau,
-                                   String hoDem,
-                                   String ten,
-                                   String gioiTinh,
-                                   String ngaySinh,
-                                   String diaChi) {
+            String email,
+            String matKhau,
+            String hoDem,
+            String ten,
+            String gioiTinh,
+            String ngaySinh,
+            String diaChi) {
         try {
             // check sdt
             if (repo.findByPhone(soDienThoai).isPresent()) {
@@ -75,6 +89,7 @@ public class TaiKhoanService {
             }
 
             TaiKhoan tk = new TaiKhoan();
+            tk.setIdTaiKhoan(generateIdTaiKhoan());
             tk.setSoDienThoai(soDienThoai);
             tk.setEmail(email);
             tk.setMatKhau(matKhau);
@@ -112,11 +127,11 @@ public class TaiKhoanService {
 
     // update inf
     public Result<TaiKhoan> capNhatThongTin(String idTaiKhoan,
-                                            String hoDem,
-                                            String ten,
-                                            String ngaySinh,
-                                            String diaChi,
-                                            String gioiTinh) {
+            String hoDem,
+            String ten,
+            String ngaySinh,
+            String diaChi,
+            String gioiTinh) {
         try {
             Optional<TaiKhoan> opt = repo.findById(idTaiKhoan);
             if (opt.isEmpty()) {
@@ -125,18 +140,45 @@ public class TaiKhoanService {
 
             TaiKhoan tk = opt.get();
 
-            if (hoDem != null && !hoDem.trim().isEmpty()) tk.setHoDem(hoDem.trim());
-            if (ten != null && !ten.trim().isEmpty()) tk.setTen(ten.trim());
-            if (ngaySinh != null && !ngaySinh.trim().isEmpty()) tk.setNgaySinh(ngaySinh.trim());
-            if (diaChi != null && !diaChi.trim().isEmpty()) tk.setDiaChi(diaChi.trim());
-            if (gioiTinh != null && !gioiTinh.trim().isEmpty()) tk.setGioiTinh(gioiTinh.trim());
+            if (hoDem != null && !hoDem.trim().isEmpty()) {
+                tk.setHoDem(hoDem.trim());
+            }
+
+            if (ten != null && !ten.trim().isEmpty()) {
+                tk.setTen(ten.trim());
+            }
+
+            // ngaySinh
+            if (ngaySinh != null) {
+                String ns = ngaySinh.trim();
+                if (!ns.isEmpty()) {
+                    if (!ns.matches("^\\d{2}/\\d{2}/\\d{4}$")) {
+                        return Result.fail("Ngày sinh phải đúng định dạng dd/MM/yyyy!");
+                    }
+                    tk.setNgaySinh(ns);
+                }
+                // nếu ns rỗng => không đụng vào (giữ nguyên)
+            }
+
+            if (diaChi != null && !diaChi.trim().isEmpty()) {
+                tk.setDiaChi(diaChi.trim());
+            }
+
+            if (gioiTinh != null && !gioiTinh.trim().isEmpty()) {
+                String gt = gioiTinh.trim();
+                if (!gt.equals("Nam") && !gt.equals("Nữ")) {
+                    return Result.fail("Giới tính chỉ được là 'Nam' hoặc 'Nữ'!");
+                }
+                tk.setGioiTinh(gt);
+            }
 
             boolean ok = repo.updateInfo(tk);
             if (!ok) {
                 return Result.fail("Cập nhật thất bại!");
             }
 
-            if (currentUser != null && currentUser.getIdTaiKhoan().equals(idTaiKhoan)) {
+            // Cập nhật currentUser (nếu bạn đang dùng)
+            if (currentUser != null && idTaiKhoan.equals(currentUser.getIdTaiKhoan())) {
                 currentUser = tk;
             }
 
@@ -147,7 +189,7 @@ public class TaiKhoanService {
         }
     }
 
-    // 🔹 LOGOUT
+    // dxuat
     public void logout() {
         currentUser = null;
     }

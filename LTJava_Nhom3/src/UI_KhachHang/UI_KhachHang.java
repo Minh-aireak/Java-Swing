@@ -4,6 +4,7 @@ import Logic.entity.Phim;
 import ConnectDatabase.DatabaseConnection;
 import Global.Session;
 import Logic.controller.LoginController;
+import Logic.controller.PaymentController;
 import Logic.controller.VeController;
 import Logic.dto.request.DataCreateVeRequest;
 import Logic.dto.response.ChiTietLichChieuResponse;
@@ -45,6 +46,7 @@ import java.util.UUID;
 
 public class UI_KhachHang extends javax.swing.JFrame {
     VeController veController = new VeController(new VeService(new VeRepository()));
+    PaymentController paymentController = new PaymentController();
     DefaultTableModel model, model2;
     LoginController loginController;
     static Session session;
@@ -2098,37 +2100,37 @@ public class UI_KhachHang extends javax.swing.JFrame {
     // KHÔNG LIÊN QUAN
     private void dv_btn_ThanhToanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dv_btn_ThanhToanActionPerformed
 
-        try {
-            
-            JOptionPane.showMessageDialog(rootPane, "<html>Thanh toán thành công! <br> Chúc bạn ngày mới tốt lành</html>", "Thông báo!", JOptionPane.INFORMATION_MESSAGE);
-            veController.saveVe(new DataCreateVeRequest(
-                    UUID.randomUUID().toString(), 
-                    session.getCurrentUser().getIdTaiKhoan(),
-                    LocalDateTime.now(),
-                    dv_lab_TongTien.getText(),
-                    listGheForPay,
-                    idGia,
-                    idLichChieu,
-                    "Đã đặt"
-            ));
-            tabbed.setSelectedIndex(4);
-
-            resetGhe();
-            updateGheAfterPay(selectedIndexLichChieuList);
-            displayListBill();
-            dv_lab_StandardQuantity.setText("0");
-            dv_lab_StandardSum.setText("0");
-            dv_lab_VIPQuantity.setText("0");
-            dv_lab_VIPSum.setText("0");
-            dv_lab_TripleQuantity.setText("0");
-            dv_lab_TripleSum.setText("0");
-            dv_lab_TongTien.setText("0");
-            displayChiTietDon(false);
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Notification!", JOptionPane.INFORMATION_MESSAGE);
-        }
+//        try {
+//            paymentController.
+//            JOptionPane.showMessageDialog(rootPane, "<html>Thanh toán thành công! <br> Chúc bạn ngày mới tốt lành</html>", "Thông báo!", JOptionPane.INFORMATION_MESSAGE);
+//            veController.saveVe(new DataCreateVeRequest(
+//                    UUID.randomUUID().toString(), 
+//                    session.getCurrentUser().getIdTaiKhoan(),
+//                    LocalDateTime.now(),
+//                    dv_lab_TongTien.getText(),
+//                    listGheForPay,
+//                    idGia,
+//                    idLichChieu,
+//                    "Đã đặt"
+//            ));
+//            tabbed.setSelectedIndex(4);
+//
+//            resetGhe();
+//            updateGheAfterPay(selectedIndexLichChieuList);
+//            displayListBill();
+//            dv_lab_StandardQuantity.setText("0");
+//            dv_lab_StandardSum.setText("0");
+//            dv_lab_VIPQuantity.setText("0");
+//            dv_lab_VIPSum.setText("0");
+//            dv_lab_TripleQuantity.setText("0");
+//            dv_lab_TripleSum.setText("0");
+//            dv_lab_TongTien.setText("0");
+//            displayChiTietDon(false);
+//        } catch (SQLException ex) {
+//            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+//        } catch (Exception ex) {
+//            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Notification!", JOptionPane.INFORMATION_MESSAGE);
+//        }
     }//GEN-LAST:event_dv_btn_ThanhToanActionPerformed
 
     // Phim module
@@ -2274,71 +2276,55 @@ public class UI_KhachHang extends javax.swing.JFrame {
     }
 
     private void btn_CapNhatActionPerformed(java.awt.event.ActionEvent evt) {
+         if (loginController == null) loginController = new LoginController();
+    if (currentUser == null || currentUser.getIdTaiKhoan() == null || currentUser.getIdTaiKhoan().trim().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Bạn chưa đăng nhập hoặc thiếu ID tài khoản!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
 
-        if (currentUser == null) {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy tài khoản đang đăng nhập!");
+    // get datatừ form
+    String ten = txt_Ten.getText().trim();
+    String hoDem = txt_Ho.getText().trim();
+    String ngaySinhStr = txt_NgaySinh.getText().trim(); // dd/MM/yyyy hoặc rỗng
+    String diaChi = txt_DiaChi.getText().trim();
+    String gioiTinh = radNam.isSelected() ? "Nam" : (radNu.isSelected() ? "Nữ" : "");
+
+    if (!ngaySinhStr.isEmpty()) {
+        if (!ngaySinhStr.matches("^\\d{2}/\\d{2}/\\d{4}$")) {
+            JOptionPane.showMessageDialog(this, "Định dạng ngày sinh phải là dd/MM/yyyy", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
-        String hoDem       = txt_Ho.getText().trim();
-        String ten         = txt_Ten.getText().trim();
-        String ngaySinhStr = txt_NgaySinh.getText().trim();
-        String diaChi      = txt_DiaChi.getText().trim();
-        String gioiTinh    = radNam.isSelected() ? "Nam" : (radNu.isSelected() ? "Nữ" : "");
-
-        // validate ngày sinh (nếu nhập)
-        if (!ngaySinhStr.isEmpty()) {
-            if (!ngaySinhStr.matches("^\\d{2}/\\d{2}/\\d{4}$")) {
-                JOptionPane.showMessageDialog(this, "Định dạng ngày sinh phải là dd/MM/yyyy");
-                return;
-            }
-
-            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
-            sdf.setLenient(false);
-            try {
-                sdf.parse(ngaySinhStr);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Ngày sinh không hợp lệ!");
-                return;
-            }
-        }
-
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+        sdf.setLenient(false);
         try {
-            LoginResponse res = loginController.capNhatThongTin(
-                    currentUser.getIdTaiKhoan(),
-                    hoDem,
-                    ten,
-                    ngaySinhStr,
-                    diaChi,
-                    gioiTinh
-            );
-
-            if (res == null || res.getTaiKhoan() == null) {
-                String msg = (res != null && res.getMessage() != null)
-                        ? res.getMessage()
-                        : "Cập nhật thất bại!";
-                JOptionPane.showMessageDialog(this, msg, "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            TaiKhoan updated = res.getTaiKhoan();
-            currentUser = updated;
-            hscn_lab_XinChao.setText("Xin chào, " + updated.getTen() + "!");
-
-            JOptionPane.showMessageDialog(this,
-                    res.getMessage() != null ? res.getMessage() : "Cập nhật thành công!");
-
-            // Reset form
-            txt_Ten.setText("");
-            txt_Ho.setText("");
-            txt_NgaySinh.setText("");
-            txt_DiaChi.setText("");
-            radNam.setSelected(false);
-            radNu.setSelected(false);
-
+            sdf.parse(ngaySinhStr);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Ngày sinh không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+    }
+
+    // call controller
+    LoginResponse res = loginController.capNhatThongTin(
+            currentUser.getIdTaiKhoan(),  
+            hoDem,
+            ten,
+            ngaySinhStr,
+            diaChi,
+            gioiTinh
+    );
+
+    // xử lý response
+    if (res == null || !res.isSuccess() || res.getTaiKhoan() == null) {
+        String msg = (res != null && res.getMessage() != null) ? res.getMessage() : "Cập nhật thất bại!";
+        JOptionPane.showMessageDialog(this, msg, "Lỗi", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    currentUser = res.getTaiKhoan();
+    hscn_lab_XinChao.setText("Xin chào, " + currentUser.getTen() + "!");
+
+    JOptionPane.showMessageDialog(this, res.getMessage() != null ? res.getMessage() : "Cập nhật thành công!");
     }
 
     // KHÔNG LIÊN QUAN (*)

@@ -1,6 +1,6 @@
 package Logic.controller;
 
-import java.util.Date;
+import java.sql.*;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import Logic.repository.BaoCaoRepository;
@@ -8,7 +8,10 @@ import Logic.repository.BaoCaoRepository;
 public class BaoCaoController {
     
     public static final int SO_GHE_TOI_DA = 30;
-    BaoCaoRepository reportRepo;
+    BaoCaoRepository reportRepo = new BaoCaoRepository();
+    public BaoCaoController(BaoCaoRepository reportRepo) {
+        this.reportRepo = reportRepo;
+    }
             
     public boolean ktraHopLe(String day, String month, String year, String errorMessage){
         if (!day.isEmpty() && !day.matches("\\d+")) {
@@ -250,7 +253,12 @@ public class BaoCaoController {
 //        }
     }
     
-    public void taoBaoCaoFromTo(Date dateFrom, Date dateTo, DefaultTableModel modelReport){
-        
+    public void taoBaoCaoFromTo(Date dateFrom, Date dateTo, DefaultTableModel modelReport) throws Exception {
+        try{
+            reportRepo.capNhatSoGheConLaiFromTo(dateFrom, dateTo, SO_GHE_TOI_DA);
+            reportRepo.layBaoCaoFromTo(dateFrom, dateTo, SO_GHE_TOI_DA, modelReport);
+        }catch(Exception e){
+            throw new Exception("Lỗi tạo báo cáo!");
+        }
     }
 }
