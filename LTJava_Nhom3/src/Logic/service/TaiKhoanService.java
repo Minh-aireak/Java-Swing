@@ -1,5 +1,6 @@
 package Logic.service;
 
+import Global.Session;
 import Logic.entity.TaiKhoan;
 import Logic.repository.TaiKhoanRepository;
 
@@ -10,6 +11,7 @@ public class TaiKhoanService {
 
     private final TaiKhoanRepository repo = new TaiKhoanRepository();
     private TaiKhoan currentUser;
+    private static Session session;
 
     // Lớp Result dùng chung
     public static class Result<T> {
@@ -42,6 +44,7 @@ public class TaiKhoanService {
             Optional<TaiKhoan> opt = repo.findByPhoneAndPassword(soDienThoai, matKhau);
             if (opt.isPresent()) {
                 currentUser = opt.get();
+                session.setCurrentUser(currentUser);
                 return Result.ok("Đăng nhập thành công!", currentUser);
             } else {
                 return Result.fail("Sai số điện thoại hoặc mật khẩu!");

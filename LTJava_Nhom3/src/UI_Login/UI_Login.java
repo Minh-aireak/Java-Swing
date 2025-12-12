@@ -12,11 +12,11 @@ public class UI_Login extends javax.swing.JFrame {
     public static Session session;
     private LoginController loginController;
 
-    // public UI_Login() {
-    // initComponents();
-    // loginController = new LoginController();
-    // this.setLocationRelativeTo(null);
-    // }
+     public UI_Login() {
+     initComponents();
+     loginController = new LoginController();
+     this.setLocationRelativeTo(null);
+     }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -132,18 +132,18 @@ public class UI_Login extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                        .addComponent(btn_DangNhap)
-                        .addGap(209, 209, 209))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addComponent(jLabel1)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnDangKy))
+                                .addComponent(btnDangKy, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(khongbiry, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(khongco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(63, 63, 63))))
+                        .addGap(63, 63, 63))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                        .addComponent(btn_DangNhap, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(205, 205, 205))))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -207,7 +207,7 @@ public class UI_Login extends javax.swing.JFrame {
         return;
     }
 
-    try {
+//    try {
         // call backend đăng nhập
         LoginResponse response = loginController.dangNhap(soDienThoai, matKhau);
 
@@ -234,25 +234,24 @@ public class UI_Login extends javax.swing.JFrame {
         );
 
         // UI_KhachHang và truyền tài khoản đang đăng nhập
-        TaiKhoan tk = response.getTaiKhoan();
-        UI_KhachHang ui = new UI_KhachHang(tk);  // cần thêm constructor này ở UI_KhachHang
+        UI_KhachHang ui = new UI_KhachHang();
         ui.setLocationRelativeTo(null);
         ui.setVisible(true);
 
         // close form đăng nhập
         this.dispose();
 
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(
-                this,
-                "Lỗi khi đăng nhập: " + ex.getMessage(),
-                "Lỗi",
-                JOptionPane.ERROR_MESSAGE
-        );
-    } finally {
-        //delete mật khẩu khỏi bộ nhớ (optional)
-        java.util.Arrays.fill(passwordChars, '\0');
-    }
+//    } catch (Exception ex) {
+//        JOptionPane.showMessageDialog(
+//                this,
+//                "Lỗi khi đăng nhập: " + ex.getMessage(),
+//                "Lỗi",
+//                JOptionPane.ERROR_MESSAGE
+//        );
+//    } finally {
+//        //delete mật khẩu khỏi bộ nhớ (optional)
+//        java.util.Arrays.fill(passwordChars, '\0');
+//    }
 }
 
     private void btnDangKyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDangKyActionPerformed

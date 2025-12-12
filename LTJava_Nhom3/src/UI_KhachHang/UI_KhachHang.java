@@ -10,6 +10,8 @@ import Logic.dto.response.ChiTietLichChieuResponse;
 import Logic.dto.response.ListLichChieuResponse;
 import Logic.dto.response.LoginResponse;
 import Logic.entity.TaiKhoan;
+import Logic.repository.VeRepository;
+import Logic.service.VeService;
 import UI_Login.UI_Login;
 import java.awt.Color;
 import java.awt.Component;
@@ -42,15 +44,11 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class UI_KhachHang extends javax.swing.JFrame {
-    VeController veController;
+    VeController veController = new VeController(new VeService(new VeRepository()));
     DefaultTableModel model, model2;
     LoginController loginController;
     static Session session;
     TaiKhoan currentUser = session.getCurrentUser();
-    public UI_KhachHang(TaiKhoan user) {
-        this(); // gọi constructor mặc định
-        this.currentUser = user;
-    }
     Phim chosenPhim = new Phim();
     
     
@@ -107,7 +105,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
             model.setRowCount(0);
             Connection connection = DatabaseConnection.getConnection();
             PreparedStatement ps = connection.prepareStatement(
-                    "SELECT P.idPhim, p.tenPhim, p.thoiLuong " +
+                    "SELECT p.idPhim, p.tenPhim, p.thoiLuong " +
                     "FROM phim p ");
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
@@ -2348,6 +2346,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
         model2.setRowCount(0);
         try {
             var response = veController.getListBill();
+            System.err.println(response);
             response.forEach((t) -> {
                 Vector<String> v = new Vector<>();
                 v.add(t.getIdBill());

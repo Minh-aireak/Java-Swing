@@ -11,6 +11,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import Logic.controller.PhimController;
 import Logic.controller.VeController;
 import Logic.entity.Phim;
+import Logic.entity.Ve;
 
 
 public class MainFrame extends javax.swing.JFrame {
@@ -930,7 +931,6 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnHuyVeActionPerformed
 
-    /// >?????
     private void btnXemChiTietActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXemChiTietActionPerformed
 //        XemChiTietVe xemChiTietVe = new XemChiTietVe();
 //        xemChiTietVe.setVisible(true);
@@ -1156,7 +1156,7 @@ public class MainFrame extends javax.swing.JFrame {
     
     private void loadDatVeData() {
 //        modelDatVe.setRowCount(0);
-//        ArrayList<Ve> dsDatVe = VeDAO.layDanhSachDatVe();
+//        ArrayList<Ve> dsDatVe = veController.;
 //        for (Ve dv : dsDatVe) {
 //            modelDatVe.addRow(new Object[]{
 //                dv.getIdVe(),

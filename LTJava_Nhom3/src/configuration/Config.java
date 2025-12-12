@@ -1,5 +1,6 @@
 package configuration;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -105,27 +106,17 @@ public class Config {
         }
     }
     
-    public static String getIpAddress() {
+    public static String getIpAddress(HttpServletRequest request) {
+        String ipAdress;
         try {
-        Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-        while (interfaces.hasMoreElements()) {
-            NetworkInterface networkInterface = interfaces.nextElement();
-            if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-                continue;
+            ipAdress = request.getHeader("X-FORWARDED-FOR");
+            if (ipAdress == null) {
+                ipAdress = request.getRemoteAddr();
             }
-            
-            Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
-            while (addresses.hasMoreElements()) {
-                InetAddress address = addresses.nextElement();
-                if (address instanceof Inet4Address) {
-                    return address.getHostAddress();
-                }
-            }
+        } catch (Exception e) {
+            ipAdress = "Invalid IP:" + e.getMessage();
         }
-    } catch (SocketException e) {
-        e.printStackTrace();
-    }
-    return "127.0.0.1";
+        return ipAdress;
     }
 
     public static String getRandomNumber(int len) {

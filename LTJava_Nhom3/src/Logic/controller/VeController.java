@@ -13,6 +13,10 @@ import java.util.List;
 
 public class VeController {
     VeService veService;
+
+    public VeController(VeService veService) {
+        this.veService = veService;
+    }
     
     public void saveVe(DataCreateVeRequest request) throws Exception {
         if(request.getTongTien().isEmpty() || Integer.valueOf(request.getTongTien()) == 0){
@@ -28,6 +32,7 @@ public class VeController {
     }
     
     public List<BillResponse> getListBill() throws SQLException{
+        System.err.println("123123");
         return veService.getListBill();
     }
     
