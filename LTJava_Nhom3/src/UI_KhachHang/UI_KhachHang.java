@@ -1,8 +1,6 @@
 package UI_KhachHang;
 
-import entity.TaiKhoan;
 import ConnectDatabase.DatabaseConnection;
-import QuanLyVeCho.controller.VeController;
 import static UI_KhachHang.DatVe_DAO.getLichChieu;
 import UI_Login.UI_Login;
 import java.awt.Color;
@@ -38,9 +36,6 @@ import javax.swing.table.DefaultTableModel;
 import java.sql.Timestamp;
 
 public class UI_KhachHang extends javax.swing.JFrame {
-    VeController veController;
-
-            
     DefaultTableModel model, model2;
     Phim chosenPhim = new Phim();
     ArrayList<String> listGheVIP = new ArrayList<>(Arrays.asList("B3,B4,B5,C3,C4,C5".split(",")));
@@ -55,6 +50,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
     public UI_KhachHang() {
         try {
             initComponents();
+            // Images will be loaded only from absolute filesystem paths or http(s) URLs
             btn_LogOut.setIcon(new ImageIcon(getClass().getResource("/UI_KhachHang/icon/LogOut.png")));
             hscn_lab_AnhAccount.setIcon(new ImageIcon(getClass().getResource("/UI_KhachHang/icon/Account.png")));
             dv_lab_AnhManHinh.setIcon(new ImageIcon(getClass().getResource("/UI_KhachHang/icon/Screen.png")));
@@ -107,11 +103,13 @@ public class UI_KhachHang extends javax.swing.JFrame {
                 model.addRow(v);
             }
             table.setModel(model);
-        } catch (SQLException ex) {
+        } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
         }
         displayBill();
     }
+
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -1359,7 +1357,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
                 .addGroup(jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSeparator6, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 43, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -1389,7 +1387,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
                         .addGroup(split_RightLayout.createSequentialGroup()
                             .addGap(19, 19, 19)
                             .addComponent(dv_lab_TenPhim, javax.swing.GroupLayout.PREFERRED_SIZE, 535, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addContainerGap(37, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, split_RightLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(dv_btn_ThanhToan, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1521,7 +1519,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
         jPanel12Layout.setHorizontalGroup(
             jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel12Layout.createSequentialGroup()
-                .addContainerGap(136, Short.MAX_VALUE)
+                .addContainerGap(197, Short.MAX_VALUE)
                 .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel12Layout.createSequentialGroup()
                         .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1586,7 +1584,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
             jpane_HoSoCaNhanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpane_HoSoCaNhanLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1044, Short.MAX_VALUE)
+                .addComponent(jSplitPane1)
                 .addContainerGap())
             .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -1612,7 +1610,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
                 .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 944, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
-                .addContainerGap(69, Short.MAX_VALUE))
+                .addContainerGap(46, Short.MAX_VALUE))
         );
         jPanel17Layout.setVerticalGroup(
             jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1628,20 +1626,20 @@ public class UI_KhachHang extends javax.swing.JFrame {
 
         ttb_Table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Mã Bill", "Tên phim", "Tổng tiền"
+                "Mã Bill", "STT", "Tên phim", "Tổng tiền"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -1833,21 +1831,21 @@ public class UI_KhachHang extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(tabbed, javax.swing.GroupLayout.PREFERRED_SIZE, 1038, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(tabbed, javax.swing.GroupLayout.PREFERRED_SIZE, 1038, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(tabbed, javax.swing.GroupLayout.PREFERRED_SIZE, 569, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -1865,7 +1863,18 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }
     
-    // KHÔNG LIÊN QUAN 
+    private void displayChiTietBill(boolean flag){
+        if(!flag){
+            for(Component comp : ttb_jp_ChiTietBill.getComponents()){
+                comp.setVisible(false);
+            }
+        }else{
+            for(Component comp : ttb_jp_ChiTietBill.getComponents()){
+                comp.setVisible(true);
+            }
+        }
+    }
+    
     private void displayChiTietDon(boolean flag){
         dv_lab_Standard.setVisible(flag);
         dv_lab_StandardQuantity.setVisible(flag);
@@ -1878,7 +1887,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         dv_lab_TripleSum.setVisible(flag);
     }
 
-    // KHÔNG LIÊN QUAN
     private void ctp_btn_DatVeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctp_btn_DatVeActionPerformed
         listTimestamps.clear();
         if(ctp_lab_TenPhim.getText().isEmpty()){
@@ -1915,12 +1923,11 @@ public class UI_KhachHang extends javax.swing.JFrame {
                 return;
             }
             tabbed.setSelectedIndex(2);
-        } catch (SQLException ex) {
+        } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_ctp_btn_DatVeActionPerformed
 
-    // KHÔNG LIÊN QUAN (*)
     private void resetGhe(){
         for(Component comp : dv_jp_LeftGhe.getComponents()){
             if(comp instanceof JToggleButton jtbtn){
@@ -1946,7 +1953,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }
 
-    // KHÔNG LIÊN QUAN
     private void updateQuantityAndSumForPay(int value1, int value2){
         JLabel[] listNameLabel = {dv_lab_Standard, dv_lab_VIP, dv_lab_Triple};
         JLabel[] listQuantity = {dv_lab_StandardQuantity, dv_lab_VIPQuantity, dv_lab_TripleQuantity};
@@ -1975,7 +1981,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }
 
-    // KHÔNG LIÊN QUAN
     private void updateGheForPay(JToggleButton jgbtn){
         int value1;
         if(listGheVIP.contains(jgbtn.getActionCommand())){
@@ -2002,7 +2007,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }
 
-    // KHÔNG LIÊN QUAN
     private void addEvenListener(JToggleButton jgbtn){
         jgbtn.addItemListener(e -> {
             if(!dv_lab_TenPhong.getText().equals("Phòng")){
@@ -2018,7 +2022,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         });
     }
 
-    // KHÔNG LIÊN QUAN
     private void themEvenListener(){
         for(Component comp : dv_jp_LeftGhe.getComponents()){
             if(comp instanceof JToggleButton jtbtn){
@@ -2032,7 +2035,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }
     
-    // KHÔNG LIÊN QUAN
     private void updateGheAfterPay(int index){
         ArrayList<String> listGheDaDat = new ArrayList<>();
         try {
@@ -2066,13 +2068,12 @@ public class UI_KhachHang extends javax.swing.JFrame {
                 }
             }
             
-        } catch (SQLException ex) {
+        } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }
 
-    // KHÔNG LIÊN QUAN
     private void dv_cbo_LichChieuItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_dv_cbo_LichChieuItemStateChanged
         if(evt.getStateChange() == ItemEvent.SELECTED){
             resetGhe();
@@ -2126,7 +2127,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
                     listGiaVe.add(Integer.valueOf(rs.getString("VIP")));
                     listGiaVe.add(Integer.valueOf(rs.getString("Triple")));
                 }
-            } catch (SQLException ex) {
+            } catch (SQLException | ClassNotFoundException ex) {
                 Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
             }
         }  
@@ -2137,10 +2138,10 @@ public class UI_KhachHang extends javax.swing.JFrame {
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }//GEN-LAST:event_btn_DoiMatKhauActionPerformed
-    
-    // KHÔNG LIÊN QUAN
-    private void dv_btn_ThanhToanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dv_btn_ThanhToanActionPerformed
 
+    private void dv_btn_ThanhToanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dv_btn_ThanhToanActionPerformed
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         if(dv_lab_TenPhong.getText() == "Phòng"){
             JOptionPane.showMessageDialog(rootPane, "<html>Không thể thanh toán! <br> Bạn chưa chọn phim</html>", "Thông báo!", JOptionPane.ERROR_MESSAGE);
             return;
@@ -2150,8 +2151,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }else{
             try {
                 Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement ps = null;
-                ResultSet rs = null;
                 int index = 1;
                 LocalDateTime now = LocalDateTime.now();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -2196,7 +2195,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
                 ps.setString(1, String.valueOf(listGheForPay.size()));
                 ps.setString(2, idLichChieu);
                 ps.executeUpdate();
-            } catch (SQLException ex) {
+            } catch (SQLException | ClassNotFoundException ex) {
                 Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
             }
             JOptionPane.showMessageDialog(rootPane, "<html>Thanh toán thành công! <br> Chúc bạn ngày mới tốt lành</html>", "Thông báo!", JOptionPane.INFORMATION_MESSAGE);
@@ -2205,7 +2204,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
 
         resetGhe();
         updateGheAfterPay(selectedIndexLichChieuList);
-        displayListBill();
+        displayBill();
         dv_lab_StandardQuantity.setText("0");
         dv_lab_StandardSum.setText("0");
         dv_lab_VIPQuantity.setText("0");
@@ -2249,12 +2248,12 @@ public class UI_KhachHang extends javax.swing.JFrame {
                 chosenPhim.setMoTa(rs.getString("moTa"));
                 ctp_lab_MoTa.setText("<html>" + rs.getString("moTa") + "</html>");
                 chosenPhim.setAnhPhim(rs.getString("anhPhim"));
-                byte[] imageByte = rs.getBytes("anhPhim");
-                ImageIcon imgIcon = new ImageIcon(imageByte);
-                Image img = imgIcon.getImage().getScaledInstance(ctp_lab_AnhPhim.getWidth(), ctp_lab_AnhPhim.getHeight(), Image.SCALE_SMOOTH);
-                ctp_lab_AnhPhim.setIcon(new ImageIcon(img));
+                // Database có thể lưu đường dẫn tuyệt đối hoặc chỉ tên file.
+                // Dùng helper để thử nhiều cách load: HTTP, filesystem đầy đủ, hoặc classpath /icons_imgs/{basename}.
+                String imageFileName = rs.getString("anhPhim");
+                setLabelImageFromPath(ctp_lab_AnhPhim, imageFileName);
             }
-        } catch (SQLException ex) {
+        } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
         }
         displayChiTietPhim(true);
@@ -2322,7 +2321,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
                     return;
                 }
                 table.setModel(model);
-            } catch (SQLException ex) {
+            } catch (ClassNotFoundException | SQLException ex) {
                 Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
             }
     }//GEN-LAST:event_h_btn_TimKiemActionPerformed
@@ -2412,113 +2411,85 @@ public class UI_KhachHang extends javax.swing.JFrame {
             txt_DiaChi.setText("");
             radNam.setSelected(false);
             radNu.setSelected(false);
-        } catch (HeadlessException | SQLException e) {
+        } catch (HeadlessException | ClassNotFoundException | SQLException e) {
             JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
         }
     }//GEN-LAST:event_btn_CapNhatActionPerformed
 
-    // KHÔNG LIÊN QUAN (*)
-    private void displayListBill(){
+    private void displayBill(){
+        int index = 1;
         model2.setRowCount(0);
-//        Connection connection;
-//        try {
-//            connection = DatabaseConnection.getConnection();
-//            String statement = "SELECT DISTINCT b.idBill, p.tenPhim, b.tongTien " +
-//            "FROM phim p " +
-//            "JOIN lich_chieu lc ON p.idPhim = lc.idPhim " +
-//            "JOIN ve v ON lc.idLichChieu = v.idLichChieu " +
-//            "JOIN bill b ON v.idBill = b.idBill " +
-//            "JOIN tai_khoan tk ON b.idTaiKhoan = tk.idTaiKhoan " +
-//            "WHERE tk.idTaiKhoan = ? ";
-//            PreparedStatement ps = connection.prepareStatement(statement);
-//            ps.setString(1, TaiKhoan.idTaiKhoan);
-//            ResultSet rs = ps.executeQuery();
-//            while(rs.next()){
-//                Vector<String> v = new Vector<>();
-//                v.add(rs.getString("idBill"));
-//                v.add(String.valueOf(index));
-//                v.add(rs.getString("tenPhim"));
-//                v.add(rs.getString("tongTien"));
-//                model2.addRow(v);
-//                index += 1;
-//            }
-//            ttb_Table.setModel(model2);
-//        } catch (SQLException ex) {
-//            Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        veController.getListBill().forEach((t) -> {
-            Vector<String> v = new Vector<>();
-            v.add(t.getIdBill());
-            v.add(t.getTenPhim());
-            v.add(String.valueOf(t.getTongTien()));
-            model2.addRow(v);
-        });
-        ttb_Table.setModel(model2);
-    }
-
-    // KHÔNG LIÊN QUAN (*)
-    private void displayChiTietBill(boolean flag){
-        if(!flag){
-            for(Component comp : ttb_jp_ChiTietBill.getComponents()){
-                comp.setVisible(false);
+        Connection connection;
+        try {
+            connection = DatabaseConnection.getConnection();
+            String statement = "SELECT DISTINCT b.idBill, p.tenPhim, b.tongTien " +
+            "FROM phim p " +
+            "JOIN lich_chieu lc ON p.idPhim = lc.idPhim " +
+            "JOIN ve v ON lc.idLichChieu = v.idLichChieu " +
+            "JOIN bill b ON v.idBill = b.idBill " +
+            "JOIN tai_khoan tk ON b.idTaiKhoan = tk.idTaiKhoan " +
+            "WHERE tk.idTaiKhoan = ? ";
+            PreparedStatement ps = connection.prepareStatement(statement);
+            ps.setString(1, TaiKhoan.idTaiKhoan);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                Vector<String> v = new Vector<>();
+                v.add(rs.getString("idBill"));
+                v.add(String.valueOf(index));
+                v.add(rs.getString("tenPhim"));
+                v.add(rs.getString("tongTien"));
+                model2.addRow(v);
+                index += 1;
             }
-        }else{
-            for(Component comp : ttb_jp_ChiTietBill.getComponents()){
-                comp.setVisible(true);
-            }
+            ttb_Table.setModel(model2);
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    // KHÔNG LIÊN QUAN (*)
     private void ttb_TableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ttb_TableMouseClicked
         indexRow = ttb_Table.getSelectedRow();
-        String idBill = ttb_Table.getValueAt(indexRow, 0).toString();
-//        try {
-//            Connection connection = DatabaseConnection.getConnection();
-//            String statement = "SELECT DISTINCT lc.idLichChieu, p.tenPhim, lc.gioChieu, GROUP_CONCAT(v.idGhe SEPARATOR ', ') AS idGhe, pc.tenPhong, b.thoiGianDat , b.tongTien " +
-//            "FROM phim p " +
-//            "JOIN lich_chieu lc ON p.idPhim = lc.idPhim " +
-//            "JOIN ve v ON lc.idLichChieu = v.idLichChieu " +
-//            "JOIN bill b ON b.idBill = v.idBill " +
-//            "JOIN tai_khoan tk ON b.idTaiKhoan = tk.idTaiKhoan " +
-//            "JOIN phong_chieu pc ON lc.idPhongChieu = pc.idPhongChieu " +
-//            "WHERE tk.idTaiKhoan = ? " +
-//            "AND b.idBill = ? " +
-//            "GROUP BY lc.idLichChieu, p.tenPhim, lc.gioChieu, p.thoiLuong, pc.tenPhong, b.thoiGianDat, b.tongTien ";
-//            PreparedStatement ps = connection.prepareStatement(statement);
-//            ps.setString(1, TaiKhoan.idTaiKhoan);
-//            ps.setString(2, data);
-//            ResultSet rs = ps.executeQuery();
-//            while (rs.next()){
-//                ttb_txt_TenPhim.setText(rs.getString("tenPhim"));
-//                Timestamp timeStamp = rs.getTimestamp("gioChieu");
-//                SimpleDateFormat newDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-//                String newTime = newDate.format(timeStamp);
-//                ttb_txt_XuatChieu.setText(newTime);
-//                String[] idGheNe = (rs.getString("idGhe")).split(", ");
-//                List<String> listIdGhe = Arrays.asList(idGheNe);
-//                Collections.sort(listIdGhe);
-//                ttb_txt_SoGheDaDat.setText(String.join(", ", listIdGhe));
-//                ttb_txt_PhongChieu.setText(rs.getString("tenPhong").substring(13));
-//                Timestamp timeStamp1 = rs.getTimestamp("thoiGianDat");
-//                SimpleDateFormat newDate1 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-//                String newTime1 = newDate1.format(timeStamp1);
-//                ttb_txt_ThoiGianDat.setText(newTime1);
-//                ttb_txt_TongTien.setText(rs.getString("tongTien"));
-//            }
-//        } catch (SQLException ex) {
-//            Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        var data = veController.getChiTietBill(idBill);
-        ttb_txt_TenPhim.setText(data.getTenPhim());
-        ttb_txt_XuatChieu.setText(data.getXuatChieu());
-        ttb_txt_SoGheDaDat.setText(data.getSoGheDaDat());
-        ttb_txt_PhongChieu.setText(data.getPhongChieu().substring(13));
-        ttb_txt_ThoiGianDat.setText(data.getThoiGianDat());
-        ttb_txt_TongTien.setText(String.valueOf(data.getTongTien()));
+        String data = ttb_Table.getValueAt(indexRow, 0).toString();
+        try {
+            Connection connection = DatabaseConnection.getConnection();
+            String statement = "SELECT DISTINCT lc.idLichChieu, p.tenPhim, lc.gioChieu, GROUP_CONCAT(v.idGhe SEPARATOR ', ') AS idGhe, pc.tenPhong, b.thoiGianDat , b.tongTien " +
+            "FROM phim p " +
+            "JOIN lich_chieu lc ON p.idPhim = lc.idPhim " +
+            "JOIN ve v ON lc.idLichChieu = v.idLichChieu " +
+            "JOIN bill b ON b.idBill = v.idBill " +
+            "JOIN tai_khoan tk ON b.idTaiKhoan = tk.idTaiKhoan " +
+            "JOIN phong_chieu pc ON lc.idPhongChieu = pc.idPhongChieu " +
+            "WHERE tk.idTaiKhoan = ? " +
+            "AND b.idBill = ? " +
+            "GROUP BY lc.idLichChieu, p.tenPhim, lc.gioChieu, p.thoiLuong, pc.tenPhong, b.thoiGianDat, b.tongTien ";
+            PreparedStatement ps = connection.prepareStatement(statement);
+            ps.setString(1, TaiKhoan.idTaiKhoan);
+            ps.setString(2, data);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                ttb_txt_TenPhim.setText(rs.getString("tenPhim"));
+                Timestamp timeStamp = rs.getTimestamp("gioChieu");
+                SimpleDateFormat newDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                String newTime = newDate.format(timeStamp);
+                ttb_txt_XuatChieu.setText(newTime);
+                String[] idGheNe = (rs.getString("idGhe")).split(", ");
+                List<String> listIdGhe = Arrays.asList(idGheNe);
+                Collections.sort(listIdGhe);
+                ttb_txt_SoGheDaDat.setText(String.join(", ", listIdGhe));
+                ttb_txt_PhongChieu.setText(rs.getString("tenPhong").substring(13));
+                Timestamp timeStamp1 = rs.getTimestamp("thoiGianDat");
+                SimpleDateFormat newDate1 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+                String newTime1 = newDate1.format(timeStamp1);
+                ttb_txt_ThoiGianDat.setText(newTime1);
+                ttb_txt_TongTien.setText(rs.getString("tongTien"));
+            }
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
+        }
         displayChiTietBill(true);
     }//GEN-LAST:event_ttb_TableMouseClicked
 
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup bgr_GioiTinh;
     private javax.swing.JButton btn_CapNhat;
@@ -2693,6 +2664,37 @@ public class UI_KhachHang extends javax.swing.JFrame {
     private javax.swing.JTextField txt_NgaySinh;
     private javax.swing.JTextField txt_Ten;
     // End of variables declaration//GEN-END:variables
+
+    private void setLabelImageFromPath(javax.swing.JLabel label, String imageFileName) {
+        if (imageFileName == null) return;
+        imageFileName = imageFileName.trim();
+        if (imageFileName.isEmpty()) return;
+        try {
+            ImageIcon imgIcon = null;
+            // Only support HTTP/HTTPS URLs or absolute filesystem paths
+            if (imageFileName.startsWith("http://") || imageFileName.startsWith("https://")) {
+                java.net.URL url = new java.net.URL(imageFileName);
+                imgIcon = new ImageIcon(url);
+            } else {
+                java.io.File f = new java.io.File(imageFileName);
+                if (f.isAbsolute() && f.exists()) {
+                    imgIcon = new ImageIcon(f.getAbsolutePath());
+                } else {
+                   
+                    System.out.println("Ảnh không phải đường dẫn tuyệt đối hoặc không tồn tại: " + imageFileName);
+                }
+            }
+            if (imgIcon != null && imgIcon.getImage() != null) {
+                Image img = imgIcon.getImage().getScaledInstance(label.getWidth() > 0 ? label.getWidth() : 200,
+                        label.getHeight() > 0 ? label.getHeight() : 300, Image.SCALE_SMOOTH);
+                label.setIcon(new ImageIcon(img));
+            } else {
+                System.out.println("Không tìm thấy ảnh cho: " + imageFileName);
+            }
+        } catch (Exception e) {
+            System.out.println("Không thể load ảnh từ: " + imageFileName + " - " + e.getMessage());
+        }
+    }
 
 }
 
