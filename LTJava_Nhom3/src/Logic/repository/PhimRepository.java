@@ -2,9 +2,6 @@ package Logic.repository;
 
 import Logic.entity.Phim;
 import UI_Admin.DBConnection;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,7 +17,7 @@ import java.util.Map;
  */
 public class PhimRepository {
 
-    public boolean themPhim(Phim phim) throws FileNotFoundException, Exception {
+    public boolean themPhim(Phim phim) throws Exception {
         Connection conn = DBConnection.KetNoi();
         if (conn == null) return false;
 
@@ -38,31 +35,17 @@ public class PhimRepository {
                 psPhim.setString(5, phim.getNgonNgu());
                 psPhim.setString(6, phim.getDienVien());
                 psPhim.setString(7, phim.getMoTa());
+                // Lưu URL hoặc đường dẫn file dưới dạng string
+                psPhim.setString(8, phim.getAnhPhim() != null ? phim.getAnhPhim() : null);
+                
+                long t1 = System.currentTimeMillis();
+                int rowsAffected = psPhim.executeUpdate();
+                long t2 = System.currentTimeMillis();
+                System.out.println("[themPhim] executeUpdate (insert phim) took " + (t2 - t1) + "ms");
 
-                File selectedFile = new File(phim.getAnhPhim());
-                if (selectedFile.exists()) {
-                    try (FileInputStream fis = new FileInputStream(selectedFile)) {
-                        psPhim.setBinaryStream(8, fis, (int) selectedFile.length());
-                        long t1 = System.currentTimeMillis();
-                        int rowsAffected = psPhim.executeUpdate();
-                        long t2 = System.currentTimeMillis();
-                        System.out.println("[themPhim] executeUpdate (insert phim) took " + (t2 - t1) + "ms");
-
-                        if (rowsAffected == 0) {
-                            conn.rollback();
-                            return false;
-                        }
-                    }
-                } else {
-                    psPhim.setNull(8, java.sql.Types.BLOB);
-                    long t1 = System.currentTimeMillis();
-                    int rowsAffected = psPhim.executeUpdate();
-                    long t2 = System.currentTimeMillis();
-                    System.out.println("[themPhim] executeUpdate (insert phim, no file) took " + (t2 - t1) + "ms");
-                    if (rowsAffected == 0) {
-                        conn.rollback();
-                        return false;
-                    }
+                if (rowsAffected == 0) {
+                    conn.rollback();
+                    return false;
                 }
             }
 
@@ -131,13 +114,8 @@ public class PhimRepository {
             psPhim.setString(4, phim.getNgonNgu());
             psPhim.setString(5, phim.getDienVien());
             psPhim.setString(6, phim.getMoTa());
-            File selectedFile = new File(phim.getAnhPhim());
-            if (selectedFile.exists()) {
-                FileInputStream fis = new FileInputStream(selectedFile);
-                psPhim.setBinaryStream(7, fis, (int) selectedFile.length());
-            } else {
-                psPhim.setString(7, phim.getAnhPhim());
-            }
+            // Lưu URL hoặc đường dẫn file dưới dạng string
+            psPhim.setString(7, phim.getAnhPhim() != null ? phim.getAnhPhim() : null);
             psPhim.setString(8, phim.getIdPhim());
             int rowsAffected = psPhim.executeUpdate();
 
