@@ -3,9 +3,6 @@ package Logic.repository;
 import ConnectDatabase.DatabaseConnection;
 import Logic.entity.LichChieu;
 import java.sql.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -47,7 +44,7 @@ public class PhimRepository {
         return rows > 0;
     }
     
-    public boolean themPhim(Phim phim) throws FileNotFoundException, Exception {
+    public boolean themPhim(Phim phim) throws Exception {
         if (connection == null) return false;
 
         long t0 = System.currentTimeMillis();
@@ -65,30 +62,17 @@ public class PhimRepository {
                 psPhim.setString(6, phim.getDienVien());
                 psPhim.setString(7, phim.getMoTa());
 
-                File selectedFile = new File(phim.getAnhPhim());
-                if (selectedFile.exists()) {
-                    try (FileInputStream fis = new FileInputStream(selectedFile)) {
-                        psPhim.setBinaryStream(8, fis, (int) selectedFile.length());
-                        long t1 = System.currentTimeMillis();
-                        int rowsAffected = psPhim.executeUpdate();
-                        long t2 = System.currentTimeMillis();
-                        System.out.println("[themPhim] executeUpdate (insert phim) took " + (t2 - t1) + "ms");
+                // Lưu URL hoặc đường dẫn file dưới dạng string
+                psPhim.setString(8, phim.getAnhPhim() != null ? phim.getAnhPhim() : null);
+                
+                long t1 = System.currentTimeMillis();
+                int rowsAffected = psPhim.executeUpdate();
+                long t2 = System.currentTimeMillis();
+                System.out.println("[themPhim] executeUpdate (insert phim) took " + (t2 - t1) + "ms");
 
-                        if (rowsAffected == 0) {
-                            connection.rollback();
-                            return false;
-                        }
-                    }
-                } else {
-                    psPhim.setNull(8, java.sql.Types.BLOB);
-                    long t1 = System.currentTimeMillis();
-                    int rowsAffected = psPhim.executeUpdate();
-                    long t2 = System.currentTimeMillis();
-                    System.out.println("[themPhim] executeUpdate (insert phim, no file) took " + (t2 - t1) + "ms");
-                    if (rowsAffected == 0) {
-                        connection.rollback();
-                        return false;
-                    }
+                if (rowsAffected == 0) {
+                    connection.rollback();
+                    return false;
                 }
             }
 
@@ -156,16 +140,9 @@ public class PhimRepository {
             psPhim.setString(4, phim.getNgonNgu());
             psPhim.setString(5, phim.getDienVien());
             psPhim.setString(6, phim.getMoTa());
-            File selectedFile = new File(phim.getAnhPhim());
-            if (selectedFile.exists()) {
-                FileInputStream fis = new FileInputStream(selectedFile);
-                psPhim.setBinaryStream(7, fis, (int) selectedFile.length());
-            } else {
-                psPhim.setString(7, phim.getAnhPhim());
-            }
+            psPhim.setString(7, phim.getAnhPhim() != null ? phim.getAnhPhim() : null);
             psPhim.setString(8, phim.getIdPhim());
             int rowsAffected = psPhim.executeUpdate();
-
             if (rowsAffected == 0) {
                 connection.rollback();
                 return false;
@@ -409,5 +386,49 @@ public class PhimRepository {
             list.add(rs.getString("idPhongChieu"));
         }
         return list;
+    }
+    
+    public boolean xoaLichChieu(String idLichChieu) throws SQLException {
+        PreparedStatement psLichChieuGhe = null;
+        PreparedStatement psLichChieu = null;
+        boolean result = false;
+
+        try {
+            // 1. Tắt tự động lưu để quản lý Transaction
+            connection.setAutoCommit(false); 
+
+            // 2. Xóa các bản ghi trong bảng con (lichchieu_ghe) trước
+            String sqlLichChieuGhe = "DELETE FROM lichchieu_ghe WHERE idLichChieu = ?";
+            psLichChieuGhe = connection.prepareStatement(sqlLichChieuGhe);
+            psLichChieuGhe.setString(1, idLichChieu);
+            psLichChieuGhe.executeUpdate();
+
+            // 3. Xóa lịch chiếu trong bảng cha (lich_chieu)
+            String sqlLichChieu = "DELETE FROM lich_chieu WHERE idLichChieu = ?";
+            psLichChieu = connection.prepareStatement(sqlLichChieu);
+            psLichChieu.setString(1, idLichChieu);
+            int rows = psLichChieu.executeUpdate();
+
+            // 4. Nếu chạy đến đây không lỗi thì Commit (Lưu thật)
+            connection.commit();
+            result = rows > 0;
+
+        } catch (SQLException e) {
+            // 5. Nếu có lỗi thì Rollback (Hoàn tác)
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            throw e; // Ném lỗi ra để Service/Controller biết
+        } finally {
+            // 6. Đóng PreparedStatement và bật lại AutoCommit
+            if (psLichChieuGhe != null) psLichChieuGhe.close();
+            if (psLichChieu != null) psLichChieu.close();
+            connection.setAutoCommit(true); 
+        }
+        return result;
     }
 }

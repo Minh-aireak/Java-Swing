@@ -2,6 +2,8 @@ package UI_Admin;
 
 import Logic.controller.PhimController;
 import Logic.entity.LichChieu;
+import Logic.repository.PhimRepository;
+import Logic.service.PhimService;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -13,11 +15,7 @@ import java.util.List;
 
 public class AddLC extends javax.swing.JFrame {
     private final DefaultTableModel modelLichChieu;
-    PhimController phimController = new PhimController();
-    /**
-     * Creates new form AddLC
-     * @param model
-     */
+    private PhimController phimController = new PhimController(new PhimService(new PhimRepository()));
     public AddLC(DefaultTableModel model) {
         this.modelLichChieu = model;
         initComponents();

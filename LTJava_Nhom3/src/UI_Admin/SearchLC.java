@@ -1,13 +1,15 @@
 package UI_Admin;
 
 import Logic.controller.PhimController;
+import Logic.repository.PhimRepository;
+import Logic.service.PhimService;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
 
 public class SearchLC extends javax.swing.JFrame {
-    private PhimController phimController = new PhimController();
+    private PhimController phimController = new PhimController(new PhimService(new PhimRepository()));
     private final DefaultTableModel modelLichChieu;
     /**
      * Creates new form SearchLC
@@ -183,18 +185,43 @@ DefaultComboBoxModel<String> comboModel = new DefaultComboBoxModel<>();
     }//GEN-LAST:event_btnRefreshActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-//        String idLichChieu = txtLcID.getText().trim();
-//        String idPhim = txtFilmID.getText().trim();
-//        String dateTime = txtDate.getText().trim();
-//        String idPhongChieu = (String) cbbRoom.getSelectedItem();
-//        String soGheConLaiStr = txtSeatNum.getText().trim();
-//
-//        try {
-//            var response = phimController.addLichChieu(idLichChieu, idPhim, dateTime, idPhongChieu, soGheConLaiStr);
-//            JOptionPane.showMessageDialog(this, response.getMessage(), "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-//        } catch (Exception ex) {
-//            JOptionPane.showMessageDialog(this, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-//        }
+ String idLichChieu = txtLcID.getText().trim();
+    String idPhim = txtFilmID.getText().trim();
+    
+    // Lấy ID phòng chiếu (Xử lý trường hợp chọn "Tất cả" hoặc null)
+    String idPhongChieu = (String) cbbRoom.getSelectedItem();
+    if (idPhongChieu == null || idPhongChieu.trim().isEmpty()) {
+        idPhongChieu = ""; 
+    }
+
+    try {
+        // 2. Gọi Controller để tìm kiếm (Hàm searchLichChieu trả về danh sách List)
+        // Lưu ý: Controller cần có hàm searchLichChieu nhận 3 tham số này
+        var danhSachKetQua = phimController.searchLichChieu(idLichChieu, idPhim, idPhongChieu);
+        
+        // 3. Xóa dữ liệu cũ trên bảng
+        modelLichChieu.setRowCount(0);
+
+        // 4. Duyệt danh sách kết quả và thêm vào bảng
+        for (var lc : danhSachKetQua) {
+            modelLichChieu.addRow(new Object[]{
+                lc.getIdLichChieu(),
+                lc.getIdPhim(),
+                lc.getGioChieu(), // Đảm bảo trả về String ngày giờ đã format
+                lc.getIdPhongChieu(),
+                lc.getSoGheConLai(),
+                lc.getIdGia()
+            });
+        }
+        
+        // 5. Thông báo nếu không tìm thấy
+        if (danhSachKetQua.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Không tìm thấy kết quả nào!", "Thông báo", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        }
+
+    } catch (Exception ex) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Lỗi tìm kiếm: " + ex.getMessage(), "Lỗi", javax.swing.JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnSearchActionPerformed
 
     

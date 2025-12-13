@@ -9,6 +9,10 @@ import java.util.List;
 
 public class PhimService {
     PhimRepository phimRepository;
+
+    public PhimService(PhimRepository phimRepository) {
+        this.phimRepository = phimRepository;
+    }
     
     public LichChieuResponse updateLichChieu(LichChieu lc) throws Exception {
         var check = phimRepository.kiemTraTonTai("lich_chieu", "idLichChieu", lc.getIdLichChieu());
@@ -78,5 +82,19 @@ public class PhimService {
 
     public List<String> getListPhongChieu() throws Exception {
         return phimRepository.getAllPhongChieu();
+    }
+    
+    public String deleteLichChieu(String idLichChieu) throws Exception {
+        // Kiểm tra tồn tại
+        if (!phimRepository.kiemTraTonTai("lich_chieu", "idLichChieu", idLichChieu)) {
+            throw new Exception("Lịch chiếu không tồn tại!");
+        }
+
+        // Gọi Repository để xóa
+        if (phimRepository.xoaLichChieu(idLichChieu)) {
+            return "Xóa lịch chiếu thành công!";
+        } else {
+            throw new Exception("Xóa lịch chiếu thất bại!");
+        }
     }
 }

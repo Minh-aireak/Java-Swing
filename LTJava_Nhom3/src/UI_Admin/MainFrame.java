@@ -6,21 +6,20 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
-import java.sql.*;
 import org.jfree.data.category.DefaultCategoryDataset;
 import Logic.controller.PhimController;
 import Logic.controller.VeController;
 import Logic.entity.Phim;
-import Logic.entity.Ve;
 import Logic.repository.BaoCaoRepository;
+import Logic.repository.PhimRepository;
+import Logic.service.PhimService;
 import java.beans.PropertyChangeListener;
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
-
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class MainFrame extends javax.swing.JFrame {
     private BaoCaoController baoCaoController = new BaoCaoController(new BaoCaoRepository());
+    private PhimController phimController = new PhimController(new PhimService(new PhimRepository()));
     private final DefaultTableModel model;
     private final DefaultTableModel modelCus;
     private final DefaultTableModel modelDatVe;
@@ -826,9 +825,8 @@ public class MainFrame extends javax.swing.JFrame {
             int kt = JOptionPane.showConfirmDialog(this, "Bạn có chắc là muốn xóa dòng này không?", "Confirm", JOptionPane.YES_NO_OPTION);
             if (kt == JOptionPane.YES_OPTION) {
                 String maPhim = model.getValueAt(selectedRow, 0).toString();
-                PhimController controller = new PhimController();
                 try {
-                    if (controller.xoaPhim(maPhim)) {
+                    if (phimController.xoaPhim(maPhim)) {
                         model.removeRow(selectedRow);
                         JOptionPane.showMessageDialog(this, "Xóa phim thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
                     } else {
@@ -884,21 +882,31 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditLichChieuActionPerformed
 
     private void btnDeleteLichChieuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteLichChieuActionPerformed
-//        selectedRow = tbLichChieu.getSelectedRow();
-//    if (selectedRow == -1) {
-//        JOptionPane.showMessageDialog(this, "Vui lòng chọn lịch chiếu để xóa!", "Error", JOptionPane.ERROR_MESSAGE);
-//        return;
-//    }
-//    String idLichChieu = modelLichChieu.getValueAt(selectedRow, 0).toString();
-//    int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa lịch chiếu " + idLichChieu + "?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-//    if (confirm == JOptionPane.YES_OPTION) {
-//        if (LichChieuDAO.xoaLichChieu(idLichChieu)) {
-//            JOptionPane.showMessageDialog(this, "Xóa lịch chiếu thành công!", "Success", JOptionPane.INFORMATION_MESSAGE);
-//            modelLichChieu.removeRow(selectedRow);
-//        } else {
-//            JOptionPane.showMessageDialog(this, "Xóa lịch chiếu thất bại!", "Error", JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
+int selectedRow = tbLichChieu.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn dòng để xóa!");
+        return;
+    }
+
+    // 2. Lấy ID từ dòng đó (Giả sử cột 0 là ID)
+    String idCanXoa = tbLichChieu.getValueAt(selectedRow, 0).toString();
+
+    // 3. Hỏi xác nhận
+    int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa lịch chiếu " + idCanXoa + "?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+    
+    if (confirm == JOptionPane.YES_OPTION) {
+        try {
+            // 4. Gọi Controller
+            String message = phimController.deleteLichChieu(idCanXoa);
+            
+            // 5. Thông báo và xóa dòng khỏi bảng
+            JOptionPane.showMessageDialog(this, message);
+            ((DefaultTableModel)tbLichChieu.getModel()).removeRow(selectedRow);
+            
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     }//GEN-LAST:event_btnDeleteLichChieuActionPerformed
 
     private void btnSearchLichChieuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchLichChieuActionPerformed
@@ -1043,9 +1051,8 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void loadFilmData() {
         model.setRowCount(0);
-        PhimController controller = new PhimController();
         try {
-            ArrayList<Phim> dsPhim = controller.layDanhSachPhim();
+            ArrayList<Phim> dsPhim = phimController.layDanhSachPhim();
             for (Phim phim : dsPhim) {
                 model.addRow(new Object[]{
                     phim.getIdPhim(),

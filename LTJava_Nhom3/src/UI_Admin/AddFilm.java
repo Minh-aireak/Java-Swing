@@ -2,6 +2,8 @@ package UI_Admin;
 
 import Logic.controller.PhimController;
 import Logic.entity.Phim;
+import Logic.repository.PhimRepository;
+import Logic.service.PhimService;
 import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,9 +16,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class AddFilm extends javax.swing.JFrame {
     private DefaultTableModel model;
-    /**
-     * Creates new form AddFilm
-     */
+    private PhimController phimController = new PhimController(new PhimService(new PhimRepository()));
     public AddFilm(){
         initComponents();
     }
@@ -325,8 +325,7 @@ public class AddFilm extends javax.swing.JFrame {
             Phim logicPhim = new Phim(idPhim, tenPhim, tacGia, theLoaiList, thoiLuong, ngonNgu, dienVien, moTa, anhPhim);
             
             // Thêm phim
-            PhimController controller = new PhimController();
-            if (controller.themPhim(logicPhim)) {
+            if (phimController.themPhim(logicPhim)) {
                 model.addRow(new Object[]{idPhim, tenPhim, tacGia, String.join(", ", theLoaiList), thoiLuong, ngonNgu, dienVien, moTa, anhPhim});
                 JOptionPane.showMessageDialog(this, "Thêm phim thành công!");
                 dispose();

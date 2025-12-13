@@ -5,6 +5,8 @@ import Logic.controller.LoginController;
 import Logic.dto.response.LoginResponse;
 import Logic.entity.TaiKhoan;
 import UI_KhachHang.UI_KhachHang;
+import UI_Admin.MainFrame;
+
 
 import javax.swing.JOptionPane;
 public class UI_Login extends javax.swing.JFrame {
@@ -180,79 +182,67 @@ public class UI_Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     
-   private void btn_DangNhapActionPerformed(java.awt.event.ActionEvent evt) {                                             
+  private void btn_DangNhapActionPerformed(java.awt.event.ActionEvent evt) {
     String soDienThoai = txtTenDangNhap.getText().trim();
     char[] passwordChars = txtMatKhau.getPassword();
     String matKhau = new String(passwordChars);
 
-    //  tra input cơ bản
+    // check input
     if (soDienThoai.isEmpty() || matKhau.isEmpty()) {
-        JOptionPane.showMessageDialog(
-                this,
-                "Vui lòng nhập đầy đủ số điện thoại và mật khẩu.",
-                "Thông báo",
-                JOptionPane.WARNING_MESSAGE
-        );
+        JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ số điện thoại và mật khẩu.", "Thông báo", JOptionPane.WARNING_MESSAGE);
         return;
     }
 
-    // check  format số điện thoại (10 số)
     if (!soDienThoai.matches("\\d{10}")) {
-        JOptionPane.showMessageDialog(
-                this,
-                "Số điện thoại phải là số và đủ 10 chữ số.",
-                "Thông báo",
-                JOptionPane.WARNING_MESSAGE
-        );
+        JOptionPane.showMessageDialog(this, "Số điện thoại phải là số và đủ 10 chữ số.", "Thông báo", JOptionPane.WARNING_MESSAGE);
         return;
     }
 
-//    try {
-        // call backend đăng nhập
+    try {
         LoginResponse response = loginController.dangNhap(soDienThoai, matKhau);
 
-        //  backend trả về null hoặc không có tài khoản
         if (response == null || response.getTaiKhoan() == null) {
             String msg = (response != null && response.getMessage() != null)
                     ? response.getMessage()
                     : "Số điện thoại hoặc mật khẩu không đúng.";
-            JOptionPane.showMessageDialog(
-                    this,
-                    msg,
-                    "Đăng nhập thất bại",
-                    JOptionPane.ERROR_MESSAGE
-            );
+            JOptionPane.showMessageDialog(this, msg, "Đăng nhập thất bại", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // đăng nhập thành công
-        JOptionPane.showMessageDialog(
-                this,
+        TaiKhoan tk = response.getTaiKhoan();
+
+         Session.setCurrentUser(tk);  // nếu Session của bạn là static như mình gợi ý
+
+
+        JOptionPane.showMessageDialog(this,
                 response.getMessage() != null ? response.getMessage() : "Đăng nhập thành công!",
                 "Thông báo",
                 JOptionPane.INFORMATION_MESSAGE
         );
 
-        // UI_KhachHang và truyền tài khoản đang đăng nhập
-        UI_KhachHang ui = new UI_KhachHang();
-        ui.setLocationRelativeTo(null);
-        ui.setVisible(true);
+        // phan quyen 
+        String id = tk.getIdTaiKhoan();
+        if (id != null && id.toUpperCase().startsWith("AD")) {
+            // mở UI Admin
+            MainFrame adminUI = new MainFrame();
+            adminUI.setLocationRelativeTo(null);
+            adminUI.setVisible(true);
+        } else {
+            UI_KhachHang ui = new UI_KhachHang();
+            ui.setLocationRelativeTo(null);
+            ui.setVisible(true);
+        }
 
-        // close form đăng nhập
+        // đóng login
         this.dispose();
 
-//    } catch (Exception ex) {
-//        JOptionPane.showMessageDialog(
-//                this,
-//                "Lỗi khi đăng nhập: " + ex.getMessage(),
-//                "Lỗi",
-//                JOptionPane.ERROR_MESSAGE
-//        );
-//    } finally {
-//        //delete mật khẩu khỏi bộ nhớ (optional)
-//        java.util.Arrays.fill(passwordChars, '\0');
-//    }
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "Lỗi khi đăng nhập: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+    } finally {
+        java.util.Arrays.fill(passwordChars, '\0');
+    }
 }
+
 
     private void btnDangKyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDangKyActionPerformed
 

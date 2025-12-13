@@ -20,12 +20,12 @@ public class VeService {
         this.veRepository = veRepository;
     }
     
-    
-    public void saveVe(DataCreateVeRequest request) throws SQLException{
+    public boolean saveVe(DataCreateVeRequest request) {
          try {
              veRepository.saveVe(request);
+             return true;
          } catch (SQLException ex) {
-             throw new SQLException("saveVe error!");
+             return false;
          }
     }
     

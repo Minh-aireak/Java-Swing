@@ -4,7 +4,6 @@ import Logic.entity.Phim;
 import ConnectDatabase.DatabaseConnection;
 import Global.Session;
 import Logic.controller.LoginController;
-import Logic.controller.PaymentController;
 import Logic.controller.VeController;
 import Logic.dto.request.DataCreateVeRequest;
 import Logic.dto.response.ChiTietLichChieuResponse;
@@ -14,10 +13,22 @@ import Logic.entity.TaiKhoan;
 import Logic.repository.VeRepository;
 import Logic.service.VeService;
 import UI_Login.UI_Login;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Image;
+import java.awt.Desktop;
 import java.awt.event.ItemEvent;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import javax.swing.ImageIcon;
 import javax.swing.table.TableColumn;
 import java.sql.Connection;
@@ -28,7 +39,6 @@ import java.util.logging.Logger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -41,12 +51,12 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
 public class UI_KhachHang extends javax.swing.JFrame {
     VeController veController = new VeController(new VeService(new VeRepository()));
-    PaymentController paymentController = new PaymentController();
     DefaultTableModel model, model2;
     LoginController loginController;
     static Session session;
@@ -1198,7 +1208,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Tổng thanh toán"));
 
         dv_lab_TongTien.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        dv_lab_TongTien.setText("0");
+        dv_lab_TongTien.setText("500000");
 
         dv_lab_Tt.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         dv_lab_Tt.setText("Tổng tiền:");
@@ -2096,25 +2106,83 @@ public class UI_KhachHang extends javax.swing.JFrame {
             }
         }  
     }//GEN-LAST:event_dv_cbo_LichChieuItemStateChanged
+   
+    // KHÔNG LIÊN QUAN (*)
+    private void url_Pay(String total) {
+        try {
+            URL url = new URL("http://localhost:8080/PaymentAPI/payment?amount=" + total);
+            HttpURLConnection conn;
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String json = reader.readLine();
+            reader.close();
+            
+            String paymentUrl = com.google.gson.JsonParser.parseString(json)
+                    .getAsJsonObject()
+                    .get("data")
+                    .getAsString();
+            Desktop.getDesktop().browse(new URI(paymentUrl));
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(rootPane, "Lỗi trong quá trình thanh toán!", "Thông báo!", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     
-    // KHÔNG LIÊN QUAN
+    private JsonObject url_PaymentSuccess() {
+    try {
+        URL url = new URL("http://localhost:8080/PaymentAPI/payment_success");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        
+        conn.setRequestMethod("GET");
+        conn.setDoInput(true);
+        
+        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8));
+        
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            sb.append(line);
+        }
+        reader.close();
+        
+        JsonObject jsonObject = JsonParser.parseString(sb.toString()).getAsJsonObject();
+        return jsonObject;
+
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(rootPane, "Lỗi trong quá trình thanh toán!", "Thông báo!", JOptionPane.ERROR_MESSAGE);
+        ex.printStackTrace();
+    }
+    return null;
+}
+    
+    // KHÔNG LIÊN QUAN (*)
     private void dv_btn_ThanhToanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dv_btn_ThanhToanActionPerformed
 
-//        try {
-//            paymentController.
-//            JOptionPane.showMessageDialog(rootPane, "<html>Thanh toán thành công! <br> Chúc bạn ngày mới tốt lành</html>", "Thông báo!", JOptionPane.INFORMATION_MESSAGE);
-//            veController.saveVe(new DataCreateVeRequest(
-//                    UUID.randomUUID().toString(), 
-//                    session.getCurrentUser().getIdTaiKhoan(),
-//                    LocalDateTime.now(),
-//                    dv_lab_TongTien.getText(),
-//                    listGheForPay,
-//                    idGia,
-//                    idLichChieu,
-//                    "Đã đặt"
-//            ));
-//            tabbed.setSelectedIndex(4);
-//
+        try {
+            String total = dv_lab_TongTien.getText();
+            if (total.equals("0")) {
+                JOptionPane.showMessageDialog(rootPane, "Vui lòng chọn ghế!", "Thông báo!", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+                
+            url_Pay(total);
+            boolean result = veController.saveVe(new DataCreateVeRequest(
+            UUID.randomUUID().toString(), 
+            session.getCurrentUser().getIdTaiKhoan(),
+            LocalDateTime.now(),
+            dv_lab_TongTien.getText(),
+            listGheForPay,
+            idGia,
+            idLichChieu,
+            "Đang thanh toán"));
+
+            if (!result) {
+                JOptionPane.showMessageDialog(rootPane, "Lỗi lưu vé!", "Error!", JOptionPane.ERROR_MESSAGE);
+            }
+            tabbed.setSelectedIndex(4);
+
 //            resetGhe();
 //            updateGheAfterPay(selectedIndexLichChieuList);
 //            displayListBill();
@@ -2126,56 +2194,54 @@ public class UI_KhachHang extends javax.swing.JFrame {
 //            dv_lab_TripleSum.setText("0");
 //            dv_lab_TongTien.setText("0");
 //            displayChiTietDon(false);
-//        } catch (SQLException ex) {
-//            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-//        } catch (Exception ex) {
-//            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Notification!", JOptionPane.INFORMATION_MESSAGE);
-//        }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Notification!", JOptionPane.INFORMATION_MESSAGE);
+        }
     }//GEN-LAST:event_dv_btn_ThanhToanActionPerformed
 
-    // Phim module
+    // Phim module (*)
     private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
-//
-//        indexRow = table.getSelectedRow();
-//        String data = table.getValueAt(indexRow, 0).toString();
-//        tabbed.setSelectedIndex(1);
-//        try {
-//            Connection connection = DatabaseConnection.getConnection();
-//            String statement = "SELECT p.idPhim, p.tenPhim, p.tacGia, p.dienVien, p.thoiLuong, GROUP_CONCAT(tl.tenTheLoai SEPARATOR ', ') AS theLoai, p.ngonNgu, p.moTa, p.anhPhim " +
-//            "FROM phim p " +
-//            "JOIN phim_theloai ptl ON p.idPhim = ptl.idPhim " +
-//            "JOIN the_loai tl ON ptl.idTheLoai = tl.idTheLoai " +
-//            "WHERE p.idPhim = ? " +
-//            "GROUP BY p.idPhim, p.tenPhim, p.tacGia, p.dienVien, p.thoiLuong, p.ngonNgu, p.moTa ";
-//            PreparedStatement ps = connection.prepareStatement(statement);
-//            ps.setString(1, data);
-//            ResultSet rs = ps.executeQuery();
-//            while (rs.next()){
-//                chosenPhim.setIdPhim(rs.getString("idPhim"));
-//                chosenPhim.setTenPhim(rs.getString("tenPhim"));
-//                ctp_lab_TenPhim.setText("PHIM - " + rs.getString("tenPhim"));
-//                chosenPhim.setTacGia(rs.getString("tacGia"));
-//                ctp_lab_TacGia.setText(rs.getString("tacGia"));
-//                chosenPhim.setDienVien(rs.getString("dienVien"));
-//                ctp_lab_DienVien.setText("<html>" + rs.getString("dienVien") + "</html>");
-//                chosenPhim.setThoiLuong(rs.getString("thoiLuong"));
-//                ctp_lab_ThoiLuong.setText(rs.getString("thoiLuong"));
-//                chosenPhim.setTheLoai(rs.getString("theLoai"));
-//                ctp_lab_TheLoai.setText(rs.getString("theLoai"));
-//                chosenPhim.setNgonNgu(rs.getString("ngonNgu"));
-//                ctp_lab_NgonNgu.setText(rs.getString("ngonNgu"));
-//                chosenPhim.setMoTa(rs.getString("moTa"));
-//                ctp_lab_MoTa.setText("<html>" + rs.getString("moTa") + "</html>");
-//                chosenPhim.setAnhPhim(rs.getString("anhPhim"));
-//                byte[] imageByte = rs.getBytes("anhPhim");
-//                ImageIcon imgIcon = new ImageIcon(imageByte);
-//                Image img = imgIcon.getImage().getScaledInstance(ctp_lab_AnhPhim.getWidth(), ctp_lab_AnhPhim.getHeight(), Image.SCALE_SMOOTH);
-//                ctp_lab_AnhPhim.setIcon(new ImageIcon(img));
-//            }
-//        } catch (SQLException ex) {
-//            Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        displayChiTietPhim(true);
+
+        indexRow = table.getSelectedRow();
+        String data = table.getValueAt(indexRow, 0).toString();
+        tabbed.setSelectedIndex(1);
+        try {
+            Connection connection = DatabaseConnection.getConnection();
+            String statement = "SELECT p.idPhim, p.tenPhim, p.tacGia, p.dienVien, p.thoiLuong, GROUP_CONCAT(tl.tenTheLoai SEPARATOR ', ') AS theLoai, p.ngonNgu, p.moTa, p.anhPhim " +
+            "FROM phim p " +
+            "JOIN phim_theloai ptl ON p.idPhim = ptl.idPhim " +
+            "JOIN the_loai tl ON ptl.idTheLoai = tl.idTheLoai " +
+            "WHERE p.idPhim = ? " +
+            "GROUP BY p.idPhim, p.tenPhim, p.tacGia, p.dienVien, p.thoiLuong, p.ngonNgu, p.moTa ";
+            PreparedStatement ps = connection.prepareStatement(statement);
+            ps.setString(1, data);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                chosenPhim.setIdPhim(rs.getString("idPhim"));
+                chosenPhim.setTenPhim(rs.getString("tenPhim"));
+                ctp_lab_TenPhim.setText("PHIM - " + rs.getString("tenPhim"));
+                chosenPhim.setTacGia(rs.getString("tacGia"));
+                ctp_lab_TacGia.setText(rs.getString("tacGia"));
+                chosenPhim.setDienVien(rs.getString("dienVien"));
+                ctp_lab_DienVien.setText("<html>" + rs.getString("dienVien") + "</html>");
+                chosenPhim.setThoiLuong(rs.getString("thoiLuong"));
+                ctp_lab_ThoiLuong.setText(rs.getString("thoiLuong"));
+                chosenPhim.setTheLoai(rs.getString("theLoai"));
+                ctp_lab_TheLoai.setText(rs.getString("theLoai"));
+                chosenPhim.setNgonNgu(rs.getString("ngonNgu"));
+                ctp_lab_NgonNgu.setText(rs.getString("ngonNgu"));
+                chosenPhim.setMoTa(rs.getString("moTa"));
+                ctp_lab_MoTa.setText("<html>" + rs.getString("moTa") + "</html>");
+                chosenPhim.setAnhPhim(rs.getString("anhPhim"));
+                // Database có thể lưu đường dẫn tuyệt đối hoặc chỉ tên file.
+                // Dùng helper để thử nhiều cách load: HTTP, filesystem đầy đủ, hoặc classpath /icons_imgs/{basename}.
+                String imageFileName = rs.getString("anhPhim");
+                setLabelImageFromPath(ctp_lab_AnhPhim, imageFileName);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        displayChiTietPhim(true);
     }//GEN-LAST:event_tableMouseClicked
 
     // Phim module

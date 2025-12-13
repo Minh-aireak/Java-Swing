@@ -10,11 +10,13 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import Logic.controller.PhimController;
 import Logic.entity.Phim;
+import Logic.repository.PhimRepository;
+import Logic.service.PhimService;
 
 public class EditFilm extends javax.swing.JFrame {
     private int selectedRow;
     private DefaultTableModel model;
-
+    private PhimController phimController = new PhimController(new PhimService(new PhimRepository()));
     public EditFilm() {
         initComponents();
     }
@@ -338,10 +340,8 @@ if (!tacGia.matches("[\\p{L}\\s,]+")) {
         }
         // Tạo đối tượng Phim
         Phim logicPhim  = new Phim(idPhim, tenPhim, tacGia, theLoaiList, thoiLuong, ngonNgu, dienVien, moTa, anhPhim);
-
-         PhimController controller = new PhimController();
         try {
-            if (controller.capNhatPhim(logicPhim)) {
+            if (phimController.capNhatPhim(logicPhim)) {
                 JOptionPane.showMessageDialog(this, "Cập nhật phim thành công!");
                 model.setValueAt(idPhim, selectedRow, 0);
                 model.setValueAt(tenPhim, selectedRow, 1);

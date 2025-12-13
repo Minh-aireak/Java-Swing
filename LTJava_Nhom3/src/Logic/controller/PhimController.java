@@ -15,7 +15,8 @@ public class PhimController {
     private PhimService phimService;
     private PhimRepository repo;
 
-    public PhimController() {
+    public PhimController(PhimService phimService) {
+        this.phimService = phimService;
     }
     
     public boolean themPhim(Phim phim) throws FileNotFoundException, Exception {
@@ -110,5 +111,12 @@ public class PhimController {
         } catch (Exception e) {
             return new ArrayList<>();
         }
+    }
+    
+    public String deleteLichChieu(String idLichChieu) throws Exception {
+        if (idLichChieu == null || idLichChieu.trim().isEmpty()) {
+            throw new Exception("Vui lòng chọn lịch chiếu để xóa!");
+        }
+        return phimService.deleteLichChieu(idLichChieu);
     }
 }

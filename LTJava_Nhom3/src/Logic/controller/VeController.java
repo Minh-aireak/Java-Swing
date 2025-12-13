@@ -12,18 +12,14 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public class VeController {
-    VeService veService;
-
+    private VeService veService;
+    
     public VeController(VeService veService) {
         this.veService = veService;
     }
     
-    public void saveVe(DataCreateVeRequest request) throws Exception {
-        if(request.getTongTien().isEmpty() || Integer.valueOf(request.getTongTien()) == 0){
-            throw new Exception("<html>Không thể thanh toán! <br> Bạn chưa chọn ghế</html>");
-        }
-        
-        veService.saveVe(request);
+    public boolean saveVe(DataCreateVeRequest request) {     
+        return veService.saveVe(request);
     }
     
     public boolean deleteVe(String idVe) {
