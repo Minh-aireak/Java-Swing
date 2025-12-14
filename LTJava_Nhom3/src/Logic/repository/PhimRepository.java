@@ -3,23 +3,24 @@ package Logic.repository;
 import ConnectDatabase.DatabaseConnection;
 import Logic.entity.Gia;
 import Logic.entity.LichChieu;
+import Logic.entity.Phim;
 import java.sql.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import Logic.entity.Phim;
 
 public class PhimRepository {
+    // Legacy shared connection (some methods still use it). Prefer per-method connections for film ops.
     Connection connection = DatabaseConnection.getConnection();
     
     public boolean kiemTraTonTai(String table, String column, String value) throws SQLException {
+        Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
+        try {
+            connection = DatabaseConnection.getConnection();
+            if (connection == null) return false;
             String sql = "SELECT COUNT(*) FROM " + table + " WHERE " + column + " = ?";
             ps = connection.prepareStatement(sql);
             ps.setString(1, value);
@@ -27,12 +28,19 @@ public class PhimRepository {
             if (rs.next()) {
                 return rs.getInt(1) > 0;
             }
-        return false;
+            return false;
+        } finally {
+            if (rs != null) try { rs.close(); } catch (SQLException e) {}
+            if (ps != null) try { ps.close(); } catch (SQLException e) {}
+            if (connection != null) try { connection.close(); } catch (SQLException e) {}
+        }
     }
     
     public boolean updateLichChieu(LichChieu lc) throws SQLException {
         Connection conn = null;
         PreparedStatement ps = null;
+        try {
+            conn = DatabaseConnection.getConnection();
             String sql = "UPDATE lich_chieu SET idPhim = ?, gioChieu = ?, soGheConLai = ?, idPhongChieu = ?, idGia = ? WHERE idLichChieu = ?";
             ps = conn.prepareStatement(sql);
             ps.setString(1, lc.getIdPhim());
@@ -42,10 +50,15 @@ public class PhimRepository {
             ps.setString(5, lc.getIdGia());
             ps.setString(6, lc.getIdLichChieu());
             int rows = ps.executeUpdate();
-        return rows > 0;
+            return rows > 0;
+        } finally {
+            if (ps != null) try { ps.close(); } catch (SQLException e) {}
+            if (conn != null) try { conn.close(); } catch (SQLException e) {}
+        }
     }
     
     public boolean themPhim(Phim phim) throws Exception {
+        Connection connection = DatabaseConnection.getConnection();
         if (connection == null) return false;
 
         long t0 = System.currentTimeMillis();
@@ -127,14 +140,17 @@ public class PhimRepository {
     }
 
     public boolean capNhatPhim(Phim phim) throws Exception {
+        Connection connection = DatabaseConnection.getConnection();
         if (connection == null) return false;
-
+        PreparedStatement psPhim = null;
+        PreparedStatement psDelete = null;
+        PreparedStatement psInsert = null;
         try {
             connection.setAutoCommit(false); // Bắt đầu transaction
 
             // Cập nhật bảng phim
             String sqlPhim = "UPDATE phim SET tenPhim = ?, tacGia = ?, thoiLuong = ?, ngonNgu = ?, dienVien = ?, moTa = ?, anhPhim = ? WHERE idPhim = ?";
-            PreparedStatement psPhim = connection.prepareStatement(sqlPhim);
+            psPhim = connection.prepareStatement(sqlPhim);
             psPhim.setString(1, phim.getTenPhim());
             psPhim.setString(2, phim.getTacGia());
             psPhim.setString(3, phim.getThoiLuong());
@@ -151,13 +167,13 @@ public class PhimRepository {
 
             // Xóa thể loại cũ
             String sqlDeleteTheLoai = "DELETE FROM phim_theloai WHERE idPhim = ?";
-            PreparedStatement psDelete = connection.prepareStatement(sqlDeleteTheLoai);
+            psDelete = connection.prepareStatement(sqlDeleteTheLoai);
             psDelete.setString(1, phim.getIdPhim());
             psDelete.executeUpdate();
 
             // Thêm lại thể loại mới
             String sqlInsertTheLoai = "INSERT INTO phim_theloai (idPhim, idTheLoai) VALUES (?, ?)";
-            PreparedStatement psInsert = connection.prepareStatement(sqlInsertTheLoai);
+            psInsert = connection.prepareStatement(sqlInsertTheLoai);
             for (String tenTheLoai : phim.getTheLoai()) {
                 String idTheLoai = layIdTheLoaiTuTen(tenTheLoai, connection);
                 if (idTheLoai != null) {
@@ -181,6 +197,9 @@ public class PhimRepository {
             System.out.println("Lỗi cập nhật phim: " + e.getMessage());
             return false;
         } finally {
+            if (psPhim != null) try { psPhim.close(); } catch (SQLException e) {}
+            if (psDelete != null) try { psDelete.close(); } catch (SQLException e) {}
+            if (psInsert != null) try { psInsert.close(); } catch (SQLException e) {}
             try {
                 connection.setAutoCommit(true);
                 connection.close();
@@ -191,49 +210,55 @@ public class PhimRepository {
     }
 
     public boolean xoaPhim(String idPhim) throws Exception {
-        if (connection == null) return false;
+        Connection conn = DatabaseConnection.getConnection();
+        if (conn == null) return false;
 
         // Kiểm tra xem phim có lịch chiếu không
-        if (phimDangCoLichChieu(idPhim, connection)) {
+        if (phimDangCoLichChieu(idPhim, conn)) {
             System.out.println("Lỗi xóa phim: phim đang có lịch chiếu.");
+            try { conn.close(); } catch (SQLException e) {}
             return false;
         }
 
+        PreparedStatement psDeleteTheLoai = null;
+        PreparedStatement psDeletePhim = null;
         try {
-            connection.setAutoCommit(false);
+            conn.setAutoCommit(false);
 
             // Xóa thể loại
             String sqlDeleteTheLoai = "DELETE FROM phim_theloai WHERE idPhim = ?";
-            PreparedStatement psDeleteTheLoai = connection.prepareStatement(sqlDeleteTheLoai);
+            psDeleteTheLoai = conn.prepareStatement(sqlDeleteTheLoai);
             psDeleteTheLoai.setString(1, idPhim);
             psDeleteTheLoai.executeUpdate();
 
             // Xóa phim
             String sqlDeletePhim = "DELETE FROM phim WHERE idPhim = ?";
-            PreparedStatement psDeletePhim = connection.prepareStatement(sqlDeletePhim);
+            psDeletePhim = conn.prepareStatement(sqlDeletePhim);
             psDeletePhim.setString(1, idPhim);
             int rowsAffected = psDeletePhim.executeUpdate();
 
             if (rowsAffected == 0) {
-                connection.rollback();
+                conn.rollback();
                 return false;
             }
 
-            connection.commit();
+            conn.commit();
             return true;
 
         } catch (SQLException e) {
             try {
-                connection.rollback();
+                conn.rollback();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
             System.out.println("Lỗi xóa phim: " + e.getMessage());
             return false;
         } finally {
+            if (psDeleteTheLoai != null) try { psDeleteTheLoai.close(); } catch (SQLException e) {}
+            if (psDeletePhim != null) try { psDeletePhim.close(); } catch (SQLException e) {}
             try {
-                connection.setAutoCommit(true);
-                connection.close();
+                conn.setAutoCommit(true);
+                conn.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -242,16 +267,18 @@ public class PhimRepository {
 
     public ArrayList<Phim> layDanhSachPhim() throws Exception {
         ArrayList<Phim> dsPhim = new ArrayList<>();
-        if (connection == null) return dsPhim;
-
+        Connection conn = DatabaseConnection.getConnection();
+        if (conn == null) return dsPhim;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         try {
             String sql = "SELECT p.*, GROUP_CONCAT(tl.tenTheLoai) AS theLoai " +
                          "FROM phim p " +
                          "LEFT JOIN phim_theloai pt ON p.idPhim = pt.idPhim " +
                          "LEFT JOIN the_loai tl ON pt.idTheLoai = tl.idTheLoai " +
                          "GROUP BY p.idPhim";
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
 
             while (rs.next()) {
                 List<String> theLoai = new ArrayList<>();
@@ -278,11 +305,9 @@ public class PhimRepository {
         } catch (SQLException e) {
             System.out.println("Lỗi lấy danh sách phim: " + e.getMessage());
         } finally {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            if (rs != null) try { rs.close(); } catch (SQLException e) {}
+            if (ps != null) try { ps.close(); } catch (SQLException e) {}
+            if (conn != null) try { conn.close(); } catch (SQLException e) {}
         }
         return dsPhim;
     }

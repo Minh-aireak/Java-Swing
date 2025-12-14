@@ -3,12 +3,12 @@ package Logic.controller;
 import Logic.dto.response.LichChieuResponse;
 import Logic.entity.Gia;
 import Logic.entity.LichChieu;
-import Logic.service.PhimService;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import Logic.entity.Phim;
 import Logic.repository.PhimRepository;
+import Logic.service.PhimService;
 import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +18,8 @@ public class PhimController {
 
     public PhimController(PhimService phimService) {
         this.phimService = phimService;
+        // Ensure repo is available when controller constructed with a service
+        if (this.repo == null) this.repo = new PhimRepository();
     }
 
     public PhimController(PhimRepository repo) {
