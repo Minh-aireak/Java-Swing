@@ -18,6 +18,8 @@ import com.google.gson.JsonParser;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
+import java.awt.HeadlessException;
+import java.awt.Image;
 import java.awt.event.ItemEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -2617,6 +2619,36 @@ public class UI_KhachHang extends javax.swing.JFrame {
     private javax.swing.JTextField txt_NgaySinh;
     private javax.swing.JTextField txt_Ten;
     // End of variables declaration//GEN-END:variables
+     private void setLabelImageFromPath(javax.swing.JLabel label, String imageFileName) {
+        if (imageFileName == null) return;
+        imageFileName = imageFileName.trim();
+        if (imageFileName.isEmpty()) return;
+        try {
+            ImageIcon imgIcon = null;
+            // Only support HTTP/HTTPS URLs or absolute filesystem paths
+            if (imageFileName.startsWith("http://") || imageFileName.startsWith("https://")) {
+                java.net.URL url = new java.net.URL(imageFileName);
+                imgIcon = new ImageIcon(url);
+            } else {
+                java.io.File f = new java.io.File(imageFileName);
+                if (f.isAbsolute() && f.exists()) {
+                    imgIcon = new ImageIcon(f.getAbsolutePath());
+                } else {
+                    // Not an absolute path or doesn't exist — skip loading
+                    System.out.println("Ảnh không phải đường dẫn tuyệt đối hoặc không tồn tại: " + imageFileName);
+                }
+            }
+            if (imgIcon != null && imgIcon.getImage() != null) {
+                Image img = imgIcon.getImage().getScaledInstance(label.getWidth() > 0 ? label.getWidth() : 200,
+                        label.getHeight() > 0 ? label.getHeight() : 300, Image.SCALE_SMOOTH);
+                label.setIcon(new ImageIcon(img));
+            } else {
+                System.out.println("Không tìm thấy ảnh cho: " + imageFileName);
+            }
+        } catch (Exception e) {
+            System.out.println("Không thể load ảnh từ: " + imageFileName + " - " + e.getMessage());
+        }
+    }
 
 }
 
