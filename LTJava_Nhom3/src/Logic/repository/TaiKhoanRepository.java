@@ -4,6 +4,8 @@ import ConnectDatabase.DatabaseConnection;
 import Logic.entity.TaiKhoan;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class TaiKhoanRepository {
@@ -156,5 +158,35 @@ public class TaiKhoanRepository {
             int updated = ps.executeUpdate();
             return updated > 0;
         }
+    }
+    
+    public List<TaiKhoan> listTaiKhoan() {
+        List<TaiKhoan> ds = new ArrayList<>();
+        Connection conn = DatabaseConnection.getConnection();
+        String sql = "SELECT idTaiKhoan, soDienThoai,matKhau, email, hoDem, ten, ngaySinh, diaChi, gioiTinh FROM tai_khoan WHERE idTaiKhoan LIKE 'TK_%'";
+        try {
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                TaiKhoan nx = new TaiKhoan(
+                    rs.getString("idTaiKhoan"),
+                    rs.getString("soDienThoai"),
+                    rs.getString("email"),
+                    rs.getString("matKhau"),
+                    rs.getString("hoDem"),
+                    rs.getString("ten"),
+                    rs.getString("ngaySinh"),
+                    rs.getString("diaChi"),
+                    rs.getString("gioiTinh")
+                );
+                ds.add(nx);
+            }
+            rs.close();
+            st.close();
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println("Lỗi lấy danh sách người xem: " + e.getMessage());
+        }
+        return ds;
     }
 }

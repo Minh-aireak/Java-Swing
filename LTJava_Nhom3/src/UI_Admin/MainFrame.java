@@ -1,6 +1,7 @@
 package UI_Admin;
 
 import Logic.controller.BaoCaoController;
+import Logic.controller.TaiKhoanController;
 import UI_Login.UI_Login;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -9,17 +10,26 @@ import java.util.ArrayList;
 import org.jfree.data.category.DefaultCategoryDataset;
 import Logic.controller.PhimController;
 import Logic.controller.VeController;
+import Logic.entity.LichChieu;
 import Logic.entity.Phim;
+import Logic.entity.TaiKhoan;
+import Logic.entity.Ve;
 import Logic.repository.BaoCaoRepository;
 import Logic.repository.PhimRepository;
+import Logic.repository.TaiKhoanRepository;
 import Logic.service.PhimService;
+import Logic.service.TaiKhoanService;
 import java.beans.PropertyChangeListener;
+import java.time.ZoneId;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 public class MainFrame extends javax.swing.JFrame {
     private BaoCaoController baoCaoController = new BaoCaoController(new BaoCaoRepository());
     private PhimController phimController = new PhimController(new PhimService(new PhimRepository()));
+    private PhimController phimController_Rep = new PhimController(new PhimRepository());
+    private TaiKhoanController loginController = new TaiKhoanController(new TaiKhoanService(new TaiKhoanRepository()));
     private final DefaultTableModel model;
     private final DefaultTableModel modelCus;
     private final DefaultTableModel modelDatVe;
@@ -47,9 +57,9 @@ public class MainFrame extends javax.swing.JFrame {
         tbBaoCao.setDefaultEditor(Object.class, null);
         loadFilmData();
         loadCustomerData();
-        loadDatVeData();
+//        loadDatVeData();
         loadLichChieuData();
-        loadGiaData();
+//        loadGiaData();
     }
     
     private void loadGiaData() {
@@ -65,20 +75,20 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
     private void loadLichChieuData() {
-//        modelLichChieu.setRowCount(0);
-//        ArrayList<LichChieu> dsLichChieu = LichChieuDAO.layDanhSachLichChieu();
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.of("Asia/Ho_Chi_Minh"));
-//        for (LichChieu lc : dsLichChieu) {
-//            String formattedTime = lc.getGioChieu().toLocalDateTime().format(formatter);
-//            modelLichChieu.addRow(new Object[]{
-//                lc.getIdLichChieu(),
-//                lc.getIdPhim(),
-//                lc.getGioChieu().toLocalDateTime().format(formatter),
-//                lc.getIdPhongChieu(),
-//                lc.getSoGheConLai(),
-//                lc.getIdGia()
-//            });
-//        }
+        modelLichChieu.setRowCount(0);
+        List<LichChieu> dsLichChieu = phimController.getListLichChieu();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withZone(ZoneId.of("Asia/Ho_Chi_Minh"));
+        for (LichChieu lc : dsLichChieu) {
+            String formattedTime = lc.getGioChieu().format(formatter);
+            modelLichChieu.addRow(new Object[]{
+                lc.getIdLichChieu(),
+                lc.getIdPhim(),
+                formattedTime,
+                lc.getIdPhongChieu(),
+                lc.getSoGheConLai(),
+                lc.getIdGia()
+            });
+        };
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -105,10 +115,6 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tbCus = new javax.swing.JTable();
-        btnAddCus = new javax.swing.JButton();
-        btnEditCus = new javax.swing.JButton();
-        btnDeleteCus = new javax.swing.JButton();
-        btnSearchCus = new javax.swing.JButton();
         btnRefreshCus = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         btnEditLichChieu = new javax.swing.JButton();
@@ -272,40 +278,6 @@ public class MainFrame extends javax.swing.JFrame {
             tbCus.getColumnModel().getColumn(4).setResizable(false);
         }
 
-        btnAddCus.setText("Thêm");
-        btnAddCus.setMaximumSize(new java.awt.Dimension(72, 32));
-        btnAddCus.setMinimumSize(new java.awt.Dimension(72, 32));
-        btnAddCus.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAddCusActionPerformed(evt);
-            }
-        });
-
-        btnEditCus.setText("Sửa");
-        btnEditCus.setMaximumSize(new java.awt.Dimension(72, 32));
-        btnEditCus.setMinimumSize(new java.awt.Dimension(72, 32));
-        btnEditCus.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditCusActionPerformed(evt);
-            }
-        });
-
-        btnDeleteCus.setText("Xóa");
-        btnDeleteCus.setMaximumSize(new java.awt.Dimension(72, 32));
-        btnDeleteCus.setMinimumSize(new java.awt.Dimension(72, 32));
-        btnDeleteCus.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDeleteCusActionPerformed(evt);
-            }
-        });
-
-        btnSearchCus.setText("Tìm kiếm");
-        btnSearchCus.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSearchCusActionPerformed(evt);
-            }
-        });
-
         btnRefreshCus.setText("Làm mới");
         btnRefreshCus.setMaximumSize(new java.awt.Dimension(72, 32));
         btnRefreshCus.setMinimumSize(new java.awt.Dimension(72, 32));
@@ -319,46 +291,26 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(44, 44, 44)
-                .addComponent(btnAddCus, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(105, 105, 105)
-                .addComponent(btnEditCus, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(118, 118, 118)
-                .addComponent(btnRefreshCus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnDeleteCus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(122, 122, 122)
-                .addComponent(btnSearchCus, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(48, 48, 48))
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 946, Short.MAX_VALUE)
             .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(416, 416, 416)
+                .addComponent(btnRefreshCus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-
-        jPanel2Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnAddCus, btnDeleteCus, btnEditCus, btnSearchCus});
-
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 351, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnEditCus, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnAddCus, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnRefreshCus, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnSearchCus, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnDeleteCus, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addComponent(btnRefreshCus, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(16, 16, 16))
         );
 
-        jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnAddCus, btnDeleteCus, btnEditCus, btnSearchCus});
-
-        tpCus.addTab("Quản lý người xem", jPanel2);
+        tpCus.addTab("Danh sách tài khoản", jPanel2);
 
         btnEditLichChieu.setText("Sửa");
         btnEditLichChieu.setMaximumSize(new java.awt.Dimension(72, 32));
@@ -770,44 +722,6 @@ public class MainFrame extends javax.swing.JFrame {
         loadCustomerData();
     }//GEN-LAST:event_btnRefreshCusActionPerformed
 
-    private void btnSearchCusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchCusActionPerformed
-        SearchCustomer searchCustomer = new SearchCustomer(modelCus);
-        searchCustomer.setVisible(true);
-    }//GEN-LAST:event_btnSearchCusActionPerformed
-
-    private void btnDeleteCusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteCusActionPerformed
-        selectedRow = tbCus.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn khách hàng để xóa!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa khách hàng này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            String idTaiKhoan = modelCus.getValueAt(selectedRow, 0).toString();
-            if (NguoiXemDAO.xoaNguoiXem(idTaiKhoan)) {
-                modelCus.removeRow(selectedRow);
-                JOptionPane.showMessageDialog(this, "Xóa khách hàng thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, "Xóa thất bại! Khách hàng có thể có vé đã đặt.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }//GEN-LAST:event_btnDeleteCusActionPerformed
-
-    private void btnEditCusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditCusActionPerformed
-        selectedRow = tbCus.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn khách hàng để sửa!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        EditCustomer editCustomer = new EditCustomer(selectedRow, modelCus);
-        editCustomer.setVisible(true);
-    }//GEN-LAST:event_btnEditCusActionPerformed
-
-    private void btnAddCusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCusActionPerformed
-        AddCustomer addCustomer = new AddCustomer(modelCus);
-        addCustomer.setVisible(true);
-    }//GEN-LAST:event_btnAddCusActionPerformed
-
     private void btnRefreshFilmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshFilmActionPerformed
         loadFilmData();
     }//GEN-LAST:event_btnRefreshFilmActionPerformed
@@ -826,7 +740,7 @@ public class MainFrame extends javax.swing.JFrame {
             if (kt == JOptionPane.YES_OPTION) {
                 String maPhim = model.getValueAt(selectedRow, 0).toString();
                 try {
-                    if (phimController.xoaPhim(maPhim)) {
+                    if (phimController_Rep.xoaPhim(maPhim)) {
                         model.removeRow(selectedRow);
                         JOptionPane.showMessageDialog(this, "Xóa phim thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
                     } else {
@@ -1052,7 +966,7 @@ int selectedRow = tbLichChieu.getSelectedRow();
     private void loadFilmData() {
         model.setRowCount(0);
         try {
-            ArrayList<Phim> dsPhim = phimController.layDanhSachPhim();
+            ArrayList<Phim> dsPhim = phimController_Rep.layDanhSachPhim();
             for (Phim phim : dsPhim) {
                 model.addRow(new Object[]{
                     phim.getIdPhim(),
@@ -1073,9 +987,8 @@ int selectedRow = tbLichChieu.getSelectedRow();
     
     private void loadCustomerData() {
         modelCus.setRowCount(0);
-        ArrayList<NguoiXem> dsNguoiXem = NguoiXemDAO.layDanhSachNguoiXem();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        for (NguoiXem nx : dsNguoiXem) {
+        List<TaiKhoan> dsNguoiXem = loginController.ListlayDanhSachNguoiXem();
+        for (TaiKhoan nx : dsNguoiXem) {
             modelCus.addRow(new Object[]{
                 nx.getIdTaiKhoan(),
                 nx.getSoDienThoai(),
@@ -1083,7 +996,7 @@ int selectedRow = tbLichChieu.getSelectedRow();
                 nx.getMatKhau(),
                 nx.getHoDem(),
                 nx.getTen(),
-                nx.getNgaySinh() != null ? nx.getNgaySinh().toLocalDate().format(formatter) : "",
+                nx.getNgaySinh(),
                 nx.getDiaChi(),
                 nx.getGioiTinh()
             });
@@ -1092,7 +1005,7 @@ int selectedRow = tbLichChieu.getSelectedRow();
     
     private void loadDatVeData() {
 //        modelDatVe.setRowCount(0);
-//        ArrayList<Ve> dsDatVe = veController.;
+//        List<Ve> dsDatVe = veController.;
 //        for (Ve dv : dsDatVe) {
 //            modelDatVe.addRow(new Object[]{
 //                dv.getIdVe(),
@@ -1106,17 +1019,14 @@ int selectedRow = tbLichChieu.getSelectedRow();
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private com.toedter.calendar.JDateChooser DateFromChooser;
     private com.toedter.calendar.JDateChooser DateToChooser;
-    private javax.swing.JButton btnAddCus;
     private javax.swing.JButton btnAddFilm;
     private javax.swing.JButton btnAddGia;
     private javax.swing.JButton btnAddLichChieu;
     private javax.swing.JButton btnCreBaoCao;
-    private javax.swing.JButton btnDeleteCus;
     private javax.swing.JButton btnDeleteFilm;
     private javax.swing.JButton btnDeleteGia;
     private javax.swing.JButton btnDeleteLichChieu;
     private javax.swing.JButton btnDisplayChart;
-    private javax.swing.JButton btnEditCus;
     private javax.swing.JButton btnEditFilm;
     private javax.swing.JButton btnEditGia;
     private javax.swing.JButton btnEditLichChieu;
@@ -1126,7 +1036,6 @@ int selectedRow = tbLichChieu.getSelectedRow();
     private javax.swing.JButton btnRefreshFilm;
     private javax.swing.JButton btnRefreshGia;
     private javax.swing.JButton btnRefreshLichChieu;
-    private javax.swing.JButton btnSearchCus;
     private javax.swing.JButton btnSearchFilm;
     private javax.swing.JButton btnSearchGia;
     private javax.swing.JButton btnSearchLichChieu;

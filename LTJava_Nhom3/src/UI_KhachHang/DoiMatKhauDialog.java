@@ -2,18 +2,19 @@ package UI_KhachHang;
 
 import Global.Session;
 import Logic.entity.TaiKhoan;
-import Logic.controller.LoginController;
+import Logic.controller.TaiKhoanController;
+import Logic.repository.TaiKhoanRepository;
+import Logic.service.TaiKhoanService;
 import javax.swing.JOptionPane;
 
 
 public class DoiMatKhauDialog extends javax.swing.JDialog {
     public static Session session;
-    private final LoginController loginController;
+    private TaiKhoanController loginController = new TaiKhoanController(new TaiKhoanService(new TaiKhoanRepository()));
     
     public DoiMatKhauDialog(javax.swing.JFrame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        loginController = new LoginController();
         setLocationRelativeTo(parent);
     }
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -152,7 +153,7 @@ public class DoiMatKhauDialog extends javax.swing.JDialog {
 
     try {
         // call controller để đổi mật khẩu
-        LoginController.ChangePasswordResponse resp =
+        TaiKhoanController.ChangePasswordResponse resp =
                 loginController.doiMatKhau(idTaiKhoan, oldPass, newPass);
 
         if (resp.isSuccess()) {

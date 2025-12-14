@@ -1,15 +1,16 @@
 package UI_Login;
 
-import Logic.controller.LoginController;
+import Logic.controller.TaiKhoanController;
+import Logic.repository.TaiKhoanRepository;
+import Logic.service.TaiKhoanService;
 import javax.swing.JOptionPane;
 
 public class DangKy extends javax.swing.JDialog {
-    private final LoginController loginController;
+    private TaiKhoanController loginController = new TaiKhoanController(new TaiKhoanService(new TaiKhoanRepository()));
 
     public DangKy(javax.swing.JFrame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        loginController = new LoginController();
     }
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -317,7 +318,7 @@ public class DangKy extends javax.swing.JDialog {
             String diaChi   = "";
 
             // call controller để đăng ký
-            LoginController.RegisterResponse resp =
+            TaiKhoanController.RegisterResponse resp =
                     loginController.dangKy(
                             soDienThoai,
                             email,

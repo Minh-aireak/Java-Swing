@@ -116,16 +116,23 @@ public class VeRepository {
     }
     
     public List<BillResponse> getListBill(String idTaiKhoan) throws SQLException {
+        
         List<BillResponse> response = new ArrayList<>();
             
         connection = DatabaseConnection.getConnection();
-        String statement = "SELECT DISTINCT b.idBill, p.tenPhim, b.tongTien " +
-                "FROM phim p " +
-                "JOIN lich_chieu lc ON p.idPhim = lc.idPhim " +
-                "JOIN ve v ON lc.idLichChieu = v.idLichChieu " +
-                "JOIN bill b ON v.idBill = b.idBill " +
-                "JOIN tai_khoan tk ON b.idTaiKhoan = tk.idTaiKhoan " +
-                "WHERE tk.idTaiKhoan = ? ";
+        String statement =
+            "SELECT " +
+            "b.idBill, " +
+            "GROUP_CONCAT(DISTINCT p.tenPhim SEPARATOR ', ') AS tenPhim, " +
+            "b.tongTien, " +
+            "GROUP_CONCAT(DISTINCT lcg.trangThai SEPARATOR ', ') AS trangThai " +
+            "FROM bill b " +
+            "JOIN ve v ON b.idBill = v.idBill " +
+            "JOIN lich_chieu lc ON v.idLichChieu = lc.idLichChieu " +
+            "JOIN phim p ON lc.idPhim = p.idPhim " +
+            "JOIN lichchieu_ghe lcg ON lc.idLichChieu = lcg.idLichChieu " +
+            "WHERE b.idTaiKhoan = ? " +
+            "GROUP BY b.idBill, b.tongTien";
         PreparedStatement ps = connection.prepareStatement(statement);
         ps.setString(1, idTaiKhoan);
         ResultSet rs = ps.executeQuery();
@@ -134,6 +141,7 @@ public class VeRepository {
             billResponse.setIdBill(rs.getString("idBill"));
             billResponse.setTenPhim(rs.getString("tenPhim"));
             billResponse.setTongTien(rs.getInt("tongTien"));
+            billResponse.setTrangThai(rs.getString("trangThai"));
             response.add(billResponse);
         }
         

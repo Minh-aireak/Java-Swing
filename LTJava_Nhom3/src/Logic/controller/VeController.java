@@ -28,7 +28,6 @@ public class VeController {
     }
     
     public List<BillResponse> getListBill() throws SQLException{
-        System.err.println("123123");
         return veService.getListBill();
     }
     

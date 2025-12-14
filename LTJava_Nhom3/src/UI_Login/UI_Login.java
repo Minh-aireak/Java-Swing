@@ -1,9 +1,11 @@
 package UI_Login;
 
 import Global.Session;
-import Logic.controller.LoginController;
+import Logic.controller.TaiKhoanController;
 import Logic.dto.response.LoginResponse;
 import Logic.entity.TaiKhoan;
+import Logic.repository.TaiKhoanRepository;
+import Logic.service.TaiKhoanService;
 import UI_KhachHang.UI_KhachHang;
 import UI_Admin.MainFrame;
 
@@ -12,11 +14,10 @@ import javax.swing.JOptionPane;
 public class UI_Login extends javax.swing.JFrame {
     
     public static Session session;
-    private LoginController loginController;
+    private TaiKhoanController loginController = new TaiKhoanController(new TaiKhoanService(new TaiKhoanRepository()));
 
      public UI_Login() {
      initComponents();
-     loginController = new LoginController();
      this.setLocationRelativeTo(null);
      }
 

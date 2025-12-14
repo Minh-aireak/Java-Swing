@@ -431,4 +431,43 @@ public class PhimRepository {
         }
         return result;
     }
+    
+    public List<LichChieu> getListLichChieu() {
+        List<LichChieu> ds = new ArrayList<>();
+        Connection conn = null;
+        Statement st = null;
+        ResultSet rs = null;
+        try {
+            conn = DatabaseConnection.getConnection();
+            if (conn == null) {
+                System.out.println("Không thể kết nối tới cơ sở dữ liệu!");
+                return ds;
+            }
+            String sql = "SELECT * FROM lich_chieu";
+            st = conn.createStatement();
+            rs = st.executeQuery(sql);
+            while (rs.next()) {
+                LichChieu lc = new LichChieu(
+                    rs.getString("idLichChieu"),
+                    rs.getString("idPhim"),
+                    rs.getTimestamp("gioChieu").toLocalDateTime(),
+                    rs.getString("idPhongChieu"),
+                    rs.getInt("soGheConLai"),
+                    rs.getString("idGia")
+                );
+                ds.add(lc);
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi lấy danh sách lịch chiếu: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (st != null) st.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.out.println("Lỗi đóng tài nguyên: " + e.getMessage());
+            }
+        }
+        return ds; 
+    }
 }

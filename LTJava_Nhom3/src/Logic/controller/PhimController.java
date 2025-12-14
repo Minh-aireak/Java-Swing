@@ -18,6 +18,14 @@ public class PhimController {
     public PhimController(PhimService phimService) {
         this.phimService = phimService;
     }
+
+    public PhimController(PhimRepository repo) {
+        this.repo = repo;
+    }
+    
+    public List<LichChieu> getListLichChieu() {
+        return phimService.getListLichChieu();
+    }
     
     public boolean themPhim(Phim phim) throws FileNotFoundException, Exception {
         if (phim == null) throw new IllegalArgumentException("Phim null");

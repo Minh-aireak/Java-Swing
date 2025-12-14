@@ -8,11 +8,12 @@ public class BillResponse {
     int soGheDaDat;
     String phongChieu;
     String thoiGianDat;
+    String trangThai;
 
     public BillResponse() {
     }
 
-    public BillResponse(String idBill, String tenPhim, int tongTien, String xuatChieu, int soGheDaDat, String phongChieu, String thoiGianDat) {
+    public BillResponse(String idBill, String tenPhim, int tongTien, String xuatChieu, int soGheDaDat, String phongChieu, String thoiGianDat, String trangThai) {
         this.idBill = idBill;
         this.tenPhim = tenPhim;
         this.tongTien = tongTien;
@@ -20,6 +21,7 @@ public class BillResponse {
         this.soGheDaDat = soGheDaDat;
         this.phongChieu = phongChieu;
         this.thoiGianDat = thoiGianDat;
+        this.trangThai = trangThai;
     }
 
     public String getIdBill() {
@@ -76,6 +78,14 @@ public class BillResponse {
 
     public void setThoiGianDat(String thoiGianDat) {
         this.thoiGianDat = thoiGianDat;
+    }
+
+    public String getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(String trangThai) {
+        this.trangThai = trangThai;
     }
     
 }

@@ -3,11 +3,16 @@ package Logic.controller;
 import Logic.dto.response.LoginResponse;
 import Logic.entity.TaiKhoan;
 import Logic.service.TaiKhoanService;
+import java.util.List;
 
-public class LoginController {
+public class TaiKhoanController {
 
-    private final TaiKhoanService service = new TaiKhoanService();
+    private TaiKhoanService service;
 
+    public TaiKhoanController(TaiKhoanService service) {
+        this.service = service;
+    }
+    
     // login
     public LoginResponse dangNhap(String soDienThoai, String matKhau) {
         var rs = service.dangNhap(soDienThoai, matKhau);
@@ -49,7 +54,10 @@ public class LoginController {
         var rs = service.dangKy(soDienThoai, email, matKhau, hoDem, ten, gioiTinh, ngaySinh, diaChi);
         return new RegisterResponse(rs.isSuccess(), rs.getMessage(), rs.getData());
     }
-
+    
+    public List<TaiKhoan> ListlayDanhSachNguoiXem() {
+        return service.listTaiKhoan();
+    }
 
     // Đổi mật khẩu
     public static class ChangePasswordResponse {
@@ -87,4 +95,5 @@ public class LoginController {
         public void setMessage(String message) { this.message = message; }
         public void setTaiKhoan(TaiKhoan taiKhoan) { this.taiKhoan = taiKhoan; }
     }
+    
 }

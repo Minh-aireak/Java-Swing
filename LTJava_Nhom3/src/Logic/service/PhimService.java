@@ -14,6 +14,10 @@ public class PhimService {
         this.phimRepository = phimRepository;
     }
     
+    public List<LichChieu> getListLichChieu() {
+        return phimRepository.getListLichChieu();
+    }
+    
     public LichChieuResponse updateLichChieu(LichChieu lc) throws Exception {
         var check = phimRepository.kiemTraTonTai("lich_chieu", "idLichChieu", lc.getIdLichChieu());
         LichChieuResponse chieuResponse = null;

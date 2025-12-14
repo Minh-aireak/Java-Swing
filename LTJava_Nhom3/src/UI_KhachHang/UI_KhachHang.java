@@ -3,14 +3,16 @@ package UI_KhachHang;
 import Logic.entity.Phim;
 import ConnectDatabase.DatabaseConnection;
 import Global.Session;
-import Logic.controller.LoginController;
+import Logic.controller.TaiKhoanController;
 import Logic.controller.VeController;
 import Logic.dto.request.DataCreateVeRequest;
 import Logic.dto.response.ChiTietLichChieuResponse;
 import Logic.dto.response.ListLichChieuResponse;
 import Logic.dto.response.LoginResponse;
 import Logic.entity.TaiKhoan;
+import Logic.repository.TaiKhoanRepository;
 import Logic.repository.VeRepository;
+import Logic.service.TaiKhoanService;
 import Logic.service.VeService;
 import UI_Login.UI_Login;
 import com.google.gson.JsonObject;
@@ -18,6 +20,8 @@ import com.google.gson.JsonParser;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
+import java.awt.HeadlessException;
+import java.awt.Image;
 import java.awt.event.ItemEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -58,17 +62,16 @@ import java.util.UUID;
 public class UI_KhachHang extends javax.swing.JFrame {
     VeController veController = new VeController(new VeService(new VeRepository()));
     DefaultTableModel model, model2;
-    LoginController loginController;
+    TaiKhoanController loginController = new TaiKhoanController(new TaiKhoanService(new TaiKhoanRepository()));
     static Session session;
     TaiKhoan currentUser = session.getCurrentUser();
     Phim chosenPhim = new Phim();
-    
     
     List<String> listGheVIP = new ArrayList<>(Arrays.asList("B3,B4,B5,C3,C4,C5".split(",")));
     List<String> listGheTriple = new ArrayList<>(Arrays.asList("D1,D2,D3".split(",")));
     List<String> listGheForPay = null;
     List<Integer> listGiaVe = null;
-    List<Timestamp> listTimestamps = null;
+    List<Timestamp> listTimestamps;
     String idGia = "";
     String idLichChieu = "";
     int selectedIndexLichChieuList = -1;
@@ -108,8 +111,8 @@ public class UI_KhachHang extends javax.swing.JFrame {
             ttb_TableColumn.setMaxWidth(0);
             table_column1.setMinWidth(500);
             table_column1.setMaxWidth(500);
-            ttb_TableColumn1.setMinWidth(40);
-            ttb_TableColumn1.setMaxWidth(40);
+            ttb_TableColumn1.setMinWidth(250);
+            ttb_TableColumn1.setMaxWidth(250);
             table.setRowHeight(30);
             hscn_lab_XinChao.setText("Xin chào, " + session.getCurrentUser().getTen() +"!");
             themEvenListener();
@@ -309,6 +312,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
         ttb_txt_PhongChieu = new javax.swing.JTextField();
         ttb_txt_XuatChieu = new javax.swing.JTextField();
         ttb_txt_TongTien = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -1208,7 +1212,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Tổng thanh toán"));
 
         dv_lab_TongTien.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        dv_lab_TongTien.setText("500000");
+        dv_lab_TongTien.setText("0");
 
         dv_lab_Tt.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         dv_lab_Tt.setText("Tổng tiền:");
@@ -1410,7 +1414,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
                         .addGroup(split_RightLayout.createSequentialGroup()
                             .addGap(19, 19, 19)
                             .addComponent(dv_lab_TenPhim, javax.swing.GroupLayout.PREFERRED_SIZE, 535, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addContainerGap(50, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, split_RightLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(dv_btn_ThanhToan, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1607,7 +1611,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
             jpane_HoSoCaNhanLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpane_HoSoCaNhanLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1044, Short.MAX_VALUE)
+                .addComponent(jSplitPane1)
                 .addContainerGap())
             .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -1649,20 +1653,20 @@ public class UI_KhachHang extends javax.swing.JFrame {
 
         ttb_Table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Mã Bill", "Tên phim", "Tổng tiền"
+                "Mã Bill", "Tên phim", "Tổng tiền", "Trạng thái"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -1692,7 +1696,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
         jPanel23Layout.setVerticalGroup(
             jPanel23Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel23Layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 371, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1790,7 +1794,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
                     .addGroup(ttb_jp_ChiTietBillLayout.createSequentialGroup()
                         .addGap(21, 21, 21)
                         .addComponent(jLabel36)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
                 .addGroup(ttb_jp_ChiTietBillLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ttb_txt_PhongChieu, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel46))
@@ -1805,24 +1809,39 @@ public class UI_KhachHang extends javax.swing.JFrame {
                 .addGap(21, 21, 21))
         );
 
+        jButton1.setText("Làm mới");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel22Layout = new javax.swing.GroupLayout(jPanel22);
         jPanel22.setLayout(jPanel22Layout);
         jPanel22Layout.setHorizontalGroup(
             jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel22Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel22Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jPanel23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel22Layout.createSequentialGroup()
+                        .addGap(186, 186, 186)
+                        .addComponent(jButton1)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(ttb_jp_ChiTietBill, javax.swing.GroupLayout.PREFERRED_SIZE, 527, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(47, Short.MAX_VALUE))
         );
         jPanel22Layout.setVerticalGroup(
             jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel22Layout.createSequentialGroup()
                 .addGap(14, 14, 14)
                 .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(ttb_jp_ChiTietBill, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
-                    .addComponent(jPanel23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(ttb_jp_ChiTietBill, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel22Layout.createSequentialGroup()
+                        .addComponent(jPanel23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap(30, Short.MAX_VALUE))
         );
 
@@ -1902,7 +1921,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
 
     // KHÔNG LIÊN QUAN (*)
     private void ctp_btn_DatVeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctp_btn_DatVeActionPerformed
-        listTimestamps.clear();
+//        listTimestamps.clear();
         if(ctp_lab_TenPhim.getText().isEmpty()){
             JOptionPane.showMessageDialog(rootPane, "Bạn chưa chọn phim!");
             return;
@@ -1915,6 +1934,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
             
             if (!Objects.isNull(response.getMessage())) {
                 JOptionPane.showMessageDialog(rootPane, response.getMessage(), "Notification!", JOptionPane.INFORMATION_MESSAGE);
+                return;
             }
             
             for (Timestamp ts : response.getListGioChieu()) {
@@ -2108,9 +2128,15 @@ public class UI_KhachHang extends javax.swing.JFrame {
     }//GEN-LAST:event_dv_cbo_LichChieuItemStateChanged
    
     // KHÔNG LIÊN QUAN (*)
-    private void url_Pay(String total) {
+    private void url_Pay(List<String> listGheForPay, String idTaiKhoan, String tongTien, String idLichChieu, String idGia) {
         try {
-            URL url = new URL("http://localhost:8080/PaymentAPI/payment?amount=" + total);
+            String listIdGhe = String.join(",", listGheForPay);
+            URL url = new URL("http://localhost:8080/PaymentAPI/payment?"
+                    + "listIdGhe=" + URLEncoder.encode(listIdGhe, "UTF-8")
+                    + "idTaiKhoan=" + URLEncoder.encode(idTaiKhoan, "UTF-8")
+                    + "&tongTien=" + URLEncoder.encode(tongTien, "UTF-8")
+                    + "&idLichChieu=" + URLEncoder.encode(idLichChieu, "UTF-8")
+                    + "&idGia=" +    URLEncoder.encode(idGia, "UTF-8"));
             HttpURLConnection conn;
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
@@ -2167,25 +2193,14 @@ public class UI_KhachHang extends javax.swing.JFrame {
                 return;
             }
                 
-            url_Pay(total);
-            boolean result = veController.saveVe(new DataCreateVeRequest(
-            UUID.randomUUID().toString(), 
-            session.getCurrentUser().getIdTaiKhoan(),
-            LocalDateTime.now(),
-            dv_lab_TongTien.getText(),
-            listGheForPay,
-            idGia,
-            idLichChieu,
-            "Đang thanh toán"));
+            url_Pay(listGheForPay, currentUser.getIdTaiKhoan(), total, idLichChieu, idGia);
+            
 
-            if (!result) {
-                JOptionPane.showMessageDialog(rootPane, "Lỗi lưu vé!", "Error!", JOptionPane.ERROR_MESSAGE);
-            }
+            displayListBill();
             tabbed.setSelectedIndex(4);
 
 //            resetGhe();
 //            updateGheAfterPay(selectedIndexLichChieuList);
-//            displayListBill();
 //            dv_lab_StandardQuantity.setText("0");
 //            dv_lab_StandardSum.setText("0");
 //            dv_lab_VIPQuantity.setText("0");
@@ -2207,7 +2222,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
         tabbed.setSelectedIndex(1);
         try {
             Connection connection = DatabaseConnection.getConnection();
-            String statement = "SELECT p.idPhim, p.tenPhim, p.tacGia, p.dienVien, p.thoiLuong, GROUP_CONCAT(tl.tenTheLoai SEPARATOR ', ') AS theLoai, p.ngonNgu, p.moTa, p.anhPhim " +
+            String statement = "SELECT p.idPhim, p.tenPhim, p.tacGia, p.dienVien, p.thoiLuong, GROUP_CONCAT(tl.tenTheLoai SEPARATOR ',') AS theLoai, p.ngonNgu, p.moTa, p.anhPhim " +
             "FROM phim p " +
             "JOIN phim_theloai ptl ON p.idPhim = ptl.idPhim " +
             "JOIN the_loai tl ON ptl.idTheLoai = tl.idTheLoai " +
@@ -2226,7 +2241,8 @@ public class UI_KhachHang extends javax.swing.JFrame {
                 ctp_lab_DienVien.setText("<html>" + rs.getString("dienVien") + "</html>");
                 chosenPhim.setThoiLuong(rs.getString("thoiLuong"));
                 ctp_lab_ThoiLuong.setText(rs.getString("thoiLuong"));
-                chosenPhim.setTheLoai(rs.getString("theLoai"));
+                List<String> listChosenPhim = Arrays.asList(rs.getString("theLoai").split(","));
+                chosenPhim.setTheLoai(listChosenPhim);
                 ctp_lab_TheLoai.setText(rs.getString("theLoai"));
                 chosenPhim.setNgonNgu(rs.getString("ngonNgu"));
                 ctp_lab_NgonNgu.setText(rs.getString("ngonNgu"));
@@ -2342,7 +2358,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
     }
 
     private void btn_CapNhatActionPerformed(java.awt.event.ActionEvent evt) {
-         if (loginController == null) loginController = new LoginController();
+         if (loginController == null) 
     if (currentUser == null || currentUser.getIdTaiKhoan() == null || currentUser.getIdTaiKhoan().trim().isEmpty()) {
         JOptionPane.showMessageDialog(this, "Bạn chưa đăng nhập hoặc thiếu ID tài khoản!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         return;
@@ -2398,12 +2414,12 @@ public class UI_KhachHang extends javax.swing.JFrame {
         model2.setRowCount(0);
         try {
             var response = veController.getListBill();
-            System.err.println(response);
             response.forEach((t) -> {
                 Vector<String> v = new Vector<>();
                 v.add(t.getIdBill());
                 v.add(t.getTenPhim());
                 v.add(String.valueOf(t.getTongTien()));
+                v.add(t.getTrangThai());
                 model2.addRow(v);
             });
             ttb_Table.setModel(model2);
@@ -2442,6 +2458,41 @@ public class UI_KhachHang extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_ttb_TableMouseClicked
+
+     private void setLabelImageFromPath(javax.swing.JLabel label, String imageFileName) {
+        if (imageFileName == null) return;
+        imageFileName = imageFileName.trim();
+        if (imageFileName.isEmpty()) return;
+        try {
+            ImageIcon imgIcon = null;
+            // Only support HTTP/HTTPS URLs or absolute filesystem paths
+            if (imageFileName.startsWith("http://") || imageFileName.startsWith("https://")) {
+                java.net.URL url = new java.net.URL(imageFileName);
+                imgIcon = new ImageIcon(url);
+            } else {
+                java.io.File f = new java.io.File(imageFileName);
+                if (f.isAbsolute() && f.exists()) {
+                    imgIcon = new ImageIcon(f.getAbsolutePath());
+                } else {
+                    // Not an absolute path or doesn't exist — skip loading
+                    System.out.println("Ảnh không phải đường dẫn tuyệt đối hoặc không tồn tại: " + imageFileName);
+                }
+            }
+            if (imgIcon != null && imgIcon.getImage() != null) {
+                Image img = imgIcon.getImage().getScaledInstance(label.getWidth() > 0 ? label.getWidth() : 200,
+                        label.getHeight() > 0 ? label.getHeight() : 300, Image.SCALE_SMOOTH);
+                label.setIcon(new ImageIcon(img));
+            } else {
+                System.out.println("Không tìm thấy ảnh cho: " + imageFileName);
+            }
+        } catch (Exception e) {
+            System.out.println("Không thể load ảnh từ: " + imageFileName + " - " + e.getMessage());
+        }
+    }
+     
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        displayListBill();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup bgr_GioiTinh;
@@ -2489,6 +2540,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
     private javax.swing.JTextField h_txt_TenTacGia;
     private javax.swing.JLabel hscn_lab_AnhAccount;
     private javax.swing.JLabel hscn_lab_XinChao;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;

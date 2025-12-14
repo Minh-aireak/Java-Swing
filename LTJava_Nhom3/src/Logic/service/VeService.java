@@ -1,5 +1,6 @@
 package Logic.service;
 
+import Global.Session;
 import Logic.dto.request.DataCreateVeRequest;
 import Logic.dto.response.BillResponse;
 import Logic.dto.response.ChiTietBillResponse;
@@ -11,10 +12,12 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
+import javax.sound.midi.SysexMessage;
 
 public class VeService {
     VeRepository veRepository;
-    String idTaiKhoan = null;
+    Session session = new Session();
+    String idTaiKhoan = session.getCurrentUser().getIdTaiKhoan();
 
     public VeService(VeRepository veRepository) {
         this.veRepository = veRepository;
@@ -41,9 +44,7 @@ public class VeService {
     
     public List<BillResponse> getListBill() throws SQLException{
         try {
-            var response = veRepository.getListBill(idTaiKhoan);
-            System.out.println("123");
-            return response;
+            return veRepository.getListBill(idTaiKhoan);
         } catch (SQLException ex) {
             throw new SQLException("getListBill error!");
         }
@@ -81,7 +82,7 @@ public class VeService {
     }
     
     public ListLichChieuResponse getListLichChieu(String idPhim) throws SQLException {
-        ListLichChieuResponse response = null;
+        ListLichChieuResponse response = new ListLichChieuResponse(null, null);
         try {
             List<Timestamp> listGioChieu = veRepository.getListLichChieu(idPhim);
             if(Objects.isNull(listGioChieu)){

@@ -1,15 +1,27 @@
 package Logic.service;
 
+import ConnectDatabase.DatabaseConnection;
 import Global.Session;
 import Logic.entity.TaiKhoan;
 import Logic.repository.TaiKhoanRepository;
+import UI_Admin.DBConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class TaiKhoanService {
 
-    private final TaiKhoanRepository repo = new TaiKhoanRepository();
+    private TaiKhoanRepository repo;
+
+    public TaiKhoanService(TaiKhoanRepository repo) {
+        this.repo = repo;
+    }
+    
     private TaiKhoan currentUser;
     private static Session session;
 
@@ -197,4 +209,9 @@ public class TaiKhoanService {
     public TaiKhoan getCurrentUser() {
         return currentUser;
     }
+    
+    public List<TaiKhoan> listTaiKhoan(){
+        return repo.listTaiKhoan();
+    }
+
 }
