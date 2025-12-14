@@ -13,6 +13,8 @@ import Logic.controller.PhimController;
 import Logic.entity.Phim;
 import Logic.repository.PhimRepository;
 import Logic.service.PhimService;
+import java.io.File;
+import javax.swing.JFileChooser;
 
 public class EditFilm extends javax.swing.JFrame {
     private int selectedRow;
@@ -20,11 +22,13 @@ public class EditFilm extends javax.swing.JFrame {
     private PhimController phimController = new PhimController(new PhimService(new PhimRepository()));
     public EditFilm() {
         initComponents();
+        txtFilmID.setEditable(false);
     }
     public EditFilm(int selectedRow,DefaultTableModel model){
         this.selectedRow = selectedRow;
         this.model = model;
         initComponents();
+        txtFilmID.setEditable(false);
         loadFilmData();
     }
     
@@ -101,6 +105,7 @@ public class EditFilm extends javax.swing.JFrame {
         ckbHoatHinh = new javax.swing.JCheckBox();
         ckbFamily = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
+        btnThemAnhSua = new javax.swing.JButton();
         txtFilmAnh = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -119,6 +124,12 @@ public class EditFilm extends javax.swing.JFrame {
         jLabel1.setText("SỬA THÔNG TIN PHIM");
 
         jLabel2.setText("Mã phim:");
+
+        txtFilmID.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtFilmIDActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("Tên phim:");
 
@@ -163,18 +174,19 @@ public class EditFilm extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(txtFilmAnh, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGap(0, 228, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(txtFilmAnh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(15, Short.MAX_VALUE))
+            .addGap(0, 35, Short.MAX_VALUE)
         );
+
+        btnThemAnhSua.setText("Thêm ảnh");
+        btnThemAnhSua.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnThemAnhSuaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -215,9 +227,7 @@ public class EditFilm extends javax.swing.JFrame {
                                     .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(9, 9, 9)
-                                        .addComponent(jLabel11)))
+                                    .addComponent(jLabel11))
                                 .addGap(34, 34, 34)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -226,7 +236,12 @@ public class EditFilm extends javax.swing.JFrame {
                                     .addComponent(txtFilmTL)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(0, 0, Short.MAX_VALUE)))))
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(txtFilmAnh, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(btnThemAnhSua)
+                                        .addGap(15, 15, 15)))))
                         .addContainerGap())))
             .addGroup(layout.createSequentialGroup()
                 .addGap(167, 167, 167)
@@ -280,14 +295,14 @@ public class EditFilm extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel10)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel11)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtFilmAnh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnThemAnhSua)
+                    .addComponent(jLabel11))
+                .addGap(47, 47, 47)
                 .addComponent(btnUpdate)
                 .addGap(69, 69, 69))
         );
@@ -299,7 +314,7 @@ public class EditFilm extends javax.swing.JFrame {
     private void txtFilmTLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFilmTLActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtFilmTLActionPerformed
-
+    
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
         String idPhim = txtFilmID.getText().trim();
         String tenPhim = txtFilmName.getText().trim();
@@ -362,9 +377,23 @@ if (!tacGia.matches("[\\p{L}\\s,]+")) {
         }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
+    private void btnThemAnhSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemAnhSuaActionPerformed
+         JFileChooser jf = new JFileChooser();
+        int selectedFile = jf.showOpenDialog(this);
+        if(selectedFile == JFileChooser.APPROVE_OPTION){
+            File chose = jf.getSelectedFile();
+            txtFilmAnh.setText(chose.getAbsolutePath());
+        }
+    }//GEN-LAST:event_btnThemAnhSuaActionPerformed
+
+    private void txtFilmIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFilmIDActionPerformed
+    
+    }//GEN-LAST:event_txtFilmIDActionPerformed
+    
    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnThemAnhSua;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JCheckBox ckbCoTrang;
     private javax.swing.JCheckBox ckbFamily;
