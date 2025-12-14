@@ -59,12 +59,12 @@ public class MainFrame extends javax.swing.JFrame {
         loadCustomerData();
 //        loadDatVeData();
         loadLichChieuData();
-//        loadGiaData();
+        loadGiaData();
     }
     
     private void loadGiaData() {
         modelGia.setRowCount(0);
-        ArrayList<Gia> dsGia = GiaDAO.layDanhSachGia();
+        List<Gia> dsGia = phimController.layDanhSachGia();
         for (Gia gia : dsGia) {
             modelGia.addRow(new Object[]{
                 gia.getIdGia(),
