@@ -276,7 +276,6 @@ public class DangKy extends javax.swing.JDialog {
             String hoDem       = txtHoDem.getText().trim();
             String ten         = txtTen.getText().trim();
 
-            // Validate phía client
             if (soDienThoai.isEmpty() || email.isEmpty() || pass.isEmpty() || rePass.isEmpty()
                     || hoDem.isEmpty() || ten.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.");
@@ -313,11 +312,9 @@ public class DangKy extends javax.swing.JDialog {
                 return;
             }
 
-            //  Các tham số chưa có trên UI nen tạm để rỗng
             String ngaySinh = ""; 
             String diaChi   = "";
 
-            // call controller để đăng ký
             TaiKhoanController.RegisterResponse resp =
                     loginController.dangKy(
                             soDienThoai,
@@ -330,10 +327,8 @@ public class DangKy extends javax.swing.JDialog {
                             diaChi
                     );
 
-            // xu lý kết quả trả về
             JOptionPane.showMessageDialog(this, resp.getMessage());
 
-            // Nếu backend trả về tài khoản mới thi đăng ký OK xong đóng form
             if (resp.getTaiKhoan() != null) {
                 this.dispose();
             }
@@ -349,7 +344,7 @@ public class DangKy extends javax.swing.JDialog {
     }//GEN-LAST:event_btnHuyActionPerformed
 
     private void radNuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radNuActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_radNuActionPerformed
 
 

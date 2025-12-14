@@ -19,7 +19,6 @@ public class Ve {
         this.giaVe = giaVe;
     }
 
-    // Getters và Setters
     public String getIdVe() { return idVe; }
     public void setIdVe(String idVe) { this.idVe = idVe; }
     public String getTenKhachHang() { return tenKhachHang; }

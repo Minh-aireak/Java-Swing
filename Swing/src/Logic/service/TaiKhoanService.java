@@ -19,7 +19,6 @@ public class TaiKhoanService {
     private TaiKhoan currentUser;
     private static Session session;
 
-    // Lớp Result dùng chung
     public static class Result<T> {
 
         private final boolean success;
@@ -53,7 +52,6 @@ public class TaiKhoanService {
         }
     }
 
-    // login
     public Result<TaiKhoan> dangNhap(String soDienThoai, String matKhau) {
         try {
             Optional<TaiKhoan> opt = repo.findByPhoneAndPassword(soDienThoai, matKhau);
@@ -69,12 +67,10 @@ public class TaiKhoanService {
         }
     }
 
-    //sinh id tk
     private String generateIdTaiKhoan() {
         return "TK_" + java.util.UUID.randomUUID().toString().replace("-", "");
     }
 
-    // logup
     public Result<TaiKhoan> dangKy(String soDienThoai,
             String email,
             String matKhau,
@@ -84,12 +80,10 @@ public class TaiKhoanService {
             String ngaySinh,
             String diaChi) {
         try {
-            // check sdt
             if (repo.findByPhone(soDienThoai).isPresent()) {
                 return Result.fail("Số điện thoại đã được sử dụng!");
             }
 
-            // check mail
             if (repo.findByEmail(email).isPresent()) {
                 return Result.fail("Email đã được sử dụng!");
             }
@@ -117,7 +111,6 @@ public class TaiKhoanService {
         }
     }
 
-    // change pass
     public Result<Void> doiMatKhau(String idTaiKhoan, String oldPass, String newPass) {
         try {
             boolean ok = repo.updatePassword(idTaiKhoan, oldPass, newPass);
@@ -131,7 +124,6 @@ public class TaiKhoanService {
         }
     }
 
-    // update inf
     public Result<TaiKhoan> capNhatThongTin(String idTaiKhoan,
             String hoDem,
             String ten,
@@ -154,7 +146,6 @@ public class TaiKhoanService {
                 tk.setTen(ten.trim());
             }
 
-            // ngaySinh
             if (ngaySinh != null) {
                 String ns = ngaySinh.trim();
                 if (!ns.isEmpty()) {
@@ -163,7 +154,6 @@ public class TaiKhoanService {
                     }
                     tk.setNgaySinh(ns);
                 }
-                // nếu ns rỗng => không đụng vào (giữ nguyên)
             }
 
             if (diaChi != null && !diaChi.trim().isEmpty()) {
@@ -183,7 +173,6 @@ public class TaiKhoanService {
                 return Result.fail("Cập nhật thất bại!");
             }
 
-            // Cập nhật currentUser (nếu bạn đang dùng)
             if (currentUser != null && idTaiKhoan.equals(currentUser.getIdTaiKhoan())) {
                 currentUser = tk;
             }
@@ -195,7 +184,6 @@ public class TaiKhoanService {
         }
     }
 
-    // dxuat
     public void logout() {
         currentUser = null;
     }

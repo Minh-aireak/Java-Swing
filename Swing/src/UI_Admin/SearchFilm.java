@@ -367,7 +367,6 @@ public class SearchFilm extends javax.swing.JFrame {
 }
 
     
-    
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
         txtFilmID.setText("");
         txtFilmName.setText("");

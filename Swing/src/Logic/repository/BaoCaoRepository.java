@@ -12,7 +12,7 @@ public class BaoCaoRepository {
     public BaoCaoRepository() {
     }
     
-     public void capNhatSoGheConLai(String day, String month, String year, int soGheToiDa) throws SQLException{
+    public void capNhatSoGheConLai(String day, String month, String year, int soGheToiDa) throws SQLException{
          StringBuilder updateSql = new StringBuilder("""
             UPDATE lich_chieu lc
             SET lc.soGheConLai = ? - (
@@ -53,7 +53,8 @@ public class BaoCaoRepository {
             }
         }
     }
-     public void layBaoCao(String day, String month, String year, int soGheToiDa, DefaultTableModel modelReport) throws SQLException{
+     
+    public void layBaoCao(String day, String month, String year, int soGheToiDa, DefaultTableModel modelReport) throws SQLException{
          StringBuilder reportSql = new StringBuilder("""
                 SELECT
                     p.tenPhim,
@@ -116,15 +117,11 @@ public class BaoCaoRepository {
 
         List<java.sql.Date> updateParamValues = new ArrayList<>();
 
-        if (dateFrom != null) {
-            updateSql.append(" AND DATE(lc) = ? ");
+        if (dateFrom != null && dateTo != null) {
+            updateSql.append(" AND DATE(lc.gioChieu) BETWEEN ? AND ?");
             updateParamValues.add(new java.sql.Date(dateFrom.getTime()));
-        }
-        if (dateTo != null) {
-            updateSql.append(" AND DATE(lc) = ? ");
             updateParamValues.add(new java.sql.Date(dateTo.getTime()));
         }
-
         try (Connection conn = DatabaseConnection.getConnection()) {
             if (conn == null) {
                 JOptionPane.showMessageDialog(null, "Không thể kết nối đến cơ sở dữ liệu!");
@@ -140,7 +137,8 @@ public class BaoCaoRepository {
             }
         }
     }
-     public void layBaoCaoFromTo(java.sql.Date dateFrom, java.sql.Date dateTo, int soGheToiDa, DefaultTableModel modelReport)throws SQLException{
+    
+    public void layBaoCaoFromTo(java.sql.Date dateFrom, java.sql.Date dateTo, int soGheToiDa, DefaultTableModel modelReport)throws SQLException{
         StringBuilder reportSql = new StringBuilder("""
                 SELECT
                     p.tenPhim,
@@ -152,12 +150,9 @@ public class BaoCaoRepository {
                 WHERE 1=1
             """);
         List<java.sql.Date> reportFromToparamValues = new ArrayList<>();
-        if(dateFrom != null){
-            reportSql.append(" AND DATE(lc) = ? ");
+        if(dateFrom != null && dateTo != null){
+            reportSql.append(" AND DATE(lc.gioChieu) BETWEEN ? AND ?");
             reportFromToparamValues.add(new java.sql.Date(dateFrom.getTime()));
-        }
-        if(dateTo != null){
-            reportSql.append("AND DATE(lc) = ?");
             reportFromToparamValues.add(new java.sql.Date(dateTo.getTime()));
         }
         reportSql.append("""

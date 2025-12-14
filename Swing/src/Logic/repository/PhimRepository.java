@@ -15,9 +15,10 @@ import java.util.Map;
 import Logic.entity.Phim;
 
 public class PhimRepository {
-    Connection connection = DatabaseConnection.getConnection();
+    Connection connection = null;
     
     public boolean kiemTraTonTai(String table, String column, String value) throws SQLException {
+        connection = DatabaseConnection.getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
             String sql = "SELECT COUNT(*) FROM " + table + " WHERE " + column + " = ?";
@@ -65,7 +66,7 @@ public class PhimRepository {
     }
     
     public boolean themPhim(Phim phim) throws Exception {
-        if (connection == null) return false;
+        connection = DatabaseConnection.getConnection();
 
         long t0 = System.currentTimeMillis();
         try {
@@ -146,12 +147,11 @@ public class PhimRepository {
     }
 
     public boolean capNhatPhim(Phim phim) throws Exception {
-        if (connection == null) return false;
-
+        connection = DatabaseConnection.getConnection();
+        
         try {
-            connection.setAutoCommit(false); // Bắt đầu transaction
+            connection.setAutoCommit(false); 
 
-            // Cập nhật bảng phim
             String sqlPhim = "UPDATE phim SET tenPhim = ?, tacGia = ?, thoiLuong = ?, ngonNgu = ?, dienVien = ?, moTa = ?, anhPhim = ? WHERE idPhim = ?";
             PreparedStatement psPhim = connection.prepareStatement(sqlPhim);
             psPhim.setString(1, phim.getTenPhim());
@@ -168,13 +168,11 @@ public class PhimRepository {
                 return false;
             }
 
-            // Xóa thể loại cũ
             String sqlDeleteTheLoai = "DELETE FROM phim_theloai WHERE idPhim = ?";
             PreparedStatement psDelete = connection.prepareStatement(sqlDeleteTheLoai);
             psDelete.setString(1, phim.getIdPhim());
             psDelete.executeUpdate();
 
-            // Thêm lại thể loại mới
             String sqlInsertTheLoai = "INSERT INTO phim_theloai (idPhim, idTheLoai) VALUES (?, ?)";
             PreparedStatement psInsert = connection.prepareStatement(sqlInsertTheLoai);
             for (String tenTheLoai : phim.getTheLoai()) {
@@ -210,7 +208,7 @@ public class PhimRepository {
     }
 
     public boolean xoaPhim(String idPhim) throws Exception {
-        if (connection == null) return false;
+        connection = DatabaseConnection.getConnection();
 
         // Kiểm tra xem phim có lịch chiếu không
         if (phimDangCoLichChieu(idPhim, connection)) {
@@ -261,7 +259,7 @@ public class PhimRepository {
 
     public ArrayList<Phim> layDanhSachPhim() throws Exception {
         ArrayList<Phim> dsPhim = new ArrayList<>();
-        if (connection == null) return dsPhim;
+        connection = DatabaseConnection.getConnection();
 
         try {
             String sql = "SELECT p.*, GROUP_CONCAT(tl.tenTheLoai) AS theLoai " +
@@ -306,7 +304,6 @@ public class PhimRepository {
         return dsPhim;
     }
 
-    // Trả về idTheLoai từ tên thể loại
     private String layIdTheLoaiTuTen(String ten, Connection conn) {
         String sql = "SELECT idTheLoai FROM the_loai WHERE tenTheLoai = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -338,7 +335,6 @@ public class PhimRepository {
         return map;
     }
 
-    // Kiểm tra xem phim có trong lịch chiếu hay không
     private boolean phimDangCoLichChieu(String idPhim, Connection conn) {
         String sql = "SELECT COUNT(*) FROM lich_chieu WHERE idPhim = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -353,8 +349,8 @@ public class PhimRepository {
         return true; // giả định có nếu lỗi
     }
     
-    // --- Bổ sung cho AddLC ---
     public boolean themLichChieu(LichChieu lc) throws SQLException {
+        connection = DatabaseConnection.getConnection();
         String sql = "INSERT INTO lich_chieu(idLichChieu, idPhim, gioChieu, idPhongChieu, soGheConLai, idGia) VALUES(?,?,?,?,?,?)";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, lc.getIdLichChieu());
@@ -367,11 +363,10 @@ public class PhimRepository {
         return rows > 0;
     }
 
-    // --- Bổ sung cho SearchLC ---
     public List<LichChieu> timKiemLichChieu(String idLC, String idPhim, String idPhong) throws SQLException {
         List<LichChieu> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM lich_chieu WHERE 1=1");
-        
+        connection = DatabaseConnection.getConnection();
         if (!idLC.isEmpty()) sql.append(" AND idLichChieu LIKE ?");
         if (!idPhim.isEmpty()) sql.append(" AND idPhim LIKE ?");
         if (idPhong != null && !idPhong.isEmpty()) sql.append(" AND idPhongChieu = ?");
@@ -396,8 +391,8 @@ public class PhimRepository {
         return list;
     }
 
-    // --- Bổ sung load ComboBox ---
     public List<String> getAllPhongChieu() throws SQLException {
+        connection = DatabaseConnection.getConnection();
         List<String> list = new ArrayList<>();
         String sql = "SELECT idPhongChieu FROM phong_chieu";
         Statement st = connection.createStatement();
@@ -409,6 +404,7 @@ public class PhimRepository {
     }
     
     public boolean xoaLichChieu(String idLichChieu) throws SQLException {
+       connection = DatabaseConnection.getConnection();
         PreparedStatement psLichChieuGhe = null;
         PreparedStatement psLichChieu = null;
         boolean result = false;
@@ -454,17 +450,17 @@ public class PhimRepository {
     
     public List<LichChieu> getListLichChieu() {
         List<LichChieu> ds = new ArrayList<>();
-        Connection conn = null;
+        connection = DatabaseConnection.getConnection();
         Statement st = null;
         ResultSet rs = null;
         try {
-            conn = DatabaseConnection.getConnection();
-            if (conn == null) {
+            connection = DatabaseConnection.getConnection();
+            if (connection == null) {
                 System.out.println("Không thể kết nối tới cơ sở dữ liệu!");
                 return ds;
             }
             String sql = "SELECT * FROM lich_chieu";
-            st = conn.createStatement();
+            st = connection.createStatement();
             rs = st.executeQuery(sql);
             while (rs.next()) {
                 LichChieu lc = new LichChieu(
@@ -483,7 +479,7 @@ public class PhimRepository {
             try {
                 if (rs != null) rs.close();
                 if (st != null) st.close();
-                if (conn != null) conn.close();
+                if (connection != null) connection.close();
             } catch (SQLException e) {
                 System.out.println("Lỗi đóng tài nguyên: " + e.getMessage());
             }
@@ -493,11 +489,11 @@ public class PhimRepository {
     
     public List<Gia> layDanhSachGia() {
         List<Gia> ds = new ArrayList<>();
-        Connection conn = null;
+        
         try {
-            conn = DatabaseConnection.getConnection();
+            connection = DatabaseConnection.getConnection();
             String sql = "SELECT * FROM gia";
-            Statement st = conn.createStatement();
+            Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while (rs.next()) {
                 Gia gia = new Gia(
@@ -511,17 +507,16 @@ public class PhimRepository {
         } catch (SQLException e) {
             System.out.println("Lỗi lấy danh sách giá: " + e.getMessage());
         } finally {
-            if (conn != null) try { conn.close(); } catch (SQLException e) {}
+            if (connection != null) try { connection.close(); } catch (SQLException e) {}
         }
         return ds;
     }
     
     public boolean themGia(Gia gia) {
-        Connection conn = null;
         try {
-            conn = DatabaseConnection.getConnection();
+            connection = DatabaseConnection.getConnection();
             String sql = "INSERT INTO gia (idGia, tieuChuan, vip, triple) VALUES (?, ?, ?, ?)";
-            PreparedStatement ps = conn.prepareStatement(sql);
+            PreparedStatement ps = connection.prepareStatement(sql);
             ps.setString(1, gia.getIdGia());
             ps.setInt(2, gia.getTieuChuan());
             ps.setInt(3, gia.getVip());
@@ -532,7 +527,7 @@ public class PhimRepository {
             System.out.println("Lỗi thêm giá: " + e.getMessage());
             return false;
         } finally {
-            if (conn != null) try { conn.close(); } catch (SQLException e) {}
+            if (connection != null) try { connection.close(); } catch (SQLException e) {}
         }
     }
     

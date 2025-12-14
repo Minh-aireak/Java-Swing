@@ -59,7 +59,6 @@ public class PhimService {
     }
     
     public LichChieuResponse addLichChieu(LichChieu lc) throws Exception {
-        // Kiểm tra tồn tại (Generic style giống file bạn gửi)
         boolean check = phimRepository.kiemTraTonTai("lich_chieu", "idLichChieu", lc.getIdLichChieu());
         LichChieuResponse chieuResponse = new LichChieuResponse(); // Phải new để tránh NullPointer
         
@@ -106,12 +105,10 @@ public class PhimService {
     }
     
     public String deleteLichChieu(String idLichChieu) throws Exception {
-        // Kiểm tra tồn tại
         if (!phimRepository.kiemTraTonTai("lich_chieu", "idLichChieu", idLichChieu)) {
             throw new Exception("Lịch chiếu không tồn tại!");
         }
 
-        // Gọi Repository để xóa
         if (phimRepository.xoaLichChieu(idLichChieu)) {
             return "Xóa lịch chiếu thành công!";
         } else {

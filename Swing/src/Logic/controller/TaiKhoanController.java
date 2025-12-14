@@ -13,24 +13,20 @@ public class TaiKhoanController {
         this.service = service;
     }
     
-    // login
     public LoginResponse dangNhap(String soDienThoai, String matKhau) {
         var rs = service.dangNhap(soDienThoai, matKhau);
         return new LoginResponse(rs.isSuccess(), rs.getMessage(), rs.getData());
     }
 
-    // logout
     public void logout() {
         service.logout();
     }
 
-    // change pass
     public ChangePasswordResponse doiMatKhau(String idTaiKhoan, String oldPass, String newPass) {
         var rs = service.doiMatKhau(idTaiKhoan, oldPass, newPass);
         return new ChangePasswordResponse(rs.isSuccess(), rs.getMessage());
     }
 
-    // update if
     public LoginResponse capNhatThongTin(String idTaiKhoan,
                                          String hoDem,
                                          String ten,
@@ -41,7 +37,6 @@ public class TaiKhoanController {
         return new LoginResponse(rs.isSuccess(), rs.getMessage(), rs.getData());
     }
 
-    // dki
     public RegisterResponse dangKy(String soDienThoai,
                                    String email,
                                    String matKhau,
@@ -59,7 +54,6 @@ public class TaiKhoanController {
         return service.listTaiKhoan();
     }
 
-    // Đổi mật khẩu
     public static class ChangePasswordResponse {
         private boolean success;
         private String message;
@@ -75,7 +69,6 @@ public class TaiKhoanController {
         public void setMessage(String message) { this.message = message; }
     }
 
-    // Đăng ký
     public static class RegisterResponse {
         private boolean success;
         private String message;

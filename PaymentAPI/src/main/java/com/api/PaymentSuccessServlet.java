@@ -14,31 +14,30 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-@WebServlet("/payment_success")
+@WebServlet("/payment_return")
 public class PaymentSuccessServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String id = req.getParameter("vnp_TxnRef");
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        resp.setContentType("text/html; charset=UTF-8");
+        resp.setCharacterEncoding("UTF-8");
+
+        String responseCode = req.getParameter("vnp_ResponseCode");
+        String txnRef = req.getParameter("vnp_TxnRef");
+
         Connection conn = null;
 
-        String idTaiKhoan;
-        String idLichChieu;
-        String listIdGhe;
-        String idGia;
-        String tongTien;
-        String idBill = "Bill_" + UUID.randomUUID();
         try {
             conn = DatabaseConnection.getConnection();
             conn.setAutoCommit(false);
 
-            PreparedStatement ps = null;
-
-            ps = conn.prepareStatement("SELECT idTaiKhoan, idLichChieu, listIdGhe, idGia, tongTien " +
-                            "FROM payment_pending " +
-                            "WHERE id = ? AND status = 'Đang xử lý'"
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT idTaiKhoan, idLichChieu, listIdGhe, idGia, tongTien " +
+                            "FROM payment_pending WHERE id = ? AND status = 'Đang xử lý'"
             );
-            ps.setString(1, id);
+            ps.setString(1, txnRef);
             ResultSet rs = ps.executeQuery();
 
             if (!rs.next()) {
@@ -46,21 +45,54 @@ public class PaymentSuccessServlet extends HttpServlet {
                 return;
             }
 
-            idTaiKhoan  = rs.getString("idTaiKhoan");
-            idLichChieu = rs.getString("idLichChieu");
-            listIdGhe   = rs.getString("listIdGhe");
-            idGia       = rs.getString("idGia");
-            tongTien    = rs.getString("tongTien");
-
-            ps = conn.prepareStatement("INSERT INTO bill (idBill, idTaiKhoan, thoiGianDat, tongTien) VALUES (?, ?, NOW(), ?)");
-            ps.setString(1, idBill);
-            ps.setString(2, idTaiKhoan);
-            ps.setInt(3, Integer.parseInt(tongTien));
-            ps.executeUpdate();
+            String idTaiKhoan  = rs.getString("idTaiKhoan");
+            String idLichChieu = rs.getString("idLichChieu");
+            String listIdGhe   = rs.getString("listIdGhe");
+            String idGia       = rs.getString("idGia");
+            int tongTien       = rs.getInt("tongTien");
 
             List<String> list = Arrays.asList(listIdGhe.split(", "));
-            for (String idGhe : list){
-                ps = conn.prepareStatement("INSERT INTO ve (idVe, idLichChieu, idGhe, idGia, idBill) VALUES (?, ? ,? ,? ,?)");
+
+            if (!"00".equals(responseCode)) {
+
+                ps = conn.prepareStatement(
+                        "DELETE lichchieu_ghe " +
+                                "WHERE idLichChieu = ? AND idGhe = ? AND trangThai = 'Đang xử lý'"
+                );
+
+                for (String idGhe : list) {
+                    ps.setString(1, idLichChieu);
+                    ps.setString(2, idGhe);
+                    ps.executeUpdate();
+                }
+
+                ps = conn.prepareStatement(
+                        "UPDATE payment_pending SET status = 'Thất bại' WHERE id = ?"
+                );
+                ps.setString(1, txnRef);
+                ps.executeUpdate();
+
+                conn.commit();
+                resp.getWriter().println("Thanh toán thất bại!");
+                return;
+            }
+
+            String idBill = "Bill_" + UUID.randomUUID();
+
+            ps = conn.prepareStatement(
+                    "INSERT INTO bill (idBill, idTaiKhoan, thoiGianDat, tongTien) " +
+                            "VALUES (?, ?, NOW(), ?)"
+            );
+            ps.setString(1, idBill);
+            ps.setString(2, idTaiKhoan);
+            ps.setInt(3, tongTien);
+            ps.executeUpdate();
+
+            for (String idGhe : list) {
+                ps = conn.prepareStatement(
+                        "INSERT INTO ve (idVe, idLichChieu, idGhe, idGia, idBill) " +
+                                "VALUES (?, ?, ?, ?, ?)"
+                );
                 ps.setString(1, "Ve_" + UUID.randomUUID());
                 ps.setString(2, idLichChieu);
                 ps.setString(3, idGhe);
@@ -69,31 +101,36 @@ public class PaymentSuccessServlet extends HttpServlet {
                 ps.executeUpdate();
 
                 ps = conn.prepareStatement("UPDATE lichchieu_ghe SET trangThai = 'Đã đặt' " +
-                                            " WHERE idLichChieu = ? AND idGhe = ? AND trangThai = 'Đang xử lý'");
+                                "WHERE idLichChieu = ? AND idGhe = ? AND trangThai = 'Đang xử lý'"
+                );
                 ps.setString(1, idLichChieu);
                 ps.setString(2, idGhe);
-                int updated = ps.executeUpdate();
-                if (updated == 0) {
-                    throw new SQLException("Ghế đã được đặt");
-                }
 
+                if (ps.executeUpdate() == 0) {
+                    throw new SQLException("Ghế đã bị người khác đặt");
+                }
             }
 
-            ps = conn.prepareStatement("UPDATE lich_chieu SET soGheConLai = soGheConLai - ? WHERE idLichChieu = ?");
+            ps = conn.prepareStatement(
+                    "UPDATE lich_chieu SET soGheConLai = soGheConLai - ? WHERE idLichChieu = ?"
+            );
             ps.setInt(1, list.size());
             ps.setString(2, idLichChieu);
             ps.executeUpdate();
 
+            ps = conn.prepareStatement(
+                    "UPDATE payment_pending SET status = 'Thành công' WHERE id = ?"
+            );
+            ps.setString(1, txnRef);
+            ps.executeUpdate();
+
             conn.commit();
             resp.getWriter().println("Thanh toán thành công!");
+
         } catch (Exception e) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
+            try {
+                if (conn != null) conn.rollback();
+            } catch (SQLException ignored) {}
             throw new RuntimeException(e);
         }
     }

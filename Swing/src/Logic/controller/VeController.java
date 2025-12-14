@@ -1,11 +1,11 @@
 package Logic.controller;
 
-import Logic.dto.request.DataCreateVeRequest;
 import Logic.dto.response.BillResponse;
 import Logic.dto.response.ChiTietBillResponse;
 import Logic.dto.response.ChiTietLichChieuResponse;
 import Logic.dto.response.ListLichChieuResponse;
 import Logic.entity.Phim;
+import Logic.entity.Ve;
 import Logic.service.VeService;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -21,10 +21,6 @@ public class VeController {
     public String holdSeats(String idTaiKhoan, String idLichChieu, List<String> listIdGhe, String idGia, String tongTien) throws SQLException {
         return veService.holdSeats(idTaiKhoan, idLichChieu, listIdGhe, idGia, tongTien);
     }
-    
-//    public boolean saveVe(DataCreateVeRequest request) {     
-//        return veService.saveVe(request);
-//    }
     
     public List<BillResponse> getListBill() throws SQLException{
         return veService.getListBill();
@@ -45,5 +41,8 @@ public class VeController {
     public ListLichChieuResponse getListLichChieu(String idPhim) throws SQLException {
         return veService.getListLichChieu(idPhim);
     }
-    
+   
+    public List<Ve> getListVe() {
+        return veService.getListVe();
+    }
 }

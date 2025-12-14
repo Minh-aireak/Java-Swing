@@ -16,9 +16,7 @@ public class EditLC extends javax.swing.JFrame {
     PhimController phimController = new PhimController(new PhimService(new PhimRepository()));
     private final DefaultTableModel modelLichChieu;
     private final int selectedRow;
-    /**
-     * Creates new form EditLC
-     */
+
     public EditLC(int selectedRow, DefaultTableModel model) {
         this.modelLichChieu = model;
         this.selectedRow = selectedRow;

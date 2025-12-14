@@ -18,6 +18,7 @@ public class PhimController {
 
     public PhimController(PhimService phimService) {
         this.phimService = phimService;
+        if (this.repo == null) this.repo = new PhimRepository();
     }
 
     public PhimController(PhimRepository repo) {
@@ -123,13 +124,11 @@ return null;
         return response;
     }
 
-    // --- Hàm cho SearchLC ---
     public List<LichChieuResponse> searchLichChieu(String idLichChieu, String idPhim, String idPhongChieu) throws Exception {
         // Tìm kiếm có thể null hoặc rỗng, không cần validate chặt
         return phimService.searchLichChieu(idLichChieu, idPhim, idPhongChieu);
     }
 
-    // --- Hàm load ComboBox ---
     public List<String> getPhongChieu() {
         try {
             return phimService.getListPhongChieu();

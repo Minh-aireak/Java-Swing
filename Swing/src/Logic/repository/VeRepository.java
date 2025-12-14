@@ -2,7 +2,6 @@ package Logic.repository;
 
 import Logic.entity.Ve;
 import ConnectDatabase.DatabaseConnection;
-import Logic.dto.request.DataCreateVeRequest;
 import Logic.dto.response.BillResponse;
 import Logic.dto.response.ChiTietBillResponse;
 import Logic.dto.response.ChiTietLichChieuResponse;
@@ -13,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class VeRepository {
     Connection connection = DatabaseConnection.getConnection();
@@ -53,45 +50,6 @@ public class VeRepository {
         }
         return id;
     }
-    
-//    public void saveVe(DataCreateVeRequest listVeRequest) {
-//        
-//        connection.setAutoCommit(false);
-//        int index = 1;
-//        try {
-//            PreparedStatement ps = null;
-//            ps = connection.prepareStatement("INSERT INTO bill (idBill, idTaiKhoan, thoiGianDat, tongTien) VALUES (?, ?, ?, ?)");
-//            ps.setString(index++, listVeRequest.getIdBill());
-//            ps.setString(index++, listVeRequest.getIdTaiKhoan());
-//            ps.setTimestamp(index++, Timestamp.valueOf(listVeRequest.getThoiGianDat()));
-//            ps.setInt(index, Integer.valueOf(listVeRequest.getTongTien()));
-//            ps.executeUpdate();
-//
-//            for (String idGhe : listVeRequest.getListIdGhe()){
-//                ps = connection.prepareStatement("INSERT INTO ve (idVe, idLichChieu, idGhe, idGia, idBill) VALUES (?, ? ,? ,? ,?)");
-//                ps.setString(1, UUID.randomUUID().toString());
-//                ps.setString(2, listVeRequest.getIdLichChieu());
-//                ps.setString(3, idGhe);
-//                ps.setString(4, listVeRequest.getIdGia());
-//                ps.setString(5, listVeRequest.getIdBill());
-//                ps.executeUpdate();
-//                ps = connection.prepareStatement("INSERT INTO lichchieu_ghe (idLichChieu, idGhe, trangThai) VALUES (?, ?, ?)");
-//                ps.setString(1, listVeRequest.getIdLichChieu());
-//                ps.setString(2, idGhe);
-//                ps.setString(3, listVeRequest.getTrangThai());
-//                ps.executeUpdate();
-//            }
-//
-//            ps = connection.prepareStatement("UPDATE lich_chieu SET soGheConLai = soGheConLai - ? WHERE idLichChieu = ?");
-//            ps.setString(1, String.valueOf(listVeRequest.getListIdGhe().size()));
-//            ps.setString(2, listVeRequest.getIdLichChieu());
-//            ps.executeUpdate();
-//            connection.commit();
-//        } catch (SQLException ex) {
-//            connection.rollback();
-//            Logger.getLogger(VeRepository.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//    }
     
     public ArrayList<Ve> getDanhSachDatVe(){
         ArrayList<Ve> ds = new ArrayList<>();
@@ -295,5 +253,47 @@ public class VeRepository {
             listGioChieu.add(ts);
         }
         return listGioChieu;
+    }
+    
+    public List<Ve> getListVe() {
+        List<Ve> ds = new ArrayList<>();
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getConnection();
+            String sql = "SELECT v.idVe, CONCAT(tk.hoDem, ' ', tk.ten) AS ten, " +
+                         "p.tenPhim, DATE_FORMAT(lc.gioChieu, '%d/%m/%Y %H:%i') AS gioChieu, " +
+                         "g.idGhe, pc.tenPhong, " +
+                         "CASE g.loaiGhe " +
+                         "WHEN 'Tiêu chuẩn' THEN gia.tieuChuan " +
+                         "WHEN 'VIP' THEN gia.vip " +
+                         "WHEN 'Triple' THEN gia.triple END AS giaVe " +
+                         "FROM ve v " +
+                         "JOIN bill b ON v.idBill = b.idBill " +
+                         "JOIN tai_khoan tk ON b.idTaiKhoan = tk.idTaiKhoan " +
+                         "JOIN lich_chieu lc ON v.idLichChieu = lc.idLichChieu " +
+                         "JOIN phim p ON lc.idPhim = p.idPhim " +
+                         "JOIN ghe g ON v.idGhe = g.idGhe " +
+                         "JOIN phong_chieu pc ON lc.idPhongChieu = pc.idPhongChieu " +
+                         "JOIN gia ON v.idGia = gia.idGia";
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                Ve dv = new Ve(
+                    rs.getString("idVe"),
+                    rs.getString("ten"),
+                    rs.getString("tenPhim"),
+                    rs.getString("gioChieu"),
+                    rs.getString("idGhe"),
+                    rs.getString("tenPhong"),
+                    rs.getInt("giaVe")
+                );
+                ds.add(dv);
+            }
+        } catch (SQLException e) {
+            System.out.println("Lỗi lấy danh sách đặt vé: " + e.getMessage());
+        } finally {
+            if (conn != null) try { conn.close(); } catch (SQLException e) {}
+        }
+        return ds;
     }
 }

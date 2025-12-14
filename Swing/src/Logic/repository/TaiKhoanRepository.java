@@ -10,7 +10,6 @@ import java.util.Optional;
 
 public class TaiKhoanRepository {
 
-    // Map một dòng ResultSet -> đối tượng TaiKhoan
     private TaiKhoan mapRow(ResultSet rs) throws SQLException {
         return new TaiKhoan(
                 rs.getString("idTaiKhoan"),
@@ -25,7 +24,6 @@ public class TaiKhoanRepository {
         );
     }
 
-    // Đăng nhập
     public Optional<TaiKhoan> findByPhoneAndPassword(String soDienThoai, String matKhau) throws SQLException {
         String sql = "SELECT idTaiKhoan, soDienThoai, email, matKhau, hoDem, ten, ngaySinh, diaChi, gioiTinh "
                 + "FROM tai_khoan WHERE soDienThoai = ? AND matKhau = ?";
@@ -44,7 +42,6 @@ public class TaiKhoanRepository {
         return Optional.empty();
     }
 
-    // Lấy theo id
     public Optional<TaiKhoan> findById(String idTaiKhoan) throws SQLException {
         String sql = "SELECT idTaiKhoan, soDienThoai, email, matKhau, hoDem, ten, ngaySinh, diaChi, gioiTinh "
                 + "FROM tai_khoan WHERE idTaiKhoan = ?";
@@ -62,7 +59,6 @@ public class TaiKhoanRepository {
         return Optional.empty();
     }
 
-    //  check sdt dùng cho kiểm tra trùng khi đăng ký
     public Optional<TaiKhoan> findByPhone(String soDienThoai) throws SQLException {
         String sql = "SELECT idTaiKhoan, soDienThoai, email, matKhau, hoDem, ten, ngaySinh, diaChi, gioiTinh "
                 + "FROM tai_khoan WHERE soDienThoai = ?";
@@ -80,7 +76,6 @@ public class TaiKhoanRepository {
         return Optional.empty();
     }
 
-    // check theo mail dùng cho kiểm tra trùng khi đăng ký
     public Optional<TaiKhoan> findByEmail(String email) throws SQLException {
         String sql = "SELECT idTaiKhoan, soDienThoai, email, matKhau, hoDem, ten, ngaySinh, diaChi, gioiTinh "
                 + "FROM tai_khoan WHERE email = ?";
@@ -98,7 +93,6 @@ public class TaiKhoanRepository {
         return Optional.empty();
     }
 
-    // LƯU TÀI KHOẢN MỚI (ĐĂNG KÝ)
     public TaiKhoan save(TaiKhoan tk) throws SQLException {
         String sql = "INSERT INTO tai_khoan "
                 + "(idTaiKhoan, soDienThoai, email, matKhau, hoDem, ten, ngaySinh, diaChi, gioiTinh) "
@@ -113,7 +107,6 @@ public class TaiKhoanRepository {
             ps.setString(5, tk.getHoDem());
             ps.setString(6, tk.getTen());
 
-            // ngaySinh có thể NULL
             if (tk.getNgaySinh() == null || tk.getNgaySinh().trim().isEmpty()) {
                 ps.setNull(7, java.sql.Types.VARCHAR);
             } else {
@@ -128,7 +121,6 @@ public class TaiKhoanRepository {
         return tk;
     }
 
-    // Cập nhật thông tin
     public boolean updateInfo(TaiKhoan tk) throws SQLException {
         String sql = "UPDATE tai_khoan SET hoDem=?, ten=?, ngaySinh=?, diaChi=?, gioiTinh=? WHERE idTaiKhoan=?";
 
@@ -136,16 +128,15 @@ public class TaiKhoanRepository {
 
             ps.setString(1, tk.getHoDem());
             ps.setString(2, tk.getTen());
-            ps.setString(3, tk.getNgaySinh());   // varchar nullable ok
+            ps.setString(3, tk.getNgaySinh());  
             ps.setString(4, tk.getDiaChi());
             ps.setString(5, tk.getGioiTinh());
-            ps.setString(6, tk.getIdTaiKhoan()); // ✅ chỉ để xác định dòng
+            ps.setString(6, tk.getIdTaiKhoan()); 
 
             return ps.executeUpdate() > 0;
         }
     }
 
-    // Đổi mật khẩu
     public boolean updatePassword(String idTaiKhoan, String oldPass, String newPass) throws SQLException {
         String sql = "UPDATE tai_khoan SET matKhau = ? WHERE idTaiKhoan = ? AND matKhau = ?";
 

@@ -1,18 +1,17 @@
 package Logic.service;
 
 import Global.Session;
-import Logic.dto.request.DataCreateVeRequest;
 import Logic.dto.response.BillResponse;
 import Logic.dto.response.ChiTietBillResponse;
 import Logic.dto.response.ChiTietLichChieuResponse;
 import Logic.dto.response.ListLichChieuResponse;
 import Logic.entity.Phim;
+import Logic.entity.Ve;
 import Logic.repository.VeRepository;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
-import javax.sound.midi.SysexMessage;
 
 public class VeService {
     VeRepository veRepository;
@@ -26,15 +25,6 @@ public class VeService {
     public String holdSeats(String idTaiKhoan, String idLichChieu, List<String> listIdGhe, String idGia, String tongTien) throws SQLException {
         return veRepository.holdSeats(idTaiKhoan, idLichChieu, listIdGhe, idGia, tongTien);
     }
-    
-//    public boolean saveVe(DataCreateVeRequest request) {
-//         try {
-//             veRepository.saveVe(request);
-//             return true;
-//         } catch (SQLException ex) {
-//             return false;
-//         }
-//    }
     
     public boolean deleteVe(String idVe) {
         try {
@@ -98,5 +88,9 @@ public class VeService {
         }
         
         return response;
+    }
+    
+    public List<Ve> getListVe() {
+        return veRepository.getListVe();
     }
 }

@@ -5,7 +5,6 @@ import ConnectDatabase.DatabaseConnection;
 import Global.Session;
 import Logic.controller.TaiKhoanController;
 import Logic.controller.VeController;
-import Logic.dto.request.DataCreateVeRequest;
 import Logic.dto.response.ChiTietLichChieuResponse;
 import Logic.dto.response.ListLichChieuResponse;
 import Logic.dto.response.LoginResponse;
@@ -15,24 +14,17 @@ import Logic.repository.VeRepository;
 import Logic.service.TaiKhoanService;
 import Logic.service.VeService;
 import UI_Login.UI_Login;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
-import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.event.ItemEvent;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import javax.swing.ImageIcon;
 import javax.swing.table.TableColumn;
 import java.sql.Connection;
@@ -55,9 +47,7 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.UUID;
 
 public class UI_KhachHang extends javax.swing.JFrame {
     VeController veController = new VeController(new VeService(new VeRepository()));
@@ -1893,7 +1883,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    // Phim
     private void displayChiTietPhim(boolean flag){
         if(!flag){
             for(Component comp : jp_ThongTinChiTietPhim.getComponents()){
@@ -1906,7 +1895,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }
     
-    // KHÔNG LIÊN QUAN (*)
     private void displayChiTietDon(boolean flag){
         dv_lab_Standard.setVisible(flag);
         dv_lab_StandardQuantity.setVisible(flag);
@@ -2024,7 +2012,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }
 
-    // KHÔNG LIÊN QUAN (*)
     private void addEvenListener(JToggleButton jgbtn){
         jgbtn.addItemListener(e -> {
             if(!dv_lab_TenPhong.getText().equals("Phòng")){
@@ -2040,7 +2027,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         });
     }
 
-    // KHÔNG LIÊN QUAN (*)
     private void themEvenListener(){
         for(Component comp : dv_jp_LeftGhe.getComponents()){
             if(comp instanceof JToggleButton jtbtn){
@@ -2054,7 +2040,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }
     
-    // KHÔNG LIÊN QUAN (*)
     private void updateGheAfterPay(int index) throws SQLException{
         try {
             var response = veController.getListGhe(listTimestamps.get(index));
@@ -2212,7 +2197,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         displayChiTietPhim(true);
     }//GEN-LAST:event_tableMouseClicked
 
-    // Phim module
     private void h_btn_TimKiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_h_btn_TimKiemActionPerformed
 
         model.setRowCount(0);
@@ -2280,14 +2264,12 @@ public class UI_KhachHang extends javax.swing.JFrame {
             }
     }//GEN-LAST:event_h_btn_TimKiemActionPerformed
 
-    // TaiKhoan module
     private void btn_DoiMatKhauActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_DoiMatKhauActionPerformed
         DoiMatKhauDialog dialog = new DoiMatKhauDialog(this, true);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
 
-    // TaiKhoan module
     private void btn_LogOutActionPerformed(java.awt.event.ActionEvent evt) {
         int result = JOptionPane.showConfirmDialog(
                 this,
@@ -2297,7 +2279,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         );
 
         if (result == JOptionPane.YES_OPTION) {
-            // call backend logout
             if (loginController != null) {
                 loginController.logout();
             }
@@ -2316,10 +2297,9 @@ public class UI_KhachHang extends javax.swing.JFrame {
         return;
     }
 
-    // get datatừ form
     String ten = txt_Ten.getText().trim();
     String hoDem = txt_Ho.getText().trim();
-    String ngaySinhStr = txt_NgaySinh.getText().trim(); // dd/MM/yyyy hoặc rỗng
+    String ngaySinhStr = txt_NgaySinh.getText().trim(); 
     String diaChi = txt_DiaChi.getText().trim();
     String gioiTinh = radNam.isSelected() ? "Nam" : (radNu.isSelected() ? "Nữ" : "");
 
@@ -2359,7 +2339,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
     JOptionPane.showMessageDialog(this, res.getMessage() != null ? res.getMessage() : "Cập nhật thành công!");
     }
 
-    // KHÔNG LIÊN QUAN (*)
     private void displayListBill(){
         model2.setRowCount(0);
         try {
@@ -2378,7 +2357,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }
 
-    // KHÔNG LIÊN QUAN (*)
     private void displayChiTietBill(boolean flag){
         if(!flag){
             for(Component comp : ttb_jp_ChiTietBill.getComponents()){
@@ -2414,7 +2392,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         if (imageFileName.isEmpty()) return;
         try {
             ImageIcon imgIcon = null;
-            // Only support HTTP/HTTPS URLs or absolute filesystem paths
             if (imageFileName.startsWith("http://") || imageFileName.startsWith("https://")) {
                 java.net.URL url = new java.net.URL(imageFileName);
                 imgIcon = new ImageIcon(url);
@@ -2423,7 +2400,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
                 if (f.isAbsolute() && f.exists()) {
                     imgIcon = new ImageIcon(f.getAbsolutePath());
                 } else {
-                    // Not an absolute path or doesn't exist — skip loading
                     System.out.println("Ảnh không phải đường dẫn tuyệt đối hoặc không tồn tại: " + imageFileName);
                 }
             }
