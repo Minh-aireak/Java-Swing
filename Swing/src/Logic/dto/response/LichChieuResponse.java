@@ -8,6 +8,10 @@ public class LichChieuResponse {
     private int soGheConLai;
     private String idGia;
     private String message;
+    
+    public LichChieuResponse(String message) {
+        this.message = message;
+    }
 
     public LichChieuResponse(String idLichChieu, String idPhim, String gioChieu, String idPhongChieu, int soGheConLai, String idGia, String message) {
         this.idLichChieu = idLichChieu;

@@ -224,16 +224,19 @@ public class VeRepository {
     }
     
     public List<String> getListGhe(Timestamp gioChieu) throws SQLException {
-        List<String> listGhe = null;
+        List<String> listGhe = new ArrayList<>();
         PreparedStatement ps = connection.prepareStatement("SELECT GROUP_CONCAT(lcg.idGhe SEPARATOR ', ') AS idGhe " +
                     "FROM lich_chieu lc " +
                     "LEFT JOIN lichchieu_ghe lcg ON lc.idLichChieu = lcg.idLichChieu " +
                     "WHERE lc.gioChieu = ?");
         ps.setTimestamp(1, gioChieu);
         ResultSet rs = ps.executeQuery();
-        if(rs.getString("idGhe") != null && !rs.getString("idGhe").isEmpty()){
-            String[] dsach = rs.getString("idGhe").split(", ");
-            listGhe.addAll(Arrays.asList(dsach));
+        if (rs.next()) { 
+            String idGheStr = rs.getString("idGhe");
+            if (idGheStr != null && !idGheStr.isEmpty()) {
+                String[] dsach = idGheStr.split(", ");
+                listGhe.addAll(Arrays.asList(dsach));
+            }
         }
         return listGhe;
     }

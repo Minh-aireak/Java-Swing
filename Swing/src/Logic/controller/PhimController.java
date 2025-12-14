@@ -68,31 +68,27 @@ public class PhimController {
     }
     
     public LichChieuResponse updateLichChieu(LichChieu lc) {
+    LichChieuResponse res = new LichChieuResponse();
 
-//    if (lc.getIdLichChieu().isEmpty() || lc.getIdPhim().isEmpty() || lc.getIdPhongChieu().isEmpty()) {
-//        return new LichChieuResponse("Lỗi: Vui lòng nhập đầy đủ thông tin!");
-//    }
-//    
-//    if (lc.getGioChieu() == null) {
-//        return new LichChieuResponse("Lỗi: Ngày giờ chiếu không hợp lệ!");
-//    }
-//
-//    try {
-//        // Gọi xuống Service hoặc Repository để xử lý
-//        // Lưu ý: Nếu bạn gọi thẳng Repository thì dùng repo.update...
-//        // Nếu qua Service thì dùng phimService.update...
-//        
-//        boolean result = repo.updateLichChieu(lc); // Hoặc phimService.updateLichChieu(lc)
-//
-//        if (result) {
-//            return new LichChieuResponse("Cập nhật thành công!");
-//        } else {
-//            return new LichChieuResponse("Cập nhật thất bại (Có thể do sai ID hoặc trùng lịch)!");
-//        }
-//    } catch (Exception e) {
-//        return new LichChieuResponse("Lỗi hệ thống: " + e.getMessage());
-//    }
-return null;
+        if (lc.getGioChieu() == null) {
+            res.setMessage("Lỗi: Ngày giờ chiếu không hợp lệ hoặc để trống!");
+            return res;
+        }
+
+        try {
+            boolean result = repo.updateLichChieu(lc); 
+
+            if (result) {
+                res.setMessage("Cập nhật thành công!");
+            } else {
+                res.setMessage("Cập nhật thất bại! (Kiểm tra lại Mã Lịch Chiếu hoặc dữ liệu nhập)");
+            }
+        } catch (Exception e) {
+            res.setMessage("Lỗi hệ thống: " + e.getMessage());
+            e.printStackTrace();
+        }
+    
+    return res;
 }
     
     public LichChieuResponse addLichChieu(String idLichChieu, String idPhim,
@@ -100,7 +96,7 @@ return null;
             , String soGheConLai, String idGia) throws Exception {
         
         LichChieuResponse response = null;
-        LichChieu lc = new LichChieu(); // Phải khởi tạo
+        LichChieu lc = new LichChieu(); 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
         if (idLichChieu.isEmpty() || idPhim.isEmpty() || gioChieu.isEmpty() || idPhongChieu == null || soGheConLai.isEmpty()) {

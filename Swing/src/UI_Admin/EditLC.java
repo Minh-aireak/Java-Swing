@@ -220,7 +220,6 @@ public class EditLC extends javax.swing.JFrame {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
             lc.setGioChieu(LocalDateTime.parse(ngayChieuStr, formatter));
 
-
             var response = phimController.updateLichChieu(lc);
 
             if (response.getMessage().toLowerCase().contains("thành công") || response.getMessage().toLowerCase().contains("success")) {
@@ -238,8 +237,6 @@ public class EditLC extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
         }
     }//GEN-LAST:event_btnUpdateActionPerformed
-
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnUpdate;

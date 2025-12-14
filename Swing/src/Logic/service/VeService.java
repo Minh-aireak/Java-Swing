@@ -10,6 +10,7 @@ import Logic.entity.Ve;
 import Logic.repository.VeRepository;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -65,7 +66,7 @@ public class VeService {
     }
     
     public List<String> getListGhe(Timestamp gioChieu) throws SQLException{
-        List<String> listGhe = null;
+        List<String> listGhe = new ArrayList<>();
         try {
             listGhe = veRepository.getListGhe(gioChieu);
         } catch (SQLException ex) {
@@ -79,7 +80,8 @@ public class VeService {
         ListLichChieuResponse response = new ListLichChieuResponse(null, null);
         try {
             List<Timestamp> listGioChieu = veRepository.getListLichChieu(idPhim);
-            if(Objects.isNull(listGioChieu)){
+            System.out.println(listGioChieu);
+            if(listGioChieu.isEmpty()){
                 response.setMessage("Phim hiện tại chưa cập nhật lịch chiếu");
             }
             response.setListGioChieu(listGioChieu);
