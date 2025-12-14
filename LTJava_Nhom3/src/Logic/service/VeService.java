@@ -60,11 +60,11 @@ public class VeService {
     }
     
     public ChiTietLichChieuResponse getChiTietLichChieu(Phim chosenPhim, Timestamp gioChieu) throws SQLException {
-        ChiTietLichChieuResponse response = null;
+        ChiTietLichChieuResponse response = new ChiTietLichChieuResponse(null, null, null, null, null);
         try {
             response = veRepository.getChiTietLichChieu(chosenPhim, gioChieu);
         } catch (SQLException ex) {
-            throw new SQLException("getChiTietLichChieu error!");
+            System.err.println(ex.getMessage());
         }
         
         return response;

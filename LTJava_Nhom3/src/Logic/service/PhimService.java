@@ -1,6 +1,7 @@
 package Logic.service;
 
 import Logic.dto.response.LichChieuResponse;
+import Logic.entity.Gia;
 import Logic.entity.LichChieu;
 import Logic.repository.PhimRepository;
 import java.time.format.DateTimeFormatter;
@@ -16,6 +17,22 @@ public class PhimService {
     
     public List<LichChieu> getListLichChieu() {
         return phimRepository.getListLichChieu();
+    }
+    
+    public List<Gia> layDanhSachGia() {
+        return phimRepository.layDanhSachGia();
+    }
+    
+    public boolean xoaGia(String idGia) {
+        return phimRepository.xoaGia(idGia);
+    }
+    
+    public boolean themGia(Gia gia) {
+        return phimRepository.themGia(gia);
+    }
+    
+    public boolean capNhatGia(Gia gia) {
+        return phimRepository.capNhatGia(gia);
     }
     
     public LichChieuResponse updateLichChieu(LichChieu lc) throws Exception {

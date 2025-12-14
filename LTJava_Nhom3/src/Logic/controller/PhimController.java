@@ -1,6 +1,7 @@
 package Logic.controller;
 
 import Logic.dto.response.LichChieuResponse;
+import Logic.entity.Gia;
 import Logic.entity.LichChieu;
 import Logic.service.PhimService;
 import java.time.LocalDateTime;
@@ -25,6 +26,22 @@ public class PhimController {
     
     public List<LichChieu> getListLichChieu() {
         return phimService.getListLichChieu();
+    }
+    
+    public List<Gia> layDanhSachGia() {
+        return phimService.layDanhSachGia();
+    }
+    
+    public boolean xoaGia(String idGia) {
+        return phimService.xoaGia(idGia);
+    }
+    
+    public boolean themGia(Gia gia) {
+        return phimService.themGia(gia);
+    }
+    
+    public boolean capNhatGia(Gia gia) {
+        return phimService.capNhatGia(gia);
     }
     
     public boolean themPhim(Phim phim) throws FileNotFoundException, Exception {

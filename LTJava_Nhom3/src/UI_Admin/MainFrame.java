@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import org.jfree.data.category.DefaultCategoryDataset;
 import Logic.controller.PhimController;
 import Logic.controller.VeController;
+import Logic.entity.Gia;
 import Logic.entity.LichChieu;
 import Logic.entity.Phim;
 import Logic.entity.TaiKhoan;
@@ -861,7 +862,7 @@ int selectedRow = tbLichChieu.getSelectedRow();
         int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa giá này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
         if (JOptionPane.YES_OPTION == confirm) {
             String idGia = modelGia.getValueAt(selectedRow, 0).toString();
-            if (GiaDAO.xoaGia(idGia)) {
+            if (phimController.xoaGia(idGia)) {
                 modelGia.removeRow(selectedRow);
                 JOptionPane.showMessageDialog(this, "Xóa giá thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
             } else {

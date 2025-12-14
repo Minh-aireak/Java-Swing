@@ -1,12 +1,11 @@
 package Logic.repository;
 
-import UI_Admin.DBConnection;
+import ConnectDatabase.DatabaseConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import java.util.Date;
 
 public class BaoCaoRepository {
 
@@ -39,7 +38,7 @@ public class BaoCaoRepository {
             updateParamValues.add(Integer.parseInt(day));
         }
 
-        try (Connection conn = DBConnection.KetNoi()) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
             if (conn == null) {
                 JOptionPane.showMessageDialog(null, "Không thể kết nối đến cơ sở dữ liệu!");
                 return;
@@ -84,7 +83,7 @@ public class BaoCaoRepository {
                 GROUP BY lc.idPhim, p.tenPhim
                 ORDER BY p.tenPhim
             """);
-            try (Connection conn = DBConnection.KetNoi(); 
+            try (Connection conn = DatabaseConnection.getConnection(); 
                 PreparedStatement reportPs = conn.prepareStatement(reportSql.toString())) {
                 int index = 1;
                 reportPs.setInt(index++, soGheToiDa);
@@ -126,7 +125,7 @@ public class BaoCaoRepository {
             updateParamValues.add(new java.sql.Date(dateTo.getTime()));
         }
 
-        try (Connection conn = DBConnection.KetNoi()) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
             if (conn == null) {
                 JOptionPane.showMessageDialog(null, "Không thể kết nối đến cơ sở dữ liệu!");
                 return;
@@ -165,7 +164,7 @@ public class BaoCaoRepository {
                 GROUP BY lc.idPhim, p.tenPhim
                       ORDER BY p.tenPhim 
                          """);
-        try(Connection conn = DBConnection.KetNoi();
+        try(Connection conn = DatabaseConnection.getConnection();
         PreparedStatement reportPs = conn.prepareStatement(reportSql.toString())){
             int index = 1;
             reportPs.setInt(index++, soGheToiDa);

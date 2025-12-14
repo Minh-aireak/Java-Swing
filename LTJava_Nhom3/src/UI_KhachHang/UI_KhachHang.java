@@ -69,9 +69,9 @@ public class UI_KhachHang extends javax.swing.JFrame {
     
     List<String> listGheVIP = new ArrayList<>(Arrays.asList("B3,B4,B5,C3,C4,C5".split(",")));
     List<String> listGheTriple = new ArrayList<>(Arrays.asList("D1,D2,D3".split(",")));
-    List<String> listGheForPay = null;
-    List<Integer> listGiaVe = null;
-    List<Timestamp> listTimestamps;
+    List<String> listGheForPay = new ArrayList<>();
+    List<Integer> listGiaVe = new ArrayList<>();
+    List<Timestamp> listTimestamps = new ArrayList<>();
     String idGia = "";
     String idLichChieu = "";
     int selectedIndexLichChieuList = -1;
@@ -1919,13 +1919,8 @@ public class UI_KhachHang extends javax.swing.JFrame {
         dv_lab_TripleSum.setVisible(flag);
     }
 
-    // KHÔNG LIÊN QUAN (*)
     private void ctp_btn_DatVeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ctp_btn_DatVeActionPerformed
-//        listTimestamps.clear();
-        if(ctp_lab_TenPhim.getText().isEmpty()){
-            JOptionPane.showMessageDialog(rootPane, "Bạn chưa chọn phim!");
-            return;
-        }
+        listTimestamps.clear();
         resetGhe();
         dv_cbo_LichChieu.removeAllItems();
         dv_lab_TenPhim.setText("<html>" + "PHIM: " + chosenPhim.getTenPhim() + "</html>");
@@ -1940,6 +1935,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
             for (Timestamp ts : response.getListGioChieu()) {
                 SimpleDateFormat newDate = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
                 String displayItem = newDate.format(ts);
+                listTimestamps.add(ts);
                 dv_cbo_LichChieu.addItem("Ngày chiếu: " + displayItem);
             }
             
@@ -1949,7 +1945,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_ctp_btn_DatVeActionPerformed
 
-    // KHÔNG LIÊN QUAN (*)
     private void resetGhe(){
         for(Component comp : dv_jp_LeftGhe.getComponents()){
             if(comp instanceof JToggleButton jtbtn){
@@ -1975,7 +1970,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }
 
-    // KHÔNG LIÊN QUAN (*)
     private void updateQuantityAndSumForPay(int value1, int value2){
         JLabel[] listNameLabel = {dv_lab_Standard, dv_lab_VIP, dv_lab_Triple};
         JLabel[] listQuantity = {dv_lab_StandardQuantity, dv_lab_VIPQuantity, dv_lab_TripleQuantity};
@@ -2004,7 +1998,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }
 
-    // KHÔNG LIÊN QUAN (*)
     private void updateGheForPay(JToggleButton jgbtn){
         int value1;
         if(listGheVIP.contains(jgbtn.getActionCommand())){
@@ -2084,7 +2077,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
         }
     }
 
-    // KHÔNG LIÊN QUAN (*)
     private void dv_cbo_LichChieuItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_dv_cbo_LichChieuItemStateChanged
         if(evt.getStateChange() == ItemEvent.SELECTED){
             resetGhe();
@@ -2092,18 +2084,18 @@ public class UI_KhachHang extends javax.swing.JFrame {
             listGheForPay.clear();
             selectedIndexLichChieuList = dv_cbo_LichChieu.getSelectedIndex();
             Timestamp gioChieu = listTimestamps.get(selectedIndexLichChieuList);
-            List<String> listGheDaDat = null;
+            List<String> listGheDaDat = new ArrayList<>();
             
             try {
                 ChiTietLichChieuResponse response = veController.getChiTietLichChieu(chosenPhim, gioChieu);
-
                 dv_lab_TenPhong.setText(response.getTenPhong());
                 dv_lab_ChiTietDonHang.setText("<html>1, PHIM: " +
                 chosenPhim.getTenPhim() + "<br><br>2, Suất chiếu: " +
                 dv_cbo_LichChieu.getSelectedItem() + " - " +
-                dv_lab_TenPhong + "</html>");
-                listGheDaDat = response.getIdGhe();
-
+                dv_lab_TenPhong.getText() + "</html>");
+                if (!Objects.isNull(response.getIdGhe()))
+                    listGheDaDat = response.getIdGhe();
+                
                 for(Component comp : dv_jp_LeftGhe.getComponents()){
                     if(comp instanceof JToggleButton jtbtn){
                         if(listGheDaDat.contains(jtbtn.getActionCommand())){
@@ -2126,8 +2118,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
             }
         }  
     }//GEN-LAST:event_dv_cbo_LichChieuItemStateChanged
-   
-    // KHÔNG LIÊN QUAN (*)
+
     private void url_Pay(List<String> listGheForPay, String idTaiKhoan, String tongTien, String idLichChieu, String idGia) {
         try {
             String listIdGhe = String.join(",", listGheForPay);
@@ -2195,7 +2186,6 @@ public class UI_KhachHang extends javax.swing.JFrame {
                 
             url_Pay(listGheForPay, currentUser.getIdTaiKhoan(), total, idLichChieu, idGia);
             
-
             displayListBill();
             tabbed.setSelectedIndex(4);
 
@@ -2275,7 +2265,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
             }}
             try {
                 Connection connection = DatabaseConnection.getConnection();
-                String statement = "SELECT DISTINCT P.idPhim, p.tenPhim, p.thoiLuong " +
+                String statement = "SELECT DISTINCT p.idPhim, p.tenPhim, p.thoiLuong " +
                 "FROM phim p " +
                 "JOIN phim_theloai ptl ON p.idPhim = ptl.idPhim " +
                 "JOIN the_loai tl ON ptl.idTheLoai = tl.idTheLoai " +

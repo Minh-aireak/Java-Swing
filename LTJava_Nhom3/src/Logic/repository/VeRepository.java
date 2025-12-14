@@ -184,7 +184,7 @@ public class VeRepository {
     }
     
     public ChiTietLichChieuResponse getChiTietLichChieu(Phim chosenPhim, Timestamp gioChieu) throws SQLException {
-        ChiTietLichChieuResponse response = null;
+        ChiTietLichChieuResponse response = new ChiTietLichChieuResponse(null, null, null, null, null);
         
         PreparedStatement ps = connection.prepareStatement(
             "SELECT pc.tenPhong, GROUP_CONCAT(lcg.idGhe SEPARATOR ', ') AS idGhe, lc.idLichChieu, ga.idGia, ga.tieuChuan, ga.VIP, ga.Triple " +
@@ -200,21 +200,23 @@ public class VeRepository {
         ps.setString(1, chosenPhim.getIdPhim());
         ps.setTimestamp(2, gioChieu);
         ResultSet rs = ps.executeQuery();
-        response.setTenPhong(rs.getString("tenPhong"));
-        response.setIdLichChieu(rs.getString("idLichChieu"));
-        response.setIdGia(rs.getString("idGia"));
-        response.setTenPhong(rs.getString("tenPhong"));
-        
-        if(rs.getString("idGhe") != null && !rs.getString("idGhe").isEmpty()){
-            String[] list = rs.getString("idGhe").split(", ");
-            response.setIdGhe(Arrays.asList(list));
-        }
+        if (rs.next()) {
+            response.setTenPhong(rs.getString("tenPhong"));
+            response.setIdLichChieu(rs.getString("idLichChieu"));
+            response.setIdGia(rs.getString("idGia"));
+            response.setTenPhong(rs.getString("tenPhong"));
 
-        List<Integer> list = null;
-        list.add(rs.getInt("tieuChuan"));
-        list.add(rs.getInt("VIP"));
-        list.add(rs.getInt("Triple"));
-        response.setListGias(list);
+            if(rs.getString("idGhe") != null && !rs.getString("idGhe").isEmpty()){
+                String[] list = rs.getString("idGhe").split(", ");
+                response.setIdGhe(Arrays.asList(list));
+            }
+
+            List<Integer> list = new ArrayList<>();
+            list.add(rs.getInt("tieuChuan"));
+            list.add(rs.getInt("VIP"));
+            list.add(rs.getInt("Triple"));
+            response.setListGias(list);
+        }
 
         return response;
     }
@@ -235,7 +237,7 @@ public class VeRepository {
     }
     
     public List<Timestamp> getListLichChieu(String idPhim) throws SQLException {
-        List<Timestamp> listGioChieu = null;
+        List<Timestamp> listGioChieu = new ArrayList<>();
         PreparedStatement ps = connection.prepareStatement("SELECT gioChieu " +
                                         "FROM lich_chieu lc " +
                                         "JOIN phim p ON lc.idPhim = p.idPhim " +

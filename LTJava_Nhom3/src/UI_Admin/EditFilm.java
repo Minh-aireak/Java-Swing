@@ -1,5 +1,6 @@
 package UI_Admin;
 
+import ConnectDatabase.DatabaseConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,7 +39,7 @@ public class EditFilm extends javax.swing.JFrame {
         txtFilmAnh.setText(model.getValueAt(selectedRow, 8).toString());
 
         String idPhim = txtFilmID.getText().trim();
-        Connection conn = DBConnection.KetNoi();
+        Connection conn = DatabaseConnection.getConnection();
         String sql = """
                         SELECT tenTheLoai 
                         FROM phim_theLoai pt 
