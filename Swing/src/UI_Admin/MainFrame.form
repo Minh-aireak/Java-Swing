@@ -71,17 +71,17 @@
                   <Component id="jLabel1" alignment="0" max="32767" attributes="0"/>
                   <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
-                      <Component id="btnAddFilm" linkSize="3" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="149" max="-2" attributes="0"/>
-                      <Component id="btnEditFilm" linkSize="3" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="116" max="-2" attributes="0"/>
-                      <Component id="btnRefreshFilm" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Component id="btnDeleteFilm" linkSize="3" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="135" max="-2" attributes="0"/>
-                      <Component id="btnSearchFilm" linkSize="3" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="46" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="78" max="-2" attributes="0"/>
+                      <Component id="btnAddFilm" min="-2" pref="90" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="87" max="-2" attributes="0"/>
+                      <Component id="btnEditFilm" min="-2" pref="90" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="84" max="-2" attributes="0"/>
+                      <Component id="btnRefreshFilm" min="-2" pref="90" max="-2" attributes="0"/>
+                      <EmptySpace pref="78" max="32767" attributes="0"/>
+                      <Component id="btnDeleteFilm" min="-2" pref="90" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="85" max="-2" attributes="0"/>
+                      <Component id="btnSearchFilm" min="-2" pref="90" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="85" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -91,17 +91,15 @@
                       <Component id="jLabel1" min="-2" pref="78" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane1" min="-2" pref="351" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
-                              <Component id="btnDeleteFilm" alignment="3" pref="41" max="32767" attributes="0"/>
-                              <Component id="btnSearchFilm" alignment="3" pref="41" max="32767" attributes="0"/>
-                          </Group>
-                          <Component id="btnAddFilm" max="32767" attributes="0"/>
-                          <Component id="btnEditFilm" alignment="0" max="32767" attributes="0"/>
-                          <Component id="btnRefreshFilm" alignment="0" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="btnAddFilm" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
+                          <Component id="btnEditFilm" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
+                          <Component id="btnRefreshFilm" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
+                          <Component id="btnDeleteFilm" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
+                          <Component id="btnSearchFilm" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="25" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -263,7 +261,7 @@
                   <Component id="jScrollPane2" alignment="0" pref="947" max="32767" attributes="0"/>
                   <Component id="jLabel2" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="416" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="428" max="-2" attributes="0"/>
                       <Component id="btnRefreshCus" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
@@ -407,17 +405,17 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jScrollPane4" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="53" max="-2" attributes="0"/>
-                      <Component id="btnAddLichChieu" min="-2" pref="72" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="96" max="-2" attributes="0"/>
-                      <Component id="btnEditLichChieu" min="-2" pref="72" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="118" max="-2" attributes="0"/>
-                      <Component id="btnRefreshLichChieu" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="121" max="32767" attributes="0"/>
-                      <Component id="btnDeleteLichChieu" min="-2" pref="85" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="122" max="-2" attributes="0"/>
-                      <Component id="btnSearchLichChieu" min="-2" pref="79" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="59" max="-2" attributes="0"/>
+                      <Component id="btnAddLichChieu" min="-2" pref="92" max="-2" attributes="0"/>
+                      <EmptySpace pref="86" max="32767" attributes="0"/>
+                      <Component id="btnEditLichChieu" min="-2" pref="92" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="90" max="-2" attributes="0"/>
+                      <Component id="btnRefreshLichChieu" min="-2" pref="92" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="97" max="-2" attributes="0"/>
+                      <Component id="btnDeleteLichChieu" min="-2" pref="92" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="92" max="-2" attributes="0"/>
+                      <Component id="btnSearchLichChieu" min="-2" pref="92" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="63" max="-2" attributes="0"/>
                   </Group>
                   <Component id="jLabel6" alignment="0" max="32767" attributes="0"/>
               </Group>
@@ -426,20 +424,16 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jLabel6" pref="79" max="32767" attributes="0"/>
+                      <Component id="jLabel6" pref="87" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane4" min="-2" pref="351" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="103" alignment="1" groupAlignment="3" attributes="0">
-                              <Component id="btnEditLichChieu" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
-                              <Component id="btnAddLichChieu" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
-                              <Component id="btnRefreshLichChieu" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="103" alignment="1" groupAlignment="3" attributes="0">
-                              <Component id="btnSearchLichChieu" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
-                              <Component id="btnDeleteLichChieu" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
-                          </Group>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="btnSearchLichChieu" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
+                          <Component id="btnDeleteLichChieu" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
+                          <Component id="btnRefreshLichChieu" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
+                          <Component id="btnEditLichChieu" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
+                          <Component id="btnAddLichChieu" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
                   </Group>
@@ -732,17 +726,17 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jScrollPane5" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="44" max="-2" attributes="0"/>
-                      <Component id="btnAddGia" min="-2" pref="72" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="105" max="-2" attributes="0"/>
-                      <Component id="btnEditGia" min="-2" pref="72" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="118" max="-2" attributes="0"/>
-                      <Component id="btnRefreshGia" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="118" max="32767" attributes="0"/>
-                      <Component id="btnDeleteGia" min="-2" pref="88" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="122" max="-2" attributes="0"/>
-                      <Component id="btnSearchGia" min="-2" pref="79" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="60" max="-2" attributes="0"/>
+                      <Component id="btnAddGia" min="-2" pref="90" max="-2" attributes="0"/>
+                      <EmptySpace pref="89" max="32767" attributes="0"/>
+                      <Component id="btnEditGia" min="-2" pref="90" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="97" max="-2" attributes="0"/>
+                      <Component id="btnRefreshGia" min="-2" pref="90" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="92" max="-2" attributes="0"/>
+                      <Component id="btnDeleteGia" min="-2" pref="90" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="95" max="-2" attributes="0"/>
+                      <Component id="btnSearchGia" min="-2" pref="90" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="64" max="-2" attributes="0"/>
                   </Group>
                   <Component id="jLabel14" alignment="0" max="32767" attributes="0"/>
               </Group>
@@ -751,22 +745,22 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jLabel14" pref="79" max="32767" attributes="0"/>
+                      <Component id="jLabel14" pref="87" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane5" min="-2" pref="351" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="103" alignment="1" groupAlignment="3" attributes="0">
-                              <Component id="btnEditGia" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
-                              <Component id="btnAddGia" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
-                              <Component id="btnRefreshGia" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="103" alignment="1" groupAlignment="3" attributes="0">
+                          <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="btnSearchGia" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
                               <Component id="btnDeleteGia" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
+                              <Component id="btnRefreshGia" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                              <Component id="btnEditGia" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
+                              <Component id="btnAddGia" alignment="3" min="-2" pref="41" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>

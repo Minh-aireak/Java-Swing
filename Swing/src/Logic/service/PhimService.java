@@ -1,12 +1,16 @@
 package Logic.service;
 
 import Logic.dto.response.LichChieuResponse;
+import Logic.dto.response.SearchPhimResponse;
 import Logic.entity.Gia;
 import Logic.entity.LichChieu;
+import Logic.entity.Phim;
 import Logic.repository.PhimRepository;
+import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class PhimService {
     PhimRepository phimRepository;
@@ -113,6 +117,28 @@ public class PhimService {
             return "Xóa lịch chiếu thành công!";
         } else {
             throw new Exception("Xóa lịch chiếu thất bại!");
+        }
+    }
+    
+    public Phim getChiTietPhim(String idPhim) throws Exception {
+        var result = phimRepository.getChiTietPhim(idPhim);
+        
+        if (Objects.isNull(result)) {
+            throw new Exception("Lỗi lấy chi tiết phim");
+        }
+        
+        return result;
+    }
+    
+    public List<SearchPhimResponse> search(String tenPhim, String tacGia, List<String> list_chosen) throws SQLException, Exception {
+        try {
+            List<SearchPhimResponse> responses = phimRepository.search(tenPhim, tacGia, list_chosen);
+            
+            if (Objects.isNull(responses)) 
+                throw new Exception("Không có kết quả phù hợp!");
+            return responses;
+        } catch (SQLException ex) {
+            throw new SQLException("Lỗi tìm kiếm phim");
         }
     }
 }

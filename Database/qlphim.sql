@@ -39,7 +39,7 @@ CREATE TABLE `bill` (
 
 LOCK TABLES `bill` WRITE;
 /*!40000 ALTER TABLE `bill` DISABLE KEYS */;
-INSERT INTO `bill` VALUES ('Bill_19a84757-6b3a-4778-9f55-270f4f9bb95d','TK_3577b5687b5547a1ad5fc9ea924f447d','2025-12-13 23:29:44',50000),('Bill001','TK_0001','2025-06-09 01:20:27',580000),('Bill002','TK_0001','2025-06-09 01:21:17',410000),('Bill003','TK_0002','2025-06-09 01:22:57',580000),('Bill004','TK_0002','2025-06-09 01:23:39',260000);
+INSERT INTO `bill` VALUES ('Bill_13a60012-06dc-43d5-9214-853e958f88f1','TK_8733888f6fbd4c47b568c107705a6408','2025-12-15 02:51:05',560000),('Bill_46eac30c-9e23-4bb8-b43c-044c548afab9','TK_8733888f6fbd4c47b568c107705a6408','2025-12-15 02:53:43',690000);
 /*!40000 ALTER TABLE `bill` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -124,7 +124,7 @@ CREATE TABLE `lich_chieu` (
 
 LOCK TABLES `lich_chieu` WRITE;
 /*!40000 ALTER TABLE `lich_chieu` DISABLE KEYS */;
-INSERT INTO `lich_chieu` VALUES ('LC_250610_01','2025-06-10 16:00:00',27,'P001','PC001','Gia01'),('LC_250610_02','2025-06-10 16:05:00',30,'P002','PC002','Gia01'),('LC_250610_03','2025-06-10 16:10:00',30,'P003','PC003','Gia02'),('LC_250610_04','2025-06-10 16:30:00',27,'P004','PC004','Gia03'),('LC_250610_05','2025-06-10 20:00:00',27,'P001','PC004','Gia02'),('LC_250610_06','2025-06-10 21:00:00',30,'P002','PC003','Gia03'),('LC_250611_01','2025-06-11 08:00:00',27,'P003','PC002','Gia01'),('LC_250611_02','2025-06-11 09:00:00',30,'P004','PC001','Gia02'),('LC_250611_03','2025-06-11 09:30:00',27,'P002','PC004','Gia03'),('LC_250611_04','2025-06-11 13:00:00',30,'P001','PC002','Gia03'),('LC_250611_05','2025-06-11 15:00:00',30,'P002','PC001','Gia03'),('LC_250611_06','2025-06-11 20:00:00',30,'P003','PC004','Gia02'),('LC_251214_01','2025-12-14 14:20:00',30,'P001','PC001','Gia01');
+INSERT INTO `lich_chieu` VALUES ('LC_1512202501','2025-12-15 15:00:00',30,'P001','PC001','Gia01'),('LC_1512202502','2025-12-15 17:00:00',30,'P002','PC002','Gia01'),('LC_1512202503','2025-12-15 20:00:00',30,'P003','PC003','Gia02'),('LC_1512202504','2025-12-15 21:30:00',30,'P004','PC004','Gia02'),('LC_1512202505','2025-12-15 21:00:00',30,'P005','PC001','Gia02'),('LC_1612202501','2025-12-16 10:00:00',30,'P005','PC001','Gia01'),('LC_1612202502','2025-12-16 13:30:00',30,'P004','PC002','Gia01'),('LC_1612202503','2025-12-16 16:00:00',30,'P003','PC003','Gia01'),('LC_1612202504','2025-12-16 19:45:00',26,'P002','PC004','Gia02'),('LC_1612202505','2025-12-16 20:15:00',30,'P005','PC002','Gia02'),('LC_1812202501','2025-12-18 21:15:00',26,'P002','PC003','Gia03');
 /*!40000 ALTER TABLE `lich_chieu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -152,8 +152,37 @@ CREATE TABLE `lichchieu_ghe` (
 
 LOCK TABLES `lichchieu_ghe` WRITE;
 /*!40000 ALTER TABLE `lichchieu_ghe` DISABLE KEYS */;
-INSERT INTO `lichchieu_ghe` VALUES ('LC_250610_01','A6','Đã đặt'),('LC_250610_01','B5','Đã đặt'),('LC_250610_01','D3','Đã đặt'),('LC_250610_04','B5','Đã đặt'),('LC_250610_04','C5','Đã đặt'),('LC_250610_04','D2','Đã đặt'),('LC_250610_05','A1','Đang xử lý'),('LC_250610_05','A2','Đang xử lý'),('LC_250610_05','A3','Đang xử lý'),('LC_250611_01','B5','Đã đặt'),('LC_250611_01','B7','Đã đặt'),('LC_250611_01','C7','Đã đặt'),('LC_250611_03','B3','Đã đặt'),('LC_250611_03','C3','Đã đặt'),('LC_250611_03','D1','Đã đặt');
+INSERT INTO `lichchieu_ghe` VALUES ('LC_1612202504','A4','Đã đặt'),('LC_1612202504','B5','Đã đặt'),('LC_1612202504','C6','Đã đặt'),('LC_1612202504','D3','Đã đặt'),('LC_1812202501','A6','Đã đặt'),('LC_1812202501','B5','Đã đặt'),('LC_1812202501','C4','Đã đặt'),('LC_1812202501','D1','Đã đặt');
 /*!40000 ALTER TABLE `lichchieu_ghe` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `payment_pending`
+--
+
+DROP TABLE IF EXISTS `payment_pending`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `payment_pending` (
+  `id` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `idTaiKhoan` varchar(50) NOT NULL,
+  `idLichChieu` varchar(50) NOT NULL,
+  `listIdGhe` varchar(50) NOT NULL,
+  `idGia` varchar(50) NOT NULL,
+  `tongTien` varchar(50) NOT NULL,
+  `status` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `payment_pending`
+--
+
+LOCK TABLES `payment_pending` WRITE;
+/*!40000 ALTER TABLE `payment_pending` DISABLE KEYS */;
+INSERT INTO `payment_pending` VALUES ('PAY_e243af4e-9448-4f30-a6d7-5cea9458d8d0','TK_8733888f6fbd4c47b568c107705a6408','LC_1612202504','A4, B5, C6, D3','Gia02','560000','Thành công'),('PAY_f39be4ed-b407-45b2-a9ad-546c08f5a1f9','TK_8733888f6fbd4c47b568c107705a6408','LC_1812202501','A6, B5, C4, D1','Gia03','690000','Thành công');
+/*!40000 ALTER TABLE `payment_pending` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -184,7 +213,7 @@ CREATE TABLE `phim` (
 
 LOCK TABLES `phim` WRITE;
 /*!40000 ALTER TABLE `phim` DISABLE KEYS */;
-INSERT INTO `phim` VALUES ('P001','Yêu Em Không Cần Lời Nói','Cho Sun Ho','Hong Kyung, Roh Yoon Seo, Kim Min Ju, Jung Yong Ju, Hyun Bong Sik, Jung Hye Young ','1 giờ 50 phút','Tiếng Hàn, phụ đề Tiếng Việt','Yêu Em Không Cần Lời Nói xoay quanh Yong Joon, chàng trai bán thời gian tại quán cơm của gia đình. Dịp tình cờ đưa anh gặp gỡ Yeo Reum, cô gái chăm sóc em gái khiếm thính, và từ đó, tình yêu ấm áp giữa họ dần nảy nở.','D:\\Java-Swing\\LTJava_Nhom3\\resources\\icons_imgs\\yekcln.png'),('P002','NGÔI ĐỀN KỲ QUÁI 4','Mike Phontharis','Mean Phiravich, James Bhuripat, Aim Witthawat','2 giờ 45 phút','Thái Lan, phụ đề Tiếng Việt','NGÔI ĐỀN KỲ QUÁI 4 kể về hồn ma Nak với sức mạnh khủng khiếp nhất mà bộ đôi hài hước Balloon và First phải đối mặt để giải cứu chàng trai đẹp Min Joon. Liệu nhóm bạn này có thể vượt qua những thử thách do chính họ tạo ra, hay sẽ tan rã từ đây? Hãy đón xem trên Motchill để khám phá nhé.','D:\\Java-Swing\\LTJava_Nhom3\\resources\\icons_imgs\\ndkq4.png'),('P003','Điều Kỳ Diệu Trong Phòng Giam Số 7','Frog Tea','Ryu Seung Ryong, Gal So Won, Oh Dal Soo, Park Won Sang, Kim Jung Tae, Jung Man Shik, Kim Gi Cheon','2 giờ 08 phút','Tiếng Hàn','Điều Kỳ Diệu Trong Phòng Giam Số 7 kể về Yong Goo bị kết án tử hình vì bị kẻ xấu vu cho tội sát nhân. Ước mơ cuối cùng của ông là được nhìn thấy con gái mình - Ye Seung. Tuy nhiên, cánh cửa nhà tù nơi ông đang bị giam giữ lại không bao giờ mở cho người nhà vào thăm. Vì vậy, những người cùng phòng giam đã lên kế hoạch để 2 cha con họ có thể hội ngộ...','D:\\Java-Swing\\LTJava_Nhom3\\resources\\icons_imgs\\dkdtpgs7.png'),('P004','Cung điện ma ám','Yoon Sung Shilk','Yook Sung Jae','2 giờ 15 phút','Tiếng Hàn, phụ đề Tiếng Việt','Cung Điện Ma Ám Phim Cung Điện Ma Ám  là một câu chuyện tình yêu đầy huyền bí giữa Yun Gap, một thư sinh thông minh được vua trọng dụng, và Yeo Ri, một nữ pháp sư trẻ tuổi. Cuộc sống của Yun Gap đảo lộn khi anh bị ác thần xâm chiếm, khiến cho chỉ Yeo Ri - cháu gái của một pháp sư lừng danh - mới có thể nhìn thấy sự hiện diện của thế lực đầy nguy hiểm này.','D:\\Java-Swing\\LTJava_Nhom3\\resources\\icons_imgs\\cdma.png');
+INSERT INTO `phim` VALUES ('P001','Yêu Em Không Cần Lời Nói','Cho Sun Ho','Hong Kyung, Roh Yoon Seo, Kim Min Ju, Jung Yong Ju, Hyun Bong Sik, Jung Hye Young ','1 giờ 50 phút','Tiếng Hàn, phụ đề Tiếng Việt','Yêu Em Không Cần Lời Nói xoay quanh Yong Joon, chàng trai bán thời gian tại quán cơm của gia đình. Dịp tình cờ đưa anh gặp gỡ Yeo Reum, cô gái chăm sóc em gái khiếm thính, và từ đó, tình yêu ấm áp giữa họ dần nảy nở.','D:\\Java-Swing\\Swing\\resources\\icons_imgs\\yekcln.png'),('P002','NGÔI ĐỀN KỲ QUÁI 4','Mike Phontharis','Mean Phiravich, James Bhuripat, Aim Witthawat','2 giờ 45 phút','Thái Lan, phụ đề Tiếng Việt','NGÔI ĐỀN KỲ QUÁI 4 kể về hồn ma Nak với sức mạnh khủng khiếp nhất mà bộ đôi hài hước Balloon và First phải đối mặt để giải cứu chàng trai đẹp Min Joon. Liệu nhóm bạn này có thể vượt qua những thử thách do chính họ tạo ra, hay sẽ tan rã từ đây? Hãy đón xem trên Motchill để khám phá nhé.','D:\\Java-Swing\\Swing\\resources\\icons_imgs\\ndkq4.png'),('P003','Điều Kỳ Diệu Trong Phòng Giam Số 7','Frog Tea','Ryu Seung Ryong, Gal So Won, Oh Dal Soo, Park Won Sang, Kim Jung Tae, Jung Man Shik, Kim Gi Cheon','2 giờ 08 phút','Tiếng Hàn','Điều Kỳ Diệu Trong Phòng Giam Số 7 kể về Yong Goo bị kết án tử hình vì bị kẻ xấu vu cho tội sát nhân. Ước mơ cuối cùng của ông là được nhìn thấy con gái mình - Ye Seung. Tuy nhiên, cánh cửa nhà tù nơi ông đang bị giam giữ lại không bao giờ mở cho người nhà vào thăm. Vì vậy, những người cùng phòng giam đã lên kế hoạch để 2 cha con họ có thể hội ngộ...','D:\\Java-Swing\\Swing\\resources\\icons_imgs\\dkdtpgs7.png'),('P004','Cung điện ma ám','Yoon Sung Shilk','Yook Sung Jae','2 giờ 15 phút','Tiếng Hàn, phụ đề Tiếng Việt','Cung Điện Ma Ám Phim Cung Điện Ma Ám  là một câu chuyện tình yêu đầy huyền bí giữa Yun Gap, một thư sinh thông minh được vua trọng dụng, và Yeo Ri, một nữ pháp sư trẻ tuổi. Cuộc sống của Yun Gap đảo lộn khi anh bị ác thần xâm chiếm, khiến cho chỉ Yeo Ri - cháu gái của một pháp sư lừng danh - mới có thể nhìn thấy sự hiện diện của thế lực đầy nguy hiểm này.','D:\\Java-Swing\\Swing\\resources\\icons_imgs\\cdma.png'),('P005','Toàn Trí Độc Giả','Kim Byung Woo','Ahn Hyo Seop, Lee Min Ho, Chae Soo Bin','117 phút','Phụ đề Việt','Toàn Trí Độc Giả kể về Kim Dokja, một nhân viên văn phòng bình thường có cuộc sống xoay chuyển 180 độ. Anh là người duy nhất từng đọc đến chương cuối cùng của bộ tiểu thuyết mạng yêu thích mang tên \"Ba Cách Để Sống Sót Trong Một Thế Giới Diệt Vong\"','D:\\Java-Swing\\Swing\\resources\\icons_imgs\\ttdg.jpg');
 /*!40000 ALTER TABLE `phim` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -212,7 +241,7 @@ CREATE TABLE `phim_theloai` (
 
 LOCK TABLES `phim_theloai` WRITE;
 /*!40000 ALTER TABLE `phim_theloai` DISABLE KEYS */;
-INSERT INTO `phim_theloai` VALUES ('P001','tl_GiaDinhHocDuong'),('P001','tl_TamLyTinhCam'),('P002','tl_HaiHuoc'),('P002','tl_HoatHinh'),('P002','tl_KinhDiMa'),('P003','tl_GiaDinhHocDuong'),('P003','tl_TamLyTinhCam'),('P004','tl_CoTrangThanThoai'),('P004','tl_KinhDiMa'),('P004','tl_TamLyTinhCam');
+INSERT INTO `phim_theloai` VALUES ('P001','tl_GiaDinhHocDuong'),('P001','tl_TamLyTinhCam'),('P002','tl_HaiHuoc'),('P002','tl_HoatHinh'),('P002','tl_KinhDiMa'),('P003','tl_GiaDinhHocDuong'),('P003','tl_TamLyTinhCam'),('P004','tl_CoTrangThanThoai'),('P004','tl_KinhDiMa'),('P004','tl_TamLyTinhCam'),('P005','tl_TamLyTinhCam');
 /*!40000 ALTER TABLE `phim_theloai` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -270,7 +299,7 @@ CREATE TABLE `tai_khoan` (
 
 LOCK TABLES `tai_khoan` WRITE;
 /*!40000 ALTER TABLE `tai_khoan` DISABLE KEYS */;
-INSERT INTO `tai_khoan` VALUES ('AD0001','0966281026','vuonghung123456789@gmail.com','Hung2005!!','Trịnh Vương','Hưng','2005-06-06','Nghệ An','Nữ'),('AD0002','0987654321','tienanh123456789@gmail.com','Anh2005!','Nguyễn Tiến','Anh','2005-09-20','Hà Nội','Nam'),('TK_0001','0865788519','tuanminh18122005@gmail.com','Aireak@@@','AIREAK','AIREAK','18/12/2006','123123123','Nam'),('TK_0002','0123456789','duylong123456789@gmail.com','Long2005!','Lê Duy ','Long','2005-07-15','Thái Bình','Nam'),('TK_1a39b3b284f64a23980dc25b74deacdb','0987658768','aerjgna@gmail.com','Hungcuacua','123','Frogfgg','18/12/2006','123','Nữ'),('TK_3577b5687b5547a1ad5fc9ea924f447d','0987654678','123123123@gmail.com','Minh@2005','Nguyen Mih','Tuan',NULL,'','Nam');
+INSERT INTO `tai_khoan` VALUES ('AD_0001','0987654321','vuonghung123456789@gmail.com','Aireak@@@','Trịnh Vương','Hưng','2005-06-06','Nghệ An','Nữ'),('TK_8733888f6fbd4c47b568c107705a6408','0865788519','aireak@gmail.com','Aireak@@@','Tuấn Minh','Minh',NULL,'','Nam');
 /*!40000 ALTER TABLE `tai_khoan` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -329,7 +358,7 @@ CREATE TABLE `ve` (
 
 LOCK TABLES `ve` WRITE;
 /*!40000 ALTER TABLE `ve` DISABLE KEYS */;
-INSERT INTO `ve` VALUES ('aa3da64f-814a-4538-928b-154c52d20cbe','LC_250610_05','A1','Gia02','Bill_19a84757-6b3a-4778-9f55-270f4f9bb95d'),('cdd085b6-45e5-4a8d-9746-38c0ec508193','LC_250610_05','A2','Gia02','Bill_19a84757-6b3a-4778-9f55-270f4f9bb95d'),('f7fb72fb-0271-4536-b2b3-4cff98f3d38f','LC_250610_05','A3','Gia02','Bill_19a84757-6b3a-4778-9f55-270f4f9bb95d'),('Ve1001','LC_250610_04','B5','Gia03','Bill001'),('Ve1002','LC_250610_04','C5','Gia03','Bill001'),('Ve1003','LC_250610_04','D2','Gia03','Bill001'),('Ve1004','LC_250610_01','A6','Gia01','Bill002'),('Ve1005','LC_250610_01','B5','Gia01','Bill002'),('Ve1006','LC_250610_01','D3','Gia01','Bill002'),('Ve1007','LC_250611_03','B3','Gia03','Bill003'),('Ve1008','LC_250611_03','C3','Gia03','Bill003'),('Ve1009','LC_250611_03','D1','Gia03','Bill003'),('Ve1010','LC_250611_01','B7','Gia01','Bill004'),('Ve1011','LC_250611_01','C7','Gia01','Bill004'),('Ve1012','LC_250611_01','B5','Gia01','Bill004');
+INSERT INTO `ve` VALUES ('Ve_12cb5a81-ffcc-412d-a692-0c08e6f79c9a','LC_1812202501','D1','Gia03','Bill_46eac30c-9e23-4bb8-b43c-044c548afab9'),('Ve_32667ecd-d63e-4c9d-8b61-18659c5aaac2','LC_1612202504','B5','Gia02','Bill_13a60012-06dc-43d5-9214-853e958f88f1'),('Ve_34040a89-3c60-40a3-88a9-f266de6500f0','LC_1612202504','D3','Gia02','Bill_13a60012-06dc-43d5-9214-853e958f88f1'),('Ve_4e49fc4b-0252-4c46-b95e-95c75222c2e4','LC_1812202501','B5','Gia03','Bill_46eac30c-9e23-4bb8-b43c-044c548afab9'),('Ve_8789c5e2-9e44-4aed-a2eb-8f39ef1fb0f1','LC_1612202504','C6','Gia02','Bill_13a60012-06dc-43d5-9214-853e958f88f1'),('Ve_b0ba9f37-4bf4-49cd-a1b3-473b71c6411c','LC_1812202501','A6','Gia03','Bill_46eac30c-9e23-4bb8-b43c-044c548afab9'),('Ve_c231fe65-62c4-46a9-9045-10ae76215cff','LC_1612202504','A4','Gia02','Bill_13a60012-06dc-43d5-9214-853e958f88f1'),('Ve_e54e63db-5f1e-4f59-b47b-8044eed0ece8','LC_1812202501','C4','Gia03','Bill_46eac30c-9e23-4bb8-b43c-044c548afab9');
 /*!40000 ALTER TABLE `ve` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -342,4 +371,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-12-14  5:39:50
+-- Dump completed on 2025-12-15  2:58:38

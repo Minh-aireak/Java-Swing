@@ -37,8 +37,6 @@ public class SearchFilm extends javax.swing.JFrame {
         txtFilmTL = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         txtFilmLang = new javax.swing.JTextField();
-        jLabel11 = new javax.swing.JLabel();
-        txtFilmAnh = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtFilmDes = new javax.swing.JTextArea();
@@ -84,8 +82,6 @@ public class SearchFilm extends javax.swing.JFrame {
         jLabel9.setText("Thời lượng:");
 
         jLabel10.setText("Ngôn ngữ:");
-
-        jLabel11.setText("Ảnh:");
 
         jLabel12.setText("Mô tả:");
 
@@ -136,11 +132,9 @@ public class SearchFilm extends javax.swing.JFrame {
                                     .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel7)
-                                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel11))
+                                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(16, 16, 16)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtFilmAnh)
                                     .addComponent(jScrollPane1)
                                     .addComponent(txtFilmActor)
                                     .addComponent(txtFilmTL)
@@ -157,9 +151,9 @@ public class SearchFilm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(64, 64, 64)
                 .addComponent(btnSearch)
-                .addGap(58, 58, 58)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnRefresh)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(69, 69, 69))
         );
 
         layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnRefresh, btnSearch});
@@ -211,14 +205,10 @@ public class SearchFilm extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel12)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel11)
-                    .addComponent(txtFilmAnh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSearch)
-                    .addComponent(btnRefresh))
+                    .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(31, 31, 31))
         );
 
@@ -236,7 +226,6 @@ public class SearchFilm extends javax.swing.JFrame {
         String ngonNgu = txtFilmLang.getText().trim();
         String dienVien = txtFilmActor.getText().trim();
         String moTa = txtFilmDes.getText().trim();
-        String anhPhim = txtFilmAnh.getText().trim();
         
         List<String> theLoaiList = new ArrayList<>();
         if (ckbCoTrang.isSelected()) theLoaiList.add("Cổ trang - Thần thoại");
@@ -246,7 +235,7 @@ public class SearchFilm extends javax.swing.JFrame {
         if (ckbHoatHinh.isSelected()) theLoaiList.add("Hoạt hình");
         if (ckbTamLy.isSelected())    theLoaiList.add("Tâm lý - Tình cảm");
 
-        ArrayList<Phim> dsPhim = timKiemPhim(idPhim, tenPhim, theLoaiList, tacGia, dienVien, thoiLuong, ngonNgu, moTa, anhPhim);
+        ArrayList<Phim> dsPhim = timKiemPhim(idPhim, tenPhim, theLoaiList, tacGia, dienVien, thoiLuong, ngonNgu, moTa);
         model.setRowCount(0);
 
         for (Phim phim : dsPhim) {
@@ -267,7 +256,7 @@ public class SearchFilm extends javax.swing.JFrame {
 
     private ArrayList<Phim> timKiemPhim(String idPhim, String tenPhim, List<String> theLoaiList,
                                     String tacGia, String dienVien, String thoiLuong,
-                                    String ngonNgu, String moTa, String anhPhim) {
+                                    String ngonNgu, String moTa) {
     ArrayList<Phim> ds = new ArrayList<>();
     Connection conn = DatabaseConnection.getConnection();
     StringBuilder sql = new StringBuilder(
@@ -325,10 +314,6 @@ public class SearchFilm extends javax.swing.JFrame {
         conditions.add("p.moTa LIKE ?");
         params.add("%" + moTa + "%");
     }
-    if (!anhPhim.isEmpty()) {
-        conditions.add("p.anhPhim LIKE ?");
-        params.add("%" + anhPhim + "%");
-    }
 
     if (!conditions.isEmpty()) {
         sql.append(" AND ").append(String.join(" AND ", conditions));
@@ -375,7 +360,6 @@ public class SearchFilm extends javax.swing.JFrame {
         txtFilmTL.setText("");
         txtFilmLang.setText("");
         txtFilmDes.setText("");
-        txtFilmAnh.setText("");
         ckbCoTrang.setSelected(false);
         ckbFunny.setSelected(false);
         ckbHorror.setSelected(false);
@@ -385,7 +369,6 @@ public class SearchFilm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRefreshActionPerformed
 
     
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnRefresh;
     private javax.swing.JButton btnSearch;
@@ -397,7 +380,6 @@ public class SearchFilm extends javax.swing.JFrame {
     private javax.swing.JCheckBox ckbTamLy;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -407,7 +389,6 @@ public class SearchFilm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField txtFilmActor;
-    private javax.swing.JTextField txtFilmAnh;
     private javax.swing.JTextArea txtFilmDes;
     private javax.swing.JTextField txtFilmID;
     private javax.swing.JTextField txtFilmLang;

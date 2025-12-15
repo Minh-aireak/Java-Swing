@@ -3,14 +3,18 @@ package UI_KhachHang;
 import Logic.entity.Phim;
 import ConnectDatabase.DatabaseConnection;
 import Global.Session;
+import Logic.controller.PhimController;
 import Logic.controller.TaiKhoanController;
 import Logic.controller.VeController;
 import Logic.dto.response.ChiTietLichChieuResponse;
 import Logic.dto.response.ListLichChieuResponse;
 import Logic.dto.response.LoginResponse;
+import Logic.dto.response.SearchPhimResponse;
 import Logic.entity.TaiKhoan;
+import Logic.repository.PhimRepository;
 import Logic.repository.TaiKhoanRepository;
 import Logic.repository.VeRepository;
+import Logic.service.PhimService;
 import Logic.service.TaiKhoanService;
 import Logic.service.VeService;
 import UI_Login.UI_Login;
@@ -36,7 +40,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.JCheckBox;
@@ -55,6 +58,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
     TaiKhoanController loginController = new TaiKhoanController(new TaiKhoanService(new TaiKhoanRepository()));
     static Session session;
     TaiKhoan currentUser = session.getCurrentUser();
+    PhimController phimController = new PhimController(new PhimService(new PhimRepository()));
     Phim chosenPhim = new Phim();
     
     List<String> listGheVIP = new ArrayList<>(Arrays.asList("B3,B4,B5,C3,C4,C5".split(",")));
@@ -1911,7 +1915,7 @@ public class UI_KhachHang extends javax.swing.JFrame {
         listTimestamps.clear();
         resetGhe();
         dv_cbo_LichChieu.removeAllItems();
-        dv_lab_TenPhim.setText("<html>" + "PHIM: " + chosenPhim.getTenPhim() + "</html>");
+        dv_lab_TenPhim.setText("<html>" + "Phim: " + chosenPhim.getTenPhim() + "</html>");
         try {
             ListLichChieuResponse response = veController.getListLichChieu(chosenPhim.getIdPhim());
             
@@ -2157,44 +2161,23 @@ public class UI_KhachHang extends javax.swing.JFrame {
         indexRow = table.getSelectedRow();
         String data = table.getValueAt(indexRow, 0).toString();
         tabbed.setSelectedIndex(1);
+        
         try {
-            Connection connection = DatabaseConnection.getConnection();
-            String statement = "SELECT p.idPhim, p.tenPhim, p.tacGia, p.dienVien, p.thoiLuong, GROUP_CONCAT(tl.tenTheLoai SEPARATOR ',') AS theLoai, p.ngonNgu, p.moTa, p.anhPhim " +
-            "FROM phim p " +
-            "JOIN phim_theloai ptl ON p.idPhim = ptl.idPhim " +
-            "JOIN the_loai tl ON ptl.idTheLoai = tl.idTheLoai " +
-            "WHERE p.idPhim = ? " +
-            "GROUP BY p.idPhim, p.tenPhim, p.tacGia, p.dienVien, p.thoiLuong, p.ngonNgu, p.moTa ";
-            PreparedStatement ps = connection.prepareStatement(statement);
-            ps.setString(1, data);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()){
-                chosenPhim.setIdPhim(rs.getString("idPhim"));
-                chosenPhim.setTenPhim(rs.getString("tenPhim"));
-                ctp_lab_TenPhim.setText("PHIM - " + rs.getString("tenPhim"));
-                chosenPhim.setTacGia(rs.getString("tacGia"));
-                ctp_lab_TacGia.setText(rs.getString("tacGia"));
-                chosenPhim.setDienVien(rs.getString("dienVien"));
-                ctp_lab_DienVien.setText("<html>" + rs.getString("dienVien") + "</html>");
-                chosenPhim.setThoiLuong(rs.getString("thoiLuong"));
-                ctp_lab_ThoiLuong.setText(rs.getString("thoiLuong"));
-                List<String> listChosenPhim = Arrays.asList(rs.getString("theLoai").split(","));
-                chosenPhim.setTheLoai(listChosenPhim);
-                ctp_lab_TheLoai.setText(rs.getString("theLoai"));
-                chosenPhim.setNgonNgu(rs.getString("ngonNgu"));
-                ctp_lab_NgonNgu.setText(rs.getString("ngonNgu"));
-                chosenPhim.setMoTa(rs.getString("moTa"));
-                ctp_lab_MoTa.setText("<html>" + rs.getString("moTa") + "</html>");
-                chosenPhim.setAnhPhim(rs.getString("anhPhim"));
-                // Database có thể lưu đường dẫn tuyệt đối hoặc chỉ tên file.
-                // Dùng helper để thử nhiều cách load: HTTP, filesystem đầy đủ, hoặc classpath /icons_imgs/{basename}.
-                String imageFileName = rs.getString("anhPhim");
-                setLabelImageFromPath(ctp_lab_AnhPhim, imageFileName);
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
+            chosenPhim = phimController.getChiTietPhim(data);
+
+            ctp_lab_TenPhim.setText("PHIM - " + chosenPhim.getTenPhim());
+            ctp_lab_TacGia.setText(chosenPhim.getTacGia());
+            ctp_lab_DienVien.setText("<html>" + chosenPhim.getDienVien() + "</html>");
+            ctp_lab_ThoiLuong.setText(chosenPhim.getThoiLuong());
+            ctp_lab_TheLoai.setText(String.join(", ", chosenPhim.getTheLoai()));
+            ctp_lab_NgonNgu.setText(chosenPhim.getNgonNgu());
+            ctp_lab_MoTa.setText("<html>" + chosenPhim.getMoTa() + "</html>");
+            String imageFileName = chosenPhim.getAnhPhim();
+            setLabelImageFromPath(ctp_lab_AnhPhim, imageFileName);
+            displayChiTietPhim(true);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Lỗi!", JOptionPane.ERROR_MESSAGE);
         }
-        displayChiTietPhim(true);
     }//GEN-LAST:event_tableMouseClicked
 
     private void h_btn_TimKiemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_h_btn_TimKiemActionPerformed
@@ -2202,66 +2185,30 @@ public class UI_KhachHang extends javax.swing.JFrame {
         model.setRowCount(0);
         String searchTen = h_txt_TenPhim.getText();
         String searchTacGia = h_txt_TenTacGia.getText();
-        ArrayList<String> list_chosen = new ArrayList<>();
+        List<String> list_chosen = new ArrayList<>();
         for(Component a : h_jp_TheLoai.getComponents()){
             if(a instanceof JCheckBox jcb){
                 if(jcb.isSelected()){
                     list_chosen.add(jcb.getActionCommand());
                 }
-            }}
-            try {
-                Connection connection = DatabaseConnection.getConnection();
-                String statement = "SELECT DISTINCT p.idPhim, p.tenPhim, p.thoiLuong " +
-                "FROM phim p " +
-                "JOIN phim_theloai ptl ON p.idPhim = ptl.idPhim " +
-                "JOIN the_loai tl ON ptl.idTheLoai = tl.idTheLoai " +
-                "WHERE 1=1";
-                if(!searchTen.isEmpty()){
-                    statement += " AND p.tenPhim LIKE ?";
-                }
-
-                if(!searchTacGia.isEmpty()){
-                    statement += " AND p.tacGia LIKE ?";
-                }
-
-                if(!list_chosen.isEmpty()){
-                    statement += " AND tl.idTheLoai IN (" + String.join(",", Collections.nCopies(list_chosen.size(), "?")) + ") " +
-                    "GROUP BY p.idPhim, p.tenPhim, p.thoiLuong " +
-                    "HAVING COUNT(DISTINCT tl.idTheLoai) = ?";
-                }
-                PreparedStatement ps = connection.prepareStatement(statement);
-                int index = 1;
-                if(!searchTen.isEmpty()){
-                    ps.setString(index++, "%" + searchTen + "%");
-                }
-                if(!searchTacGia.isEmpty()){
-                    ps.setString(index++, "%" + searchTacGia + "%");
-                }
-                if(!list_chosen.isEmpty()){
-                    for (String str : list_chosen){
-                        ps.setString(index++, str);
-                    }
-                    ps.setInt(index, list_chosen.size());
-                }
-                ResultSet rs = ps.executeQuery();
-
-                boolean hasResult = false;
-                while(rs.next()){
-                    hasResult = true;
-                    Vector v = new Vector();
-                    v.add(rs.getString("idPhim"));
-                    v.add(rs.getString("tenPhim"));
-                    v.add(rs.getString("thoiLuong"));
-                    model.addRow(v);
-                }
-                if(!hasResult){
-                    JOptionPane.showMessageDialog(rootPane, "Không có kết quả phù hợp");
-                    return;
-                }
-                table.setModel(model);
-            } catch (SQLException ex) {
-                Logger.getLogger(UI_KhachHang.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+        
+        try {
+            List<SearchPhimResponse> responses = phimController.search(searchTen, searchTacGia, list_chosen);
+            
+            for (SearchPhimResponse spr : responses) {
+                Vector v = new Vector();
+                v.add(spr.getIdPhim());
+                v.add(spr.getTenPhim());
+                v.add(spr.getThoiLuong());
+                model.addRow(v);
+            }
+            
+            table.setModel(model);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(), "Thông báo!", JOptionPane.INFORMATION_MESSAGE);
+        }
     }//GEN-LAST:event_h_btn_TimKiemActionPerformed
 
     private void btn_DoiMatKhauActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btn_DoiMatKhauActionPerformed

@@ -18,12 +18,12 @@ public class AddLC extends javax.swing.JFrame {
     }
 
     private void loadPhongChieu() {
-DefaultComboBoxModel<String> comboModel = new DefaultComboBoxModel<>();
-    List<String> list = phimController.getPhongChieu();
-    for(String item : list) {
-        comboModel.addElement(item);
-    }
-    cbbRoom.setModel(comboModel);
+        DefaultComboBoxModel<String> comboModel = new DefaultComboBoxModel<>();
+        List<String> list = phimController.getPhongChieu();
+        for(String item : list) {
+            comboModel.addElement(item);
+        }
+        cbbRoom.setModel(comboModel);
     }
 
     @SuppressWarnings("unchecked")
@@ -137,7 +137,7 @@ DefaultComboBoxModel<String> comboModel = new DefaultComboBoxModel<>();
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(txtGiaID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(63, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         btnAdd.setText("Thêm");
@@ -161,11 +161,11 @@ DefaultComboBoxModel<String> comboModel = new DefaultComboBoxModel<>();
             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGap(37, 37, 37)
-                .addComponent(btnAdd)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnRefresh)
-                .addGap(29, 29, 29))
+                .addGap(82, 82, 82)
+                .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(49, 49, 49)
+                .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -175,9 +175,9 @@ DefaultComboBoxModel<String> comboModel = new DefaultComboBoxModel<>();
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnAdd)
-                    .addComponent(btnRefresh))
-                .addGap(54, 54, 54))
+                    .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(17, 17, 17))
         );
 
         pack();
@@ -226,7 +226,6 @@ DefaultComboBoxModel<String> comboModel = new DefaultComboBoxModel<>();
     }
     }//GEN-LAST:event_btnAddActionPerformed
 
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;

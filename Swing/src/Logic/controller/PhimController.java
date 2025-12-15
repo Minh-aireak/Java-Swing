@@ -1,6 +1,7 @@
 package Logic.controller;
 
 import Logic.dto.response.LichChieuResponse;
+import Logic.dto.response.SearchPhimResponse;
 import Logic.entity.Gia;
 import Logic.entity.LichChieu;
 import Logic.service.PhimService;
@@ -9,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import Logic.entity.Phim;
 import Logic.repository.PhimRepository;
 import java.io.FileNotFoundException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,7 +123,6 @@ public class PhimController {
     }
 
     public List<LichChieuResponse> searchLichChieu(String idLichChieu, String idPhim, String idPhongChieu) throws Exception {
-        // Tìm kiếm có thể null hoặc rỗng, không cần validate chặt
         return phimService.searchLichChieu(idLichChieu, idPhim, idPhongChieu);
     }
 
@@ -138,5 +139,13 @@ public class PhimController {
             throw new Exception("Vui lòng chọn lịch chiếu để xóa!");
         }
         return phimService.deleteLichChieu(idLichChieu);
+    }
+    
+    public Phim getChiTietPhim(String idPhim) throws Exception {
+        return phimService.getChiTietPhim(idPhim);
+    }
+    
+    public List<SearchPhimResponse> search(String tenPhim, String tacGia, List<String> list_chosen) throws SQLException, Exception {
+        return phimService.search(tenPhim, tacGia, list_chosen);
     }
 }
